@@ -3,15 +3,21 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
     accountData:{
-        username: {
-            type:String,
-            unique: true,
-            required: true
+        email:{
+            type: String,
+            validate: {
+                validator: function(v) {
+                    return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(v);
+                },
+                message: props => `${props.value} is not a valid email address!`
+            }
         },
         password:{
             type:String, // have it as String for now, then later on set it a binary encryption
             reuiqred: true
-        }
+        },
+        securityQuestion: String,
+        securityAnswer: String
     },
     profileData:{
         name:{
@@ -22,15 +28,6 @@ const userSchema = new mongoose.Schema({
             type:String,
             enum: ['Free', 'Paid'],
             default: 'Free'
-        },
-        email:{
-            type: String,
-            validate: {
-                validator: function(v) {
-                    return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(v);
-                },
-                message: props => `${props.value} is not a valid email address!`
-            }
         },
         creationDate:{
             type: Date,
