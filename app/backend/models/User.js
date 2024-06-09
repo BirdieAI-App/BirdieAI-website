@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
             enum: ['Free', 'Paid'],
             default: 'Free'
         },
-        creationDate:{
+        creationTime:{
             type: Date,
             default: Date.now
         }
