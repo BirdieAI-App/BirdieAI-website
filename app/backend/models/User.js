@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     accountData:{
         email:{
             type: String,
+            unique: true,
             validate: {
                 validator: function(v) {
                     return /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(v);
@@ -20,10 +21,8 @@ const userSchema = new mongoose.Schema({
         securityAnswer: String
     },
     profileData:{
-        name:{
-            type: String,
-            required: true
-        }, 
+        firstName: String,
+        lastName: String,
         subscriptionTier:{
             type:String,
             enum: ['Free', 'Paid'],

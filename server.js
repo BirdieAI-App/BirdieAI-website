@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const userRoute = require('./app/backend/routes/UserRoute.js')
 
 // Access environment variables
 const port = process.env.PORT || 3000;
@@ -24,7 +25,7 @@ app
 	.use(bodyParser.json())
 	.use(cors())
 	//define the routes
-	// .use()
+	.use('/', userRoute)
 	//telling that server by express is working successfully
 	.listen(port, () => {
 	console.log(`Server is running on http://localhost:${port}`);
