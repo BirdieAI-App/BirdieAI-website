@@ -32,8 +32,7 @@ const Testimonial1Small = () => {
             invoice either.
           </p>
           <p>
-            Zenvoice solved this problem once and for all. The app is simple,
-            but it nails the job perfectly.
+          The AI Diet Coach was a lifesaver. I'm advocating for an evidence-based approach to feeding my kids but feel short of time to go through books and searches. AI coach is all I need from knowledge to an actionable meal plan for my family"
           </p>
         </div>
         <div className="flex justify-center items-center gap-3 md:gap-4">

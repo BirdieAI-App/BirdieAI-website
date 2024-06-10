@@ -8,14 +8,14 @@ import { useState, useEffect, useRef } from "react";
 // - svg: icon of the feature
 const features = [
   {
-    name: "Emails",
+    name: "Chat with AI Diet Coach",
     description: (
       <>
         <ul className="space-y-1">
           {[
-            "Send transactional emails",
-            "DNS setup to avoid spam folder (DKIM, DMARC, SPF in subdomain)",
-            "Webhook to receive & forward emails",
+            "Answers from credible sources",
+            "Personalized nutrition plan",
+            "Shopping list curated",
           ].map((item) => (
             <li key={item} className="flex items-center gap-3">
               <svg

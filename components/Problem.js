@@ -41,26 +41,25 @@ const Step = ({ emoji, text }) => {
 // - Features: "ShipFast has user auth, Stripe, emails all set up for you"
 const Problem = () => {
   return (
-    <section className="bg-neutral text-neutral-content">
+    <section className="bg-lime-600 text-neutral-50">
       <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
         <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8">
-          80% of startups fail because founders never launch
+        Mamas, we get it – figuring out the best way to nourish yourself and bub can quickly become a never-ending puzzle. 
         </h2>
-        <p className="max-w-xl mx-auto text-lg opacity-90 leading-relaxed mb-12 md:mb-20">
-          Emails, DNS records, user authentication... There&apos;s so much going
-          on.
+        <p className="max-w-xl mx-auto text-lg opacity-100 leading-relaxed mb-12 md:mb-20">
+        With new questions popping up daily during pregnancy and those early parenthood months, you can easily fall into a cycle of endlessly scrolling websites, articles, and forums, only to feel overwhelmed, exhausted, and fall into decision fatigue.
         </p>
 
         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6">
-          <Step emoji="🧑‍💻" text="8 hrs to add Stripe" />
+          <Step emoji="🧑‍💻" text="Search for thousand questions do and don't" />
 
           <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="😮‍💨" text="Struggle to find time" />
+          <Step emoji="😮‍💨" text="You are nauseous, exhausted and no energy left to think about meal plan" />
 
           <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="😔" text="Quit project" />
+          <Step emoji="😔" text="Waiting at least 2 weeks to get dietitian's appoitment" />
         </div>
       </div>
     </section>

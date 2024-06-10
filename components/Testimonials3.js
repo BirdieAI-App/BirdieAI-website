@@ -14,9 +14,9 @@ const list = [
     img: "https://pbs.twimg.com/profile_images/1514863683574599681/9k7PqDTA_400x400.jpg",
   },
   {
-    username: "the_mcnaveen",
-    name: "Naveen",
-    text: "Setting up everything from the ground up is a really hard, and time consuming process. What you pay for will save your time for sure.",
+    username: "Kristen J",
+    name: "Kristen Jones",
+    text: "The AI Diet Coach was a lifesaver. I'm advocating for an evidence-based approach to feeding my kids but feel short of time to go through books and searches. AI coach is all I need from knowledge to an actionable meal plan for my family",
   },
   {
     username: "wahab",

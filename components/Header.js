@@ -13,10 +13,10 @@ const links = [
     href: "/#pricing",
     label: "Pricing",
   },
-  {
-    href: "/#testimonials",
-    label: "Reviews",
-  },
+  //{
+  //  href: "/#testimonials",
+  //  label: "Reviews",
+ // },
   {
     href: "/#faq",
     label: "FAQ",
@@ -87,7 +87,7 @@ const Header = () => {
         </div>
 
         {/* Your links on large screens */}
-        <div className="hidden lg:flex lg:justify-center lg:gap-12 lg:items-center">
+        <div className="hidden lg:flex lg:justify-center lg:gap-12 lg:items-center" style={{marginRight: 1065}}>
           {links.map((link) => (
             <Link
               href={link.href}

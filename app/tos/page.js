@@ -57,39 +57,43 @@ const TOS = () => {
           className="leading-relaxed whitespace-pre-wrap"
           style={{ fontFamily: "sans-serif" }}
         >
-          {`Last Updated: September 26, 2023
+          {`Last Updated: May 05, 2024
 
-Welcome to ShipFast!
+Privacy Policy for Birdie App
 
-These Terms of Service ("Terms") govern your use of the ShipFast website at https://shipfa.st ("Website") and the services provided by ShipFast. By using our Website and services, you agree to these Terms.
+1. Introduction
 
-1. Description of ShipFast
+Welcome to Birdie App! We are committed to protecting your privacy and ensuring that your personal information is collected and used in a responsible and transparent manner. This Privacy Policy provides detailed information on how your data is collected, used, and protected by Birdie App.
 
-ShipFast is a platform that offers a JavaScript code boilerplate to assist entrepreneurs in launching their startups more efficiently.
+2. Information We Collect
 
-2. Ownership and Usage Rights
+a. Personal Data: We collect personal data that you voluntarily provide to us, which includes your name, email address, and payment information. This information is collected to enable your use of our services, such as subscription to personalized meal plans and nutrition advice.
 
-When you purchase a package from ShipFast, you gain the right to download and use the code provided for creating applications. You own the code you create but do not have the right to resell it. We offer a full refund within 7 days of purchase, as specified in our refund policy.
+b. Non-Personal Data: We use cookies to enhance your experience on our website by understanding how you use it. These cookies do not gather personal information about you and are used solely for analytics and performance improvements.
 
-3. User Data and Privacy
+3. Purpose of Data Collection
 
-We collect and store user data, including name, email, and payment information, as necessary to provide our services. For details on how we handle your data, please refer to our Privacy Policy at https://shipfa.st/privacy-policy.
+The data we collect serves the purpose of providing subscription services and our newsletter. It enables us to tailor and optimize our services to meet your specific needs in nutrition advice and meal planning.
 
-4. Non-Personal Data Collection
+4. Data Sharing
 
-We use web cookies to collect non-personal data for the purpose of improving our services and user experience.
+We value your privacy. Birdie App does not share your personal or non-personal data with any third parties. Your information is used exclusively for the purposes stated within this Privacy Policy.
 
-5. Governing Law
+5. Children's Privacy
 
-These Terms are governed by the laws of France.
+Birdie App does not knowingly collect any personal information from children. If you are under the age of 18, please do not submit any personal information through our website.
 
-6. Updates to the Terms
+6. Updates to This Privacy Policy
 
-We may update these Terms from time to time. Users will be notified of any changes via email.
+We may update this Privacy Policy periodically to reflect changes to our information practices. If we make any substantial changes, we will notify you via email and post the updated policy on this page.
 
-For any questions or concerns regarding these Terms of Service, please contact us at marc@shipfa.st.
+7. Contact Us
 
-Thank you for using ShipFast!`}
+If you have any questions about this Privacy Policy, please contact us at support@birdieapp.co.
+
+For all other inquiries, please visit our Contact Us page on the Website.
+
+By using Birdieapp, you consent to the terms of this Privacy Policy.`}
         </pre>
       </div>
     </main>
