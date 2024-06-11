@@ -16,13 +16,12 @@ const userSchema = new mongoose.Schema({
         password:{
             type:String, // have it as String for now, then later on set it a binary encryption
             reuiqred: true
-        },
-        securityQuestion: String,
-        securityAnswer: String
+        }
     },
     profileData:{
         firstName: String,
         lastName: String,
+        DOB: Date,
         subscriptionTier:{
             type:String,
             enum: ['Free', 'Paid'],
