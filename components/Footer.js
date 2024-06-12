@@ -49,7 +49,7 @@ const Footer = () => {
                     href={`mailto:${config.mailgun.supportEmail}`}
                     target="_blank"
                     className="link link-hover"
-                    aria-label="Contact Support"
+                    aria-label="Contact Support" rel="noreferrer"
                   >
                     Support
                   </a>

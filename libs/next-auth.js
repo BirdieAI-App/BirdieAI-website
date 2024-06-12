@@ -46,6 +46,10 @@ export const authOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect to a specific path after sign-in
+      return baseUrl + "/dashboard";
+    },
   },
   session: {
     strategy: "jwt",
