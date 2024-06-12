@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const userRoute = require('./app/backend/routes/UserRoute.js')
+const userRoute = require('./backend/routes/UserRoute.js')
 
 // Access environment variables
 const port = process.env.PORT || 3000;

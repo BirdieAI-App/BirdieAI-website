@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
         },
         password:{
             type:String, // have it as String for now, then later on set it a binary encryption
-            reuiqred: true
+            // turn off for now to test sign in with google
+            // reuiqred: true
         }
     },
     profileData:{
