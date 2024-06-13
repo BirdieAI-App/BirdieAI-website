@@ -23,7 +23,6 @@ export const authOptions = {
       },
     }),
     // Follow the "Login with Email" tutorial to set up your email server
-    
     // Requires a MongoDB database. Set MONOGODB_URI env variable.
     ...(connectMongo
       ? [
@@ -38,13 +37,32 @@ export const authOptions = {
   // Requires a MongoDB database. Set MONOGODB_URI env variable.
   // Learn more about the model type: https://next-auth.js.org/v3/adapters/models
   ...(connectMongo && { adapter: MongoDBAdapter(connectMongo) }),
-
+  pages: {
+    signIn: '/api/auth/signin',  // Custom sign-in page
+  },
   callbacks: {
-    session: async ({ session, token }) => {
-      if (session?.user) {
-        session.user.id = token.sub;
+    // session: async ({ session, token }) => {
+    //   console.log(token);
+    //   if (session?.user) {
+    //     session.user.id = token.sub;
+    //     // console.log(session);
+    //   }
+    //   return session;
+    // },
+    async jwt({ token, account }) {
+      if (account) {
+          token.idToken = account.id_token;
+          // console.log(account.id_token);
+          
       }
-      return session;
+      return token;
+    },
+    async session({ session, token }) {
+        if (session?.user) {
+            session.user.id = token.sub;
+            session.idToken = token.idToken;  // Add idToken to the session
+        }
+        return session;
     },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in
