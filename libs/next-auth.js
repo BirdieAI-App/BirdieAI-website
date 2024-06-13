@@ -3,6 +3,7 @@ import EmailProvider from "next-auth/providers/email";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import config from "@/config";
 import connectMongo from "./mongo";
+import { sendGoogleIDToken } from "./request";
 
 export const authOptions = {
   // Set any random key in .env.local
@@ -41,29 +42,22 @@ export const authOptions = {
     signIn: '/api/auth/signin',  // Custom sign-in page
   },
   callbacks: {
-    // session: async ({ session, token }) => {
-    //   console.log(token);
-    //   if (session?.user) {
-    //     session.user.id = token.sub;
-    //     // console.log(session);
-    //   }
-    //   return session;
-    // },
     async jwt({ token, account }) {
       if (account) {
           token.idToken = account.id_token;
           // console.log(account.id_token);
-          
+          const data = await sendGoogleIDToken(token);
+          console.log(data);
       }
       return token;
     },
-    async session({ session, token }) {
-        if (session?.user) {
-            session.user.id = token.sub;
-            session.idToken = token.idToken;  // Add idToken to the session
-        }
-        return session;
-    },
+    // async session({ session, token }) {
+    //     if (session?.user) {
+    //         session.user.id = token.sub;
+    //         session.idToken = token.idToken;  // Add idToken to the session
+    //     }
+    //     return session;
+    // },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in
       return baseUrl + "/dashboard";

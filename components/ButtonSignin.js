@@ -24,7 +24,7 @@ const ButtonSignin = ({ text = "Get started", extraStyle }) => {
   if (status === "authenticated") {
     return (
       <Link
-        href={'config.auth.callbackUrl'}
+        href={config.auth.callbackUrl}
         className={`btn ${extraStyle ? extraStyle : ""}`}
       >
         {session.user?.image ? (
