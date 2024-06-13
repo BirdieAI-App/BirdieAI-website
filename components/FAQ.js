@@ -7,22 +7,23 @@ import { useRef, useState } from "react";
 
 const faqList = [
   {
-    question: "What do I get exactly?",
-    answer: <div className="space-y-2 leading-relaxed">Loreum Ipseum</div>,
+    question: "How does Birdie work?",
+    answer: <div className="space-y-2 leading-relaxed"> We use AI and Large Language Modal with custom training from credible medical sources such as webmd, mayoclinic for medical related questions. We gathers a huge collection of recipes from top food channels and analysize the ingreadients and map them with specific nutrition needs to provide the personalized and appropriate nutrition plan. You can simply enter your questions about a spefic topics. If you don't know how to start, just describe your condition and ask for guidance. Birdie is here to help</div>,
   },
   {
-    question: "Can I get a refund?",
+    question: "How do I know if information is correct?",
     answer: (
       <p>
-        Yes! You can request a refund within 7 days of your purchase. Reach out
-        by email.
+        For nutrition related questions, our AI Diet coach is trained with research contents and articles from trustworthy medical sites about nutrition, pregnancy care, children health and food ingredient review. 
+        Our criteria to select the source is based on the following criteria: the site has to be accredited by reputable health organizations or recognized by authorities in the medical field, content in the site is evidence-based, relying on peer-reviewed research or guidelines from recognized medical institutions, and information is written or reviewed by medical professionals with expertise in the relevant fields. The list of medical sites also includes websites from schools of health at well-established universities that often provide reliable and authoritative information on various health topics, including nutrition, pregnancy care, and children's health and top hospitals in women's and children's healthcare.
+        For recipes, we gather thousand of popular and high-review recipes from different diet types to address user preference.
       </p>
     ),
   },
   {
-    question: "I have another question",
+    question: "How do I contact Birdie if I have another question?",
     answer: (
-      <div className="space-y-2 leading-relaxed">Cool, contact us by email</div>
+      <div className="space-y-2 leading-relaxed">Cool, contact us by email  support@birdieapp.co</div>
     ),
   },
 ];

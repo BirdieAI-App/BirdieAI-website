@@ -52,24 +52,22 @@ userRoute.route('/users/:userId')
         try{
                 let updateData = {};
 
-            if (req.body.accountData) {
-                for (const key in req.body.accountData) {
-                    updateData[`accountData.${key}`] = req.body.accountData[key];
+                if (req.body.accountData) {
+                    for (const key in req.body.accountData) {
+                        updateData[`accountData.${key}`] = req.body.accountData[key];
+                    }
                 }
-            }
-
-            if (req.body.profileData) {
-                for (const key in req.body.profileData) {
-                    updateData[`profileData.${key}`] = req.body.profileData[key];
+                if (req.body.profileData) {
+                    for (const key in req.body.profileData) {
+                        updateData[`profileData.${key}`] = req.body.profileData[key];
+                    }
                 }
-            }
-
-            let status = await User.updateOne({"_id": userid},{$set: updateData});
-            if(status.modifiedCount != 1){
-                console.log("status: " + JSON.stringify(status));
-                return res.status(404).send("Account not update. Either no account with user id="+ userid+" exist, or no value in the account was chagne");
-            }
-            return res.status(200).send("successfully modified the account");
+                let status = await User.updateOne({"_id": userid},{$set: updateData});
+                if(status.modifiedCount != 1){
+                    console.log("status: " + JSON.stringify(status));
+                    return res.status(404).send("Account not update. Either no account with user id="+ userid+" exist, or no value in the account was chagne");
+                }
+                return res.status(200).send("successfully modified the account");
         }catch(err){
             return res.status(500).send("Unexpected error occured when updating user data: "+err);
         }

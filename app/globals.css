@@ -20,3 +20,18 @@ progress::-webkit-progress-value {
     @apply !capitalize;
   }
 }
+
+/*custom css*/
+.btn-orange-solid {
+  color: white;
+  background-color: #d97706;
+  border: none;
+
+}
+
+.btn-orange-border {
+  color: black;
+  background-color: white;
+  border: 1px solid #d97706;
+}
+
