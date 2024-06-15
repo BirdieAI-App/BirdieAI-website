@@ -9,26 +9,18 @@ export const useSignUp = function () {
 
   const submitHandler = async (event) => {
     event.preventDefault();
-
-    const response = await postUser({ email, password });
-
-    if (response.ok) {
-      // const data = await response.json();
-
+    try {
+      const response = await postUser({ accountData: {email: email, password: password}, profileData: {} });
+      console.log(response);
       const result = await signIn('credentials', {
         redirect: true,
         email,
         password,
       });
 
-      // if (result.ok) {
-      //   router.push('/dashboard'); // Redirect to dashboard after sign-in
-      // } else {
-      //   alert('Sign-in failed');
-      // }
-    } else {
-      const data = await response.json();
-      alert(data.message);
+      console.log(result);
+    } catch (err) {
+      console.log(err);
     }
   };
 

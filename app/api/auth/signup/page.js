@@ -5,9 +5,6 @@ import Link from "next/link";
 
 export default function Signup() {
     const {setEmail, setPassword, submitHandler, email, password} = useSignUp();
-
-    console.log(email);
-    console.log(password);
     
     return (
         <section class="bg-gray-50 dark:bg-gray-900">

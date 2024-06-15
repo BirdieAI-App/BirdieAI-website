@@ -5,8 +5,9 @@ const bcrypt = require('bcrypt');
 const localStrategy = new passportLocal.Strategy({passReqToCallback: true},
     async (req, email, password, done) => {
       let thisUser;
+      console.log(email)
       try {
-        thisUser = await User.findOne({"accountData.id": email});
+        thisUser = await User.findOne({"accountData.email": email});
         if (thisUser) {
           const match = await bcrypt.compare(password,thisUser.accountData.password);
           if  (match) {

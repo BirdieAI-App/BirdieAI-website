@@ -6,7 +6,9 @@ const authRoute = express.Router();
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client();
 const CLIENT_ID = process.env.GOOGLE_ID;
-const User = require('../models/User')
+const User = require('../models/User');
+const passport = require('passport');
+const bcrypt = require('bcrypt');
 
 //CALLBACK route:  GitHub will call this route after the
 //OAuth authentication process is complete.
@@ -43,22 +45,63 @@ authRoute.get('/auth/logout', (req, res) => {
 //Should be called from the React.js client to set up app state.
 authRoute.get('/auth/test', (req, res) => {
   console.log("auth/test reached.");
-    const isAuth = req.isAuthenticated();
-    if (isAuth) {
-        console.log("User is authenticated");
-        console.log("User record tied to session: " + JSON.stringify(req.user));
-    } else {
-        //User is not authenticated
-        console.log("User is not authenticated");
-    }
-    //Return JSON object to client with results.
-    res.json({isAuthenticated: isAuth, user: req.user});
+  const isAuth = req.isAuthenticated();
+  if (isAuth) {
+    console.log("User is authenticated");
+    console.log("User record tied to session: " + JSON.stringify(req.user));
+  } else {
+    //User is not authenticated
+    console.log("User is not authenticated");
+  }
+  //Return JSON object to client with results.
+  res.json({ isAuthenticated: isAuth, user: req.user });
 });
 
-//LOGIN route: Attempts to log in user using local strategy
-// authRoute.post('/auth/login', passport.authenticate('local', { failWithError: true }),(req, res) => {
+// LOGIN route: LOGIN WITH PASSPORT
+ //   passport.authenticate('local', { failWithError: true }), (req, res) => {
+    //   console.log("/login route reached: successful authentication.");
+    //   //Redirect to app's main page; the /auth/test route should return true
+    //   res.status(200).send("Login successful");
+    // },
+    //   (err, req, res, next) => {
+    //     console.log("/login route reached: unsuccessful authentication");
+    //     if (req.authError) {
+    //       console.log("req.authError: " + req.authError);
+    //       res.status(401).send(req.authError);
+    //     } else {
+    //       res.status(401).send("Unexpected error occurred when attempting to authenticate. Please try again.");
+    //     }
+    //   }
 
-// });
+//LOGIN route: LOGIN WITH NO PASSPORT
+authRoute
+  .route('/auth/login')
+  .post(async (req, res, next) => {
+    let thisUser;
+    const {email, password} = req.body;
+    // console.log(req.body);
+    try {
+      thisUser = await User.findOne({ "accountData.email": email });
+      if (thisUser) {
+        const genSalt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(thisUser.accountData.password, genSalt);
+        const match = await bcrypt.compare(password, hashPassword);
+        if (match) {
+          res.status(200).send("Login successful");
+        } else {
+          req.authError = "The password is incorrect. Please try again" +
+            " or reset your password.";
+          res.status(401).send(req.authError);
+        }
+      } else { //userId not found in DB
+        req.authError = "There is no account with email " + email +
+          ". Please try again.";
+          res.status(401).send(req.authError);
+      }
+    } catch (err) {
+      res.status(401).send("Unexpected error occurred when attempting to authenticate. Please try again.");
+    }
+  });
 
 authRoute
   .route("/auth/google")

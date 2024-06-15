@@ -11,7 +11,12 @@ export const getAllUSers = async function () {
 }
 
 export const postUser = async function (payload) {
-    console.log(payload);
-    const response = await apiClient.post('/auth/signup', payload);
+    // console.log(payload);
+    const response = await apiClient.post('/users', payload);
+    return response;
+}
+
+export const SignInByCredentials = async function (payload) {
+    const response = await apiClient.post('/auth/login', payload);
     return response;
 }

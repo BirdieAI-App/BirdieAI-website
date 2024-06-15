@@ -101,6 +101,7 @@ userRoute.route('/users')
     //POST request: saving a new user into database
     .post(async(req,res)=>{
         //validate body of the request
+        // console.log(req.body);
         for(const bodyProp in req.body){
             if(bodyProp === 'accountData'){
                 for(const accountProp in req.body.accountData){
@@ -136,8 +137,8 @@ userRoute.route('/users')
                 accountData:{
                     email: req.body.accountData.email,
                     password: req.body.accountData.password,
-                    securityQuestion: req.body.accountData.securityQuestion,
-                    securityAnswer: req.body.accountData.securityAnswer
+                    // securityQuestion: req.body.accountData.securityQuestion,
+                    // securityAnswer: req.body.accountData.securityAnswer
                 },
                 profileData:{
                     subscriptionTier: req.body.profileData.subscriptionTier,
