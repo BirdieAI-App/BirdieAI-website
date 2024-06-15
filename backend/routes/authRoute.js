@@ -23,13 +23,36 @@ const User = require('../models/User')
 //LOGOUT route: Use passport's req.logout() method to log the user out and
 //redirect the user to the main app page. req.isAuthenticated() is toggled to false.
 authRoute.get('/auth/logout', (req, res) => {
-
+  console.log('/auth/logout reached. Logging out');
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    req.session.destroy((err) => {
+      if (err) {
+        console.error('Error destroying session:', err);
+        return res.status(500).send('Error destroying session');
+      }
+      res.clearCookie('connect.sid'); // Clear the session cookie
+      res.redirect('/'); // Redirect to the login page
+    });
+  });
 });
 
 //TEST route: Tests whether user was successfully authenticated.
 //Should be called from the React.js client to set up app state.
 authRoute.get('/auth/test', (req, res) => {
-
+  console.log("auth/test reached.");
+    const isAuth = req.isAuthenticated();
+    if (isAuth) {
+        console.log("User is authenticated");
+        console.log("User record tied to session: " + JSON.stringify(req.user));
+    } else {
+        //User is not authenticated
+        console.log("User is not authenticated");
+    }
+    //Return JSON object to client with results.
+    res.json({isAuthenticated: isAuth, user: req.user});
 });
 
 //LOGIN route: Attempts to log in user using local strategy

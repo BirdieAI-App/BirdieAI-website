@@ -1,9 +1,12 @@
 const passport = require('passport');
 const session = require('express-session');
 const User = require('../models/User.js')
+const googleStrategy = require('./googleStrategy.js');
 
 
 const configPassport = (app) =>{
+    passport.use(googleStrategy);
+
     passport.serializeUser((user, done) => {
         console.log("In serializeUser.");
         console.log("Contents of user param: " + JSON.stringify(user));

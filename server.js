@@ -4,8 +4,9 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const userRoute = require('./backend/routes/UserRoute.js')
-const authRoute = require('./backend/routes/authRoute.js')
+const userRoute = require('./backend/routes/UserRoute.js');
+const configPassport = require('./backend/passport/config.js');
+const authRoute = require('./backend/routes/authRoute.js');
 
 // Access environment variables
 const port = process.env.PORT || 3000;
@@ -19,6 +20,8 @@ mongoose.connect(mongoURI)
   	process.exit(1);
 });
 
+//configure passport
+configPassport(app);
 
 app
 	//setup to recieve body 
@@ -27,7 +30,7 @@ app
 	.use(cors())
 	//define the routes
 	.use('/', userRoute)
-	//telling that server by express is working successfully
+	.use('/',authRoute)
 	.listen(port, () => {
 	console.log(`Server is running on http://localhost:${port}`);
 	});
