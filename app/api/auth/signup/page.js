@@ -2,9 +2,27 @@
 
 import { useSignUp } from "@/hooks/useSignUp";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { getProviders, signIn } from 'next-auth/react';
 
 export default function Signup() {
     const {setEmail, setPassword, submitHandler, email, password} = useSignUp();
+    const [providers, setProviders] = useState(null);
+
+    useEffect(() => {
+        async function fetchProviders() {
+            const res = await getProviders();
+            setProviders(res);
+            console.log(res);
+        }
+
+        fetchProviders();
+    }, []);
+
+    if (!providers) {
+        return <div>Loading...</div>;
+    } 
+
     
     return (
         <section class="bg-gray-50 dark:bg-gray-900">
@@ -14,6 +32,18 @@ export default function Signup() {
                         <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Create an account
                         </h1>
+                        {providers.google && (
+                            <button className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                            onClick={() => signIn(providers.google.id)}>
+                                <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
+                                <span className='ml-3'> Continue with Google</span>
+                            </button>
+                            
+                        )}
+                        <div class="inline-flex items-center justify-center w-full">
+                            <hr class="w-full h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>
+                            <span class="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
+                        </div>
                         <form class="space-y-4 md:space-y-6" onSubmit={submitHandler}>
                             <div>
                                 <label for="email" class="block mb-2 text-sm font-medium text-gray-900 ">Your email</label>

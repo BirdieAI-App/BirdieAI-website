@@ -36,7 +36,18 @@ export default function SignIn() {
                 <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Sign in to your account</h2>
             </div>
 
-            <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+            <div class="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
+                {providers.google && (
+                <button className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                onClick={() => signIn(providers.google.id)}>
+                    <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
+                    <span className='ml-3'> Continue with Google</span>
+                </button>
+                )}
+                <div class="inline-flex items-center justify-center w-full">
+                    <hr class="w-full h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>
+                    <span class="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2 dark:text-white dark:bg-gray-900">or</span>
+                </div>
                 {providers.credentials && 
                 (<form class="space-y-6" method="post" action="/api/auth/callback/credentials">
                     <input name="csrfToken" type="hidden" defaultValue={csrfToken}/>
@@ -63,14 +74,6 @@ export default function SignIn() {
                         <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
                     </div>
                 </form>)}
-                {providers.google && (
-                <button className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-                onClick={() => signIn(providers.google.id)}>
-                    <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
-                    <span className='ml-3'> Continue with Google</span>
-                </button>
-                
-                )}
                 {/* {providers.credentials} */}
                 <p class="mt-10 text-center text-sm text-gray-500">
                     Not a member?
