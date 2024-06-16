@@ -5,7 +5,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const userRoute = require('./backend/routes/UserRoute.js');
-const configPassport = require('./backend/passport/config.js');
 const authRoute = require('./backend/routes/authRoute.js');
 
 // Access environment variables
@@ -20,8 +19,6 @@ mongoose.connect(mongoURI)
   	process.exit(1);
 });
 
-//configure passport
-configPassport(app);
 
 app
 	//setup to recieve body 

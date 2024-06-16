@@ -7,23 +7,8 @@ const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client();
 const CLIENT_ID = process.env.GOOGLE_ID;
 const User = require('../models/User');
-const passport = require('passport');
 const bcrypt = require('bcrypt');
 
-//CALLBACK route:  GitHub will call this route after the
-//OAuth authentication process is complete.
-//req.isAuthenticated() tells us whether authentication was successful.
-
-// authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failureRedirect: '/' }),
-//   (req, res) => {
-//     console.log("auth/google/callback reached.");
-//     res.redirect('/'); //sends user back to login screen; 
-//                       //req.isAuthenticated() indicates status
-//   }
-// );
-
-//LOGOUT route: Use passport's req.logout() method to log the user out and
-//redirect the user to the main app page. req.isAuthenticated() is toggled to false.
 authRoute.get('/auth/logout', (req, res) => {
   console.log('/auth/logout reached. Logging out');
   req.logout((err) => {
@@ -41,44 +26,12 @@ authRoute.get('/auth/logout', (req, res) => {
   });
 });
 
-//TEST route: Tests whether user was successfully authenticated.
-//Should be called from the React.js client to set up app state.
-authRoute.get('/auth/test', (req, res) => {
-  console.log("auth/test reached.");
-  const isAuth = req.isAuthenticated();
-  if (isAuth) {
-    console.log("User is authenticated");
-    console.log("User record tied to session: " + JSON.stringify(req.user));
-  } else {
-    //User is not authenticated
-    console.log("User is not authenticated");
-  }
-  //Return JSON object to client with results.
-  res.json({ isAuthenticated: isAuth, user: req.user });
-});
 
-// LOGIN route: LOGIN WITH PASSPORT
- //   passport.authenticate('local', { failWithError: true }), (req, res) => {
-    //   console.log("/login route reached: successful authentication.");
-    //   //Redirect to app's main page; the /auth/test route should return true
-    //   res.status(200).send("Login successful");
-    // },
-    //   (err, req, res, next) => {
-    //     console.log("/login route reached: unsuccessful authentication");
-    //     if (req.authError) {
-    //       console.log("req.authError: " + req.authError);
-    //       res.status(401).send(req.authError);
-    //     } else {
-    //       res.status(401).send("Unexpected error occurred when attempting to authenticate. Please try again.");
-    //     }
-    //   }
-
-//LOGIN route: LOGIN WITH NO PASSPORT
 authRoute
   .route('/auth/login')
   .post(async (req, res, next) => {
     let thisUser;
-    const {email, password} = req.body;
+    const { email, password } = req.body;
     // console.log(req.body);
     try {
       thisUser = await User.findOne({ "accountData.email": email });
@@ -96,12 +49,12 @@ authRoute
       } else { //userId not found in DB
         req.authError = "There is no account with email " + email +
           ". Please try again.";
-          res.status(401).send(req.authError);
+        res.status(401).send(req.authError);
       }
     } catch (err) {
       res.status(401).send("Unexpected error occurred when attempting to authenticate. Please try again.");
     }
-  });
+});
 
 authRoute
   .route("/auth/google")
@@ -133,6 +86,6 @@ authRoute
     } catch (error) {
       next(error);
     }
-  })
+})
 
 module.exports = authRoute;

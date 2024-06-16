@@ -5,7 +5,6 @@ import config from "@/config";
 import connectMongo from "./mongo";
 import { sendGoogleIDToken, SignInByCredentials } from "./request";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { redirect } from "next/dist/server/api-utils";
 
 export const authOptions = {
   // Set any random key in .env.local
@@ -40,14 +39,17 @@ export const authOptions = {
         // Add logic here to look up the user from the credentials supplied
         const {email, password} = credentials;
         const user = { email: email, password: password};
-        const response = await SignInByCredentials(user);
-        if (response) {
-          // If login is successful, return the user object
-          return user;
-        } else {
-          // If login fails, return null
-          return null;
+        try {const response = await SignInByCredentials(user);
+          if (response) {
+            // If login is successful, return the user object
+            return user;
+          } else {
+            // If login fails, return null
+            return null;
+        }} catch(err) {
+          console.log(err);
         }
+        
       }
     }),
     // Follow the "Login with Email" tutorial to set up your email server
