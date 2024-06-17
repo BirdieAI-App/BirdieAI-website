@@ -183,7 +183,7 @@ const Testimonial = ({ i }) => {
                 href={testimonial.link}
                 target="_blank"
                 className="shrink-0 "
-                aria-label={testimonial.type?.ariaLabel}
+                aria-label={testimonial.type?.ariaLabel} rel="noreferrer"
               >
                 {testimonial.type?.svg}
               </a>
