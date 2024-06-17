@@ -1,8 +1,8 @@
 'use client'
 
-import Image from "next/image";
+// import Image from "next/image";
 import config from "@/config";
-import ButtonGradient from "./ButtonGradient";
+// import ButtonGradient from "./ButtonGradient";
 import { useRouter } from 'next/navigation'
 
 const Hero = () => {
