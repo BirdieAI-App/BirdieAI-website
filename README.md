@@ -15,3 +15,10 @@
 - **GET**: Retrieve all users in the user collection.
 - **POST**: Add a new user to the user collection.
 
+# Frontend Route Information
+
+## /api/auth/signin
+
+## /api/auth/signup
+
+## /dashboard
