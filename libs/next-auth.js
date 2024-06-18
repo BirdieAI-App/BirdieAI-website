@@ -84,7 +84,8 @@ export const authOptions = {
     },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in
-      return baseUrl + "/dashboard";
+      // return baseUrl + "/dashboard";
+      return url.startsWith(baseUrl) ? url : baseUrl;
     }
   },
   session: {
