@@ -59,6 +59,7 @@ authRoute
 authRoute
   .route("/auth/google")
   .post(async (req, res, next) => {
+    console.log('reach authentication with google')
     const idToken = req.body.idToken;
     try {
       const ticket = await client.verifyIdToken({
