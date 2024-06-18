@@ -75,16 +75,16 @@ export const authOptions = {
     error: '/api/auth/signin'
   },
   callbacks: {
-    async jwt({ token, account }) {
-      // console.log(account);
-      if (account?.provider === "google"){
-          token.idToken = account.id_token;
-          // console.log(account.id_token);
-          const data = await sendGoogleIDToken(token);
-          console.log(data);
-      }
-      return token;
-    },
+    // async jwt({ token, account }) {
+    //   // console.log(account);
+    //   if (account?.provider === "google"){
+    //       token.idToken = account.id_token;
+    //       // console.log(account.id_token);
+    //       const data = await sendGoogleIDToken(token);
+    //       console.log(data);
+    //   }
+    //   return token;
+    // },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in
       // return baseUrl + "/dashboard";
