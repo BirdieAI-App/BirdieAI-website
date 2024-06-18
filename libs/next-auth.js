@@ -15,6 +15,7 @@ export const authOptions = {
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
       authorizationUrl: "https://accounts.google.com/o/oauth2/auth?response_type=code&prompt=consent&access_type=offline",
+      callbackUrl: "https://birdie-auth-j49k7lzxa-kaia15s-projects.vercel.app/api/auth/callback/google",
       async profile(profile) {
         return {
           id: profile.sub,
