@@ -55,7 +55,7 @@ export default async function Author({ params }) {
                   className="btn btn-square"
                   // Using a dark theme? -> className="btn btn-square btn-neutral"
                   title={`Go to ${author.name} profile on ${social.name}`}
-                  target="_blank"
+                  target="_blank" rel="noreferrer"
                 >
                   {social.icon}
                 </a>

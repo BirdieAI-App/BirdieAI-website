@@ -49,7 +49,7 @@ const Footer = () => {
                     href={`mailto:${config.mailgun.supportEmail}`}
                     target="_blank"
                     className="link link-hover"
-                    aria-label="Contact Support"
+                    aria-label="Contact Support" rel="noreferrer"
                   >
                     Support
                   </a>
@@ -57,12 +57,6 @@ const Footer = () => {
                 <Link href="/#pricing" className="link link-hover">
                   Pricing
                 </Link>
-                <Link href="/blog" className="link link-hover">
-                  Blog
-                </Link>
-                <a href="/#" target="_blank" className="link link-hover">
-                  Affiliates
-                </a>
               </div>
             </div>
 

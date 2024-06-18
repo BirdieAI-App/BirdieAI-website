@@ -1,8 +1,8 @@
 'use client'
 
-import Image from "next/image";
+// import Image from "next/image";
 import config from "@/config";
-import ButtonGradient from "./ButtonGradient";
+// import ButtonGradient from "./ButtonGradient";
 import { useRouter } from 'next/navigation'
 
 const Hero = () => {
@@ -19,7 +19,7 @@ const Hero = () => {
           Get answers to your dietary questions, access personalized nutrition advice, and receive a custom meal plan from our AI, expertly trained using reputable medical sources and scientific journals.
         </p>
         <div className="flex flex-col lg:flex-row gap-4"> {/* Use flex row for side-by-side buttons */}
-          <button className="btn btn-primary btn-wide btn-orange-solid" onClick={() => router.push('/dashboard')}>
+          <button className="btn btn-primary btn-wide btn-orange-solid" onClick={() => router.push('/api/auth/signup')}>
             Try {config.appName}
           </button>
           <a href="#faq" className="btn btn-secondary btn-wide btn-orange-border">
