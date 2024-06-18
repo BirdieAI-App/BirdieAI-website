@@ -32,7 +32,7 @@ authRoute
   .post(async (req, res, next) => {
     let thisUser;
     const { email, password } = req.body;
-    // console.log(req.body);
+    console.log(`Receive credentials to login ${req.body}`);
     try {
       thisUser = await User.findOne({ "accountData.email": email });
       if (thisUser) {
@@ -60,6 +60,7 @@ authRoute
   .route("/auth/google")
   .post(async (req, res, next) => {
     const idToken = req.body.idToken;
+    console.log(`Receive credentials to login ${idToken} with Google`);
     try {
       const ticket = await client.verifyIdToken({
         idToken: idToken,
