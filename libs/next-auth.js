@@ -14,6 +14,8 @@ export const authOptions = {
       // Follow the "Login with Google" tutorial to get your credentials
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
+      authorizationUrl: "https://accounts.google.com/o/oauth2/auth?response_type=code&prompt=consent&access_type=offline",
+      callbackUrl: "https://birdie-auth.vercel.app/api/auth/callback/google",
       async profile(profile) {
         return {
           id: profile.sub,
@@ -73,18 +75,19 @@ export const authOptions = {
     error: '/api/auth/signin'
   },
   callbacks: {
-    async jwt({ token, account }) {
-      // console.log(account);
-      if (account?.provider === "google"){
-          token.idToken = account.id_token;
-          // console.log(account.id_token);
-          const data = await sendGoogleIDToken(token);
-          console.log(data);
-      }
-      return token;
-    },
+    // async jwt({ token, account }) {
+    //   // console.log(account);
+    //   if (account?.provider === "google"){
+    //       token.idToken = account.id_token;
+    //       // console.log(account.id_token);
+    //       const data = await sendGoogleIDToken(token);
+    //       console.log(data);
+    //   }
+    //   return token;
+    // },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in
+      // return baseUrl + "/dashboard";
       return url.startsWith(baseUrl) ? url : baseUrl;
     }
   },
