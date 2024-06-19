@@ -1,8 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
-import EmailProvider from "next-auth/providers/email";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import config from "@/config";
-import connectMongo from "./mongo";
 import { sendGoogleIDToken, SignInByCredentials } from "./request";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -51,22 +48,8 @@ export const authOptions = {
         }
         
       }
-    }),
-    // Follow the "Login with Email" tutorial to set up your email server
-    // Requires a MongoDB database. Set MONOGODB_URI env variable.
-    ...(connectMongo
-      ? [
-          EmailProvider({
-            server: process.env.EMAIL_SERVER,
-            from: config.mailgun.fromNoReply,
-          }),
-        ]
-      : []),
+    })
   ],
-  // New users will be saved in Database (MongoDB Atlas). Each user (model) has some fields like name, email, image, etc..
-  // Requires a MongoDB database. Set MONOGODB_URI env variable.
-  // Learn more about the model type: https://next-auth.js.org/v3/adapters/models
-  ...(connectMongo && { adapter: MongoDBAdapter(connectMongo) }),
   pages: {
     signIn: '/api/auth/signin',  // Custom sign-in page
     error: '/api/auth/signin'
@@ -77,8 +60,8 @@ export const authOptions = {
       if (account?.provider === "google"){
           token.idToken = account.id_token;
           // console.log(account.id_token);
-          const data = await sendGoogleIDToken(token);
-          console.log(data);
+          // const data = await sendGoogleIDToken(token);
+          // console.log(data);
       }
       return token;
     },
