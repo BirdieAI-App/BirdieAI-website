@@ -6,7 +6,7 @@ import config from "@/config";
 // use this to interact with our own API (/app/api folder) from the front-end side
 // See https://shipfa.st/docs/tutorials/api-call
 const apiClient = axios.create({
-  baseURL: "https://www.birdieapp.co/.api",
+  baseURL: `${process.env.DEPLOY_URL}`,
 });
 
 apiClient.interceptors.response.use(
