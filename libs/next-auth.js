@@ -48,8 +48,7 @@ export const authOptions = {
             return null;
         }} catch(err) {
           console.log(err);
-        }
-        
+        }        
       }
     })
   ],
@@ -62,16 +61,16 @@ export const authOptions = {
       // console.log(account);
       if (account?.provider === "google"){
           token.idToken = account.id_token;
-          console.log(account.id_token);
+          // console.log(account.id_token);
           const data = await sendGoogleIDToken(token);
-          console.log(data);
+          // console.log(data);
       }
       return token;
     },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in
-      // return baseUrl + "/dashboard";
-      return url.startsWith(baseUrl) ? url : baseUrl;
+      return baseUrl + "/dashboard";
+      // return url.startsWith(baseUrl) ? url : baseUrl;
     }
   },
   session: {
