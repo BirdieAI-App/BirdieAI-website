@@ -8,7 +8,6 @@ import config from "@/config";
 const apiClient = axios.create({
   baseURL: `${process.env.DEPLOY_URL}/.api`,
 });
-console.log(`${process.env.DEPLOY_URL}/.api`);
 apiClient.interceptors.response.use(
   function (response) {
     return response.data;

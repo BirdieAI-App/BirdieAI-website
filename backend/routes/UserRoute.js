@@ -100,8 +100,9 @@ userRoute.route('/users')
     })
     //POST request: saving a new user into database
     .post(async(req,res)=>{
+        console.log("in /users route (POST) saving a new user into database.");
         //validate body of the request
-        // console.log(req.body);
+        console.log(req.body);
         for(const bodyProp in req.body){
             if(bodyProp === 'accountData'){
                 for(const accountProp in req.body.accountData){

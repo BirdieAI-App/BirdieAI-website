@@ -16,6 +16,22 @@ dotenv.config({ path: path.resolve(__dirname, './.env') });
 const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGODB_URI;
 
+
+// Body parsing middleware
+// middleware 
+
+app.use((req, res, next) => {
+	console.log(`Received ${req.method} request for ${req.url}`);
+	console.log('Request body:', req.body);
+	next();
+  });
+
+// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+// app.use(express.json()); // Parse JSON bodies
+// CORS middleware
+app.use(cors());
+
+
 //making connection to MongoDB
 mongoose.connect(mongoURI)
 	.then(() => {console.log('MongoDB connected');}
@@ -25,15 +41,9 @@ mongoose.connect(mongoURI)
 });
 
 console.log("testtt")
-
-	//setup to recieve body 
-	app.use(bodyParser.urlencoded({ extended: true }))
-	app.use(bodyParser.json())
-	// app.use(cookieParser())
-	app.use(cors())
-	//define the routes
-	app.use('/.api', userRoute)
-	app.use('/.api',authRoute)
+//define the routes
+app.use('/.api', userRoute)
+app.use('/.api',authRoute)
 
 
 export default app;
