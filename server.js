@@ -26,12 +26,19 @@ app.use((req, res, next) => {
 	next();
   });
 
-// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // app.use(express.json()); // Parse JSON bodies
 
 
 // CORS middleware
-app.use(cors());
+const corsOptions = {
+	origin: process.env.DEPLOY_URL, // Update with your client origin
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN'],
+	credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 
 //making connection to MongoDB
