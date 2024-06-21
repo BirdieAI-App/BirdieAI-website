@@ -7,6 +7,9 @@ import config from "@/config";
 // See https://shipfa.st/docs/tutorials/api-call
 const apiClient = axios.create({
   baseURL: `${process.env.DEPLOY_URL}/.api`,
+  headers:{
+    'Content-Type':'application/json'
+  }
 });
 apiClient.interceptors.response.use(
   function (response) {

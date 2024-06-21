@@ -28,6 +28,8 @@ app.use((req, res, next) => {
 
 // app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // app.use(express.json()); // Parse JSON bodies
+
+
 // CORS middleware
 app.use(cors());
 
@@ -40,10 +42,10 @@ mongoose.connect(mongoURI)
   	process.exit(1);
 });
 
-console.log("testtt")
+
 //define the routes
 app.use('/.api', userRoute)
-app.use('/.api',authRoute)
+app.use('/.api', authRoute)
 
 
 export default app;
