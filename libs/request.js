@@ -1,7 +1,8 @@
 import apiClient from "./api";
 
 export const sendGoogleIDToken = async function (token) {
-    const response = await apiClient.post('/auth/google', token);
+    const apiUrl = apiClient.createUrl('/auth/google');
+    const response = await apiClient.post(apiUrl, token);
     return response;
 }
 
@@ -12,11 +13,13 @@ export const getAllUSers = async function () {
 
 export const postUser = async function (payload) {
     // console.log(payload);
-    const response = await apiClient.post('/users', payload);
+    const apiUrl = apiClient.createUrl(`/users`);
+    const response = await apiClient.post(apiUrl, payload);
     return response;
 }
 
 export const SignInByCredentials = async function (payload) {
-    const response = await apiClient.post('/auth/login', payload);
+    const apiUrl = apiClient.createUrl('/auth/login');
+    const response = await apiClient.post(apiUrl, payload);
     return response;
 }
