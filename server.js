@@ -34,7 +34,8 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 const corsOptions = {
 	origin: process.env.DEPLOY_URL, // Update with your client origin
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
-	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', "Accept", "Origin"],
+	// "Origin, X-Requested-With, Content-Type, Accept"
 	credentials: true,
 };
 
