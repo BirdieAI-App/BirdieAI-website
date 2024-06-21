@@ -24,9 +24,10 @@ app.use((req, res, next) => {
 	console.log(`Received ${req.method} request for ${req.url}`);
 	console.log('Request body:', req.body);
 	next();
-  });
 
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+});
+
+// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 // app.use(express.json()); // Parse JSON bodies
 
 
