@@ -32,7 +32,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // CORS middleware
 const corsOptions = {
-	origin: '*', // Ensure this environment variable is set
+	origin: 'https://birdieapp.co/.api/users', // Ensure this environment variable is set
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
 	credentials: true,
