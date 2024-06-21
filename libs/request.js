@@ -12,6 +12,7 @@ export const getAllUSers = async function () {
 
 export const postUser = async function (payload) {
     // console.log(payload);
+    console.log('Base URL', apiClient.defaults.baseURL);
     const response = await apiClient.post('/users', payload);
     return response;
 }
