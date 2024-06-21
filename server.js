@@ -32,12 +32,12 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // CORS middleware
 const corsOptions = {
-	origin: process.env.DEPLOY_URL, // Update with your client origin
+	origin: '*', // Ensure this environment variable is set
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
-	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', "Accept", "Origin"],
-	// "Origin, X-Requested-With, Content-Type, Accept"
+	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
 	credentials: true,
-};
+	optionsSuccessStatus: 200 // Some legacy browsers choke on a 204 status
+  };
 
 app.use(cors(corsOptions));
 
