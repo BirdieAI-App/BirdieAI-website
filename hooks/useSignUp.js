@@ -10,7 +10,7 @@ export const useSignUp = function () {
   const submitHandler = async (event) => {
     event.preventDefault();
     try {
-      const response = await postUser({ accountData: {email: email, password: password}, profileData: {} });
+      const response = await postUser({ accountData: {email: email, password: password}});
       console.log(response);
       const result = await signIn('credentials', {
         redirect: true,
