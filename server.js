@@ -35,3 +35,5 @@ console.log("testtt")
 	app.use('/.api', userRoute)
 	app.use('/.api',authRoute)
 
+
+// export default app;
