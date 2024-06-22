@@ -33,12 +33,27 @@ const config = {
         //priceAnchor: ,
         features: [
           {
-            name: "3 chats with AI Diet Coach",
+            name: "3 conversations with AI Diet Coach for 1 hour",
           },
           { name: "Personalized Meal plan" },
           //{ name: "Weekly nutrition newsletter" },
           //{ name: "Emails" },
         ],
+      },
+      {
+        priceId:
+        process.env.NODE_ENV === "development"
+          ? "price_1O5KtcAxyNprDp7iftKnrrpw"
+          : "price_456",
+      name: "",
+      description: "One-day Pass",
+      price: 5,
+      //priceAnchor: 149,
+      features: [
+
+        { name: "Unlimited questions with AI Diet Coach for 24 hours" },
+        { name: "Personalized Meal plan" },
+      ],  
       },
       {
         // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
@@ -49,12 +64,12 @@ const config = {
             : "price_456",
         name: "",
         description: "Better nutrition planning",
-        price: 5,
+        price: 10,
         //priceAnchor: 149,
         features: [
   
           { name: "Unlimited questions with AI Diet Coach" },
-          { name: "Personalized Meal plane" },
+          { name: "Personalized Meal plan" },
           { name: "Weekly nutrition newsletter" },
           { name: "Weekly research updates" },
           { name: "24/7 support" },

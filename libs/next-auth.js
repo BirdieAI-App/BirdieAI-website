@@ -59,9 +59,9 @@ export const authOptions = {
       // console.log(account);
       if (account?.provider === "google"){
           token.idToken = account.id_token;
-          console.log(account.id_token);
+          // console.log(account.id_token);
           const data = await sendGoogleIDToken(token);
-          console.log(data);
+          // console.log(data);
       }
       return token;
     },
