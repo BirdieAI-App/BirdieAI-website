@@ -24,14 +24,23 @@ app.use((req, res, next) => {
 	console.log(`Received ${req.method} request for ${req.url}`);
 	console.log('Request body:', req.body);
 	next();
-  });
 
-// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-// app.use(express.json()); // Parse JSON bodies
+});
+
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.json()); // Parse JSON bodies
 
 
 // CORS middleware
-app.use(cors());
+const corsOptions = {
+	origin: '*', // Ensure this environment variable is set
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
+	credentials: true,
+	optionsSuccessStatus: 200 // Some legacy browsers choke on a 204 status
+  };
+
+app.use(cors(corsOptions));
 
 
 //making connection to MongoDB

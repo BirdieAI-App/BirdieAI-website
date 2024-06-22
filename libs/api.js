@@ -6,11 +6,21 @@ import config from "@/config";
 // use this to interact with our own API (/app/api folder) from the front-end side
 // See https://shipfa.st/docs/tutorials/api-call
 const apiClient = axios.create({
-  baseURL: `${process.env.DEPLOY_URL}/.api`,
-  headers:{
-    'Content-Type':'application/json'
+  baseURL: process.env.BASE_URL || 'https://www.birdieapp.co',
+  headers: {
+    'Content-Type': 'application/json'
   }
 });
+
+// Add the createUrl method to the apiClient
+apiClient.createUrl = function(endpoint) {
+  const baseUrl = this.defaults.baseURL; // Use the baseURL from the axios instance
+  if (!endpoint) {
+    throw new Error('Endpoint must be provided');
+  }
+  return `${baseUrl.replace(/\/$/, '')}/.api/${endpoint}`;
+};
+
 apiClient.interceptors.response.use(
   function (response) {
     return response.data;
