@@ -100,8 +100,9 @@ userRoute.route('/users')
     })
     //POST request: saving a new user into database
     .post(async(req,res)=>{
+        console.log("in /users route (POST) saving a new user into database.");
         //validate body of the request
-        // console.log(req.body);
+        console.log(req.body);
         for(const bodyProp in req.body){
             if(bodyProp === 'accountData'){
                 for(const accountProp in req.body.accountData){
@@ -133,20 +134,19 @@ userRoute.route('/users')
                 return res.status(400).send("email: "+ req.body.accountData.email + " already existed in databsae");
             }
             //user has not been used. Good to add
-            let newUser = await new User({
-                accountData:{
-                    email: req.body.accountData.email,
-                    password: req.body.accountData.password,
-                    // securityQuestion: req.body.accountData.securityQuestion,
-                    // securityAnswer: req.body.accountData.securityAnswer
-                },
-                profileData:{
-                    subscriptionTier: req.body.profileData.subscriptionTier,
-                    firstName: req.body.profileData.firstName,
-                    lastName: req.body.profileData.lastName,
-                    creationTime: req.body.profileData.creationTime
+            let newUserData = {}
+            if(req.body.accountData){
+                for(let key in req.body.accountData){
+                    newUserData[`accountData.${key}`] = req.body.accountData[key];
                 }
-            }).save();
+            }
+
+            if(req.body.profileData){
+                for(let key in req.body.profileData){
+                    newUserData[`profileData.${key}`] = req.body.profileData[key];
+                }
+            }
+            let newUser = await new User(newUserData).save();
             return res.status(200).json(newUser);
         }catch(err){
             return res.status(500).send("Unexpected error occured when saving user to database: "+ err);

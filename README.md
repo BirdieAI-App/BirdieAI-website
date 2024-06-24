@@ -17,8 +17,10 @@
 
 # Frontend Route Information
 
-## /api/auth/signin
+<!-- ## /api/auth/signin
 
 ## /api/auth/signup
 
-## /dashboard
+## /dashboard -->
+
+

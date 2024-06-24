@@ -63,7 +63,7 @@ const config = {
             ? "price_1O5KtcAxyNprDp7iftKnrrpw"
             : "price_456",
         name: "",
-        description: "Monthly Plan",
+        description: "Better nutrition planning",
         price: 10,
         //priceAnchor: 149,
         features: [

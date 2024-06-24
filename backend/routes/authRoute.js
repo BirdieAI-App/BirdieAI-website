@@ -30,6 +30,7 @@ authRoute.get('/auth/logout', (req, res) => {
 authRoute
   .route('/auth/login')
   .post(async (req, res, next) => {
+    console.log('reach authentication with username and password')
     let thisUser;
     const { email, password } = req.body;
     console.log(`Receive credentials to login ${req.body}`);
