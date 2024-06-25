@@ -41,12 +41,10 @@ export const authOptions = {
         let user = { email: email, password: password};
         try {
           const response = await SignInByCredentials(user);
-          // console.log(response);
-          // user.userId = response.data._id;
           if (response) {
             // If login is successful, return the user object
-            console.log(response);
             user.userId = response._id;
+            // console.log(user);
             return user;
           } else {
             // If login fails, return null
@@ -62,7 +60,7 @@ export const authOptions = {
     error: '/api/auth/signin'
   },
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       // console.log(account);
       if (account?.provider === "google"){
           token.idToken = account.id_token;
@@ -72,6 +70,9 @@ export const authOptions = {
           if (data._id) {
             token.userId = data._id;
           }
+      }
+      if (user) {
+        token.userId = user.userId; // Add userId to the token
       }
       return token;
     },
