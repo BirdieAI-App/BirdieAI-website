@@ -56,5 +56,7 @@ mongoose.connect(mongoURI)
 app.use('/.api', userRoute)
 app.use('/.api', authRoute)
 
-
+app.listen(port, () => {
+	console.log(`Server is running on port ${port}`);
+});
 // export default app;

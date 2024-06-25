@@ -38,10 +38,15 @@ export const authOptions = {
       async authorize(credentials, req) {
         // Add logic here to look up the user from the credentials supplied
         const {email, password} = credentials;
-        const user = { email: email, password: password};
-        try {const response = await SignInByCredentials(user);
+        let user = { email: email, password: password};
+        try {
+          const response = await SignInByCredentials(user);
+          // console.log(response);
+          // user.userId = response.data._id;
           if (response) {
             // If login is successful, return the user object
+            console.log(response);
+            user.userId = response._id;
             return user;
           } else {
             // If login fails, return null
@@ -64,8 +69,17 @@ export const authOptions = {
           // console.log(account.id_token);
           const data = await sendGoogleIDToken(token);
           // console.log(data);
+          if (data._id) {
+            token.userId = data._id;
+          }
       }
       return token;
+    },
+    async session({ session, token }) {
+      if (token.userId) {
+        session.user.userId = token.userId;
+      }
+      return session;
     },
     async redirect({ url, baseUrl }) {
       // Redirect to a specific path after sign-in

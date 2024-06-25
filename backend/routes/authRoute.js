@@ -41,7 +41,7 @@ authRoute
         const hashPassword = await bcrypt.hash(thisUser.accountData.password, genSalt);
         const match = await bcrypt.compare(password, hashPassword);
         if (match) {
-          res.status(200).send("Login successful");
+          res.status(200).send({_id: thisUser._id, email: email});
         } else {
           req.authError = "The password is incorrect. Please try again" +
             " or reset your password.";

@@ -6,10 +6,11 @@ import Chat from '@/components/Chat';
 
 const ChatPage = () => {
   return (
-    <div>
-      <ButtonAccount />
-      <Chat />
-    </div>
+    // <div>
+    //   <ButtonAccount />
+      
+    // </div>
+    <Chat />
     // <main className='h-screen grid grid-flow-row-dense grid-cols-6'>
     //   <div class="col-span-1 grid grid-rows-10 ">
     //     <div class="row-start-1 row-end-8 flex flex-col items-center">
