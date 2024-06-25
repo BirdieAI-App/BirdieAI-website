@@ -1,15 +1,20 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import config from '@/config';
 import { useRouter } from 'next/navigation';
-import ButtonAccount from './ButtonAccount';
+// import ButtonAccount from './ButtonAccount';
 
 const Chat = () => {
-    const [isChecked, setIsChecked] = useState(false);
+    // const [isChecked, setIsChecked] = useState(false);
     const { data: session, status } = useSession();
     const router = useRouter();
+    const suggestions = ["I have a specific question about my medical condition related to nutrition",
+        "I have a specific question about my medical condition related to nutrition",
+        "I have a specific question about my medical condition related to nutrition",
+        "I have a specific question about my medical condition related to nutrition",
+        "I have a specific question about my medical condition related to nutrition"];
 
     useEffect(() => {
         if (status !== 'loading' && !session) {
@@ -30,10 +35,10 @@ const Chat = () => {
         return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
     }
 
-    function onClickHandler(event) {
-        event.preventDefault();
-        setIsChecked(true);
-    }
+    // function onClickHandler(event) {
+    //     event.preventDefault();
+    //     setIsChecked(true);
+    // }
 
     return (
         <main
@@ -193,8 +198,10 @@ const Chat = () => {
 
             {/** Second | Row */}
             <div className="row-span-11 grid grid-rows-12 md:col-span-3 md:h-screen">
-                <div className="hidden md:flex md:pt-5">
-                    <img className=" object-contain h-20 w-full" src="../icon.png" />
+                <div className="md:flex md:pt-5 items-center justify-center">
+                    <button onClick={() => router.push('/')} className='self-center'>
+                        <img className="object-contain h-20 w-full" src="../icon.png" />
+                    </button>
                 </div>
                 {/**Suggestion: Start */}
                 <div
@@ -206,164 +213,50 @@ const Chat = () => {
                     {/**Box: End */}
 
                     {/**Box: Start */}
-                    <div className="row-start-3 row-span-2  flex items-center justify-center border border-gray-400">
-                        <svg
-                            className="w-1/4"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M8.99994 3L1.99994 15L8.99994 13.2222L15.9999 15L8.99994 3ZM8.99994 3L8.99994 11.5"
-                                stroke="#7CD2EB"
-                                stroke-miterlimit="16"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                        <p className="text-left w-2/4">
-                            I have a specific question about my medical condition related to
-                            nutrition
-                        </p>
-                        <svg
-                            className="w-1/4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            class="lucide lucide-chevron-right"
-                        >
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
-                    </div>
-                    {/**Box: End */}
+                    <div>
+                        {suggestions?.map((item) => {
+                            return (
+                                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg">
+                                    <svg
+                                        className="w-1/4"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 18 18"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M8.99994 3L1.99994 15L8.99994 13.2222L15.9999 15L8.99994 3ZM8.99994 3L8.99994 11.5"
+                                            stroke="#7CD2EB"
+                                            stroke-miterlimit="16"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                    </svg>
+                                    <p className="text-left w-2/4">
+                                        {item}
+                                    </p>
+                                    <svg
+                                        className="w-1/4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        class="lucide lucide-chevron-right"
+                                    >
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
+                                </div>
+                            )
+                        })}
 
-                    {/**Box: Start */}
-                    <div className="row-start-5 row-span-2  flex items-center justify-center border-gray-400 border-l border-r border-b">
-                        <svg
-                            className="w-1/4"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M8.99994 3L1.99994 15L8.99994 13.2222L15.9999 15L8.99994 3ZM8.99994 3L8.99994 11.5"
-                                stroke="#7CD2EB"
-                                stroke-miterlimit="16"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                        <p className="text-left w-2/4">
-                            I have a specific question about my medical condition related to
-                            nutrition
-                        </p>
-                        <svg
-                            className="w-1/4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            class="lucide lucide-chevron-right"
-                        >
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
+                        {/**Box: End */}
                     </div>
-                    {/**Box: End */}
-
-                    {/**Box: Start */}
-                    <div className="row-start-7 row-span-2  flex items-center justify-center border-gray-400 border-l border-r border-b">
-                        <svg
-                            className="w-1/4"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M8.99994 3L1.99994 15L8.99994 13.2222L15.9999 15L8.99994 3ZM8.99994 3L8.99994 11.5"
-                                stroke="#7CD2EB"
-                                stroke-miterlimit="16"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                        <p className="text-left w-2/4">
-                            I have a specific question about my medical condition related to
-                            nutrition
-                        </p>
-                        <svg
-                            className="w-1/4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            class="lucide lucide-chevron-right"
-                        >
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
-                    </div>
-                    {/**Box: End */}
-
-                    {/**Box: Start */}
-                    <div className="row-start-9 row-span-2  flex items-center justify-center border-gray-400 border-l border-r border-b">
-                        <svg
-                            className="w-1/4"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                        >
-                            <path
-                                d="M8.99994 3L1.99994 15L8.99994 13.2222L15.9999 15L8.99994 3ZM8.99994 3L8.99994 11.5"
-                                stroke="#7CD2EB"
-                                stroke-miterlimit="16"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
-                        <p className="text-left w-2/4">
-                            I have a specific question about my medical condition related to
-                            nutrition
-                        </p>
-                        <svg
-                            className="w-1/4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            class="lucide lucide-chevron-right"
-                        >
-                            <path d="m9 18 6-6-6-6" />
-                        </svg>
-                    </div>
-                    {/**Box: End */}
                 </div>
                 {/**Suggestion: End */}
 
