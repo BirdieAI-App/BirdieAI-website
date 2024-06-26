@@ -4,11 +4,9 @@ import { sendGoogleIDToken, SignInByCredentials } from "./request";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions = {
-  // Set any random key in .env.local
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
-      // Follow the "Login with Google" tutorial to get your credentials
       clientId: process.env.GOOGLE_ID,
       clientSecret: process.env.GOOGLE_SECRET,
       authorizationUrl: "https://accounts.google.com/o/oauth2/auth?response_type=code&prompt=consent&access_type=offline",
@@ -22,79 +20,74 @@ export const authOptions = {
           createdAt: new Date(),
         };
       },
-      allowDangerousEmailAccountLinking: true
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
-      // The name to display on the sign in form (e.g. "Sign in with...")
       name: "Credentials",
-      // `credentials` is used to generate a form on the sign in page.
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
       credentials: {
         email: { label: "Email", type: "text", placeholder: "jsmith" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        // Add logic here to look up the user from the credentials supplied
-        const {email, password} = credentials;
-        let user = { email: email, password: password};
+        const { email, password } = credentials;
+        let user = { email, password };
         try {
           const response = await SignInByCredentials(user);
           if (response) {
-            // If login is successful, return the user object
             user.userId = response._id;
-            // console.log(user);
             return user;
           } else {
-            // If login fails, return null
             return null;
-        }} catch(err) {
-          console.log(err);
-        }        
-      }
-    })
+          }
+        } catch (err) {
+          console.log("Error in authorize:", err);
+          return null;
+        }
+      },
+    }),
   ],
   pages: {
-    signIn: '/api/auth/signin',  // Custom sign-in page
-    error: '/api/auth/signin'
+    signIn: '/api/auth/signin',
+    error: '/api/auth/signin',
   },
   callbacks: {
     async jwt({ token, account, user }) {
-      // console.log(account);
-      if (account?.provider === "google"){
-          token.idToken = account.id_token;
-          // console.log(account.id_token);
+      if (account?.provider === "google") {
+        token.idToken = account.id_token;
+        try {
           const data = await sendGoogleIDToken(token);
-          // console.log(data);
           if (data._id) {
             token.userId = data._id;
+            // console.log(token);
+            return token;
           }
+        } catch (err) {
+          console.log("Error in sendGoogleIDToken:", err);
+        }
       }
       if (user) {
-        token.userId = user.userId; // Add userId to the token
+        token.userId = user.userId;
+        // console.log(token);
+        return token;
       }
+      // console.log(token);
       return token;
     },
     async session({ session, token }) {
-      if (token.userId) {
+      // console.log(token);
+      if (token?.userId) {
         session.user.userId = token.userId;
       }
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Redirect to a specific path after sign-in
       return baseUrl + "/chat";
-      // return url.startsWith(baseUrl) ? url : baseUrl;
-    }
+    },
   },
   session: {
     strategy: "jwt",
   },
   theme: {
     brandColor: config.colors.main,
-    // Add you own logo below. Recommended size is rectangle (i.e. 200x50px) and show your logo + name.
-    // It will be used in the login flow to display your logo. If you don't add it, it will look faded.
-    // logo: `https://${config.domainName}/logoAndName.png`,
   },
 };

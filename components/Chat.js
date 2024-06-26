@@ -214,9 +214,9 @@ const Chat = () => {
 
                     {/**Box: Start */}
                     <div>
-                        {suggestions?.map((item) => {
+                        {suggestions?.map((idx,item) => {
                             return (
-                                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg">
+                                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg" key={idx}>
                                     <svg
                                         className="w-1/4"
                                         width="24"
@@ -234,7 +234,7 @@ const Chat = () => {
                                         />
                                     </svg>
                                     <p className="text-left w-2/4">
-                                        {item}
+                                    I have a specific question about my medical condition related to nutrition
                                     </p>
                                     <svg
                                         className="w-1/4"
