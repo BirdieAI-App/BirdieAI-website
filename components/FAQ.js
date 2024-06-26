@@ -23,7 +23,7 @@ const faqList = [
   {
     question: "How do I contact Birdie if I have another question?",
     answer: (
-      <div className="space-y-2 leading-relaxed">Cool, contact us by email  support@birdieapp.co</div>
+      <div className="space-y-2 leading-relaxed">Cool, contact us by email  dev@birdieapp.co</div>
     ),
   },
 ];

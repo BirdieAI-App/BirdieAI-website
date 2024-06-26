@@ -33,7 +33,7 @@ const config = {
         //priceAnchor: ,
         features: [
           {
-            name: "3 conversations with AI Diet Coach for 1 hour",
+            name: "3 conversations with AI Diet Coach",
           },
           { name: "Personalized Meal plan" },
           //{ name: "Weekly nutrition newsletter" },
@@ -63,7 +63,7 @@ const config = {
             ? "price_1O5KtcAxyNprDp7iftKnrrpw"
             : "price_456",
         name: "",
-        description: "Better nutrition planning",
+        description: "Better Nutrition Planning",
         price: 10,
         //priceAnchor: 149,
         features: [
