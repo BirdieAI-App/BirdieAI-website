@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import config from '@/config';
 import { useRouter } from 'next/navigation';
 import ButtonAccount from './ButtonAccount';
+import Link from "next/link";
 // import ButtonAccount from './ButtonAccount';
 
 const Chat = () => {
@@ -70,10 +71,12 @@ const Chat = () => {
                         <path d="M8 12h8" />
                         <path d="M12 8v8" />
                     </svg>
+                    <Link href="/" className='object-contain md:hidden'>
                     <img
-                        className=" object-contain h-12 w-1/3 md:hidden"
+                        className="h-20 w-full"
                         src="../icon.png"
                     />
+                    </Link>
                     <div className='md:hidden'>
                     <ButtonAccount />
                     </div>
@@ -143,8 +146,10 @@ const Chat = () => {
 
             {/** Second | Row */}
             <div className="row-span-11 grid grid-rows-12 md:col-span-3 md:h-screen">
-                <div className="flex flex-row mt-5">
-                    <img className=" object-contain h-20 w-full hidden md:block" src="../icon.png" />
+                <div className="flex flex-row mt-5 items-center justify-center">
+                    <Link className='object-contain hidden md:block' href="/">
+                    <img className=" h-20 w-full" src="../icon.png" />
+                    </Link>
                 </div>
                 {/**Suggestion: Start */}
                 <div
@@ -191,7 +196,7 @@ const Chat = () => {
 
                 {/**ChatBox: Start */}
                 <div className="row-start-11 flex items-center justify-center">
-                    <div className="flex w-2/3 h-full items-center justify-center border border-gray-400 rounded-lg">
+                    <div className="flex w-5/6 h-full items-center justify-center border border-gray-400 rounded-lg">
                         <input
                             placeholder="Ask me question"
                             className="w-4/5 focus:outline-none h-full"
