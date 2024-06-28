@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import config from '@/config';
 import { useRouter } from 'next/navigation';
+import ButtonAccount from './ButtonAccount';
 // import ButtonAccount from './ButtonAccount';
 
 const Chat = () => {
@@ -11,7 +12,6 @@ const Chat = () => {
     const { data: session, status } = useSession();
     const router = useRouter();
     const suggestions = ["I have a specific question about my medical condition related to nutrition",
-        "I have a specific question about my medical condition related to nutrition",
         "I have a specific question about my medical condition related to nutrition",
         "I have a specific question about my medical condition related to nutrition",
         "I have a specific question about my medical condition related to nutrition"];
@@ -74,29 +74,10 @@ const Chat = () => {
                         className=" object-contain h-12 w-1/3 md:hidden"
                         src="../icon.png"
                     />
-                    <svg
-                        className="w-1/3 md:hidden"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        class="lucide lucide-sliders-horizontal"
-                    >
-                        <line x1="21" x2="14" y1="4" y2="4" />
-                        <line x1="10" x2="3" y1="4" y2="4" />
-                        <line x1="21" x2="12" y1="12" y2="12" />
-                        <line x1="8" x2="3" y1="12" y2="12" />
-                        <line x1="21" x2="16" y1="20" y2="20" />
-                        <line x1="12" x2="3" y1="20" y2="20" />
-                        <line x1="14" x2="14" y1="2" y2="6" />
-                        <line x1="8" x2="8" y1="10" y2="14" />
-                        <line x1="16" x2="16" y1="18" y2="22" />
-                    </svg>
+                    <div className='md:hidden'>
+                    <ButtonAccount />
+                    </div>
+                    
                 </div>
                 {/** Mobile : End*/}
 
@@ -158,50 +139,12 @@ const Chat = () => {
                 </div>
                 {/** Upgrade Account : End*/}
 
-                {/** Profile : Start*/}
-                <div className="hidden md:row-start-11 md:flex md:justify-center md:items-center">
-                    <div
-                        className="md:col-start-1 md:col-span-1 md:flex md:items-center md:justify-center md:w-full 
-          md:p-4 md:rounded-sm"
-                    >
-                        <svg
-                            className="hidden md:block"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            class="lucide lucide-sliders-horizontal"
-                        >
-                            <line x1="21" x2="14" y1="4" y2="4" />
-                            <line x1="10" x2="3" y1="4" y2="4" />
-                            <line x1="21" x2="12" y1="12" y2="12" />
-                            <line x1="8" x2="3" y1="12" y2="12" />
-                            <line x1="21" x2="16" y1="20" y2="20" />
-                            <line x1="12" x2="3" y1="20" y2="20" />
-                            <line x1="14" x2="14" y1="2" y2="6" />
-                            <line x1="8" x2="8" y1="10" y2="14" />
-                            <line x1="16" x2="16" y1="18" y2="22" />
-                        </svg>
-                        <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px]">
-                            Profile Setting
-                        </p>
-                    </div>
-                </div>
-
-                {/** Profile : End*/}
             </div>
 
             {/** Second | Row */}
             <div className="row-span-11 grid grid-rows-12 md:col-span-3 md:h-screen">
-                <div className="md:flex md:pt-5 items-center justify-center">
-                    <button onClick={() => router.push('/')} className='self-center'>
-                        <img className="object-contain h-20 w-full" src="../icon.png" />
-                    </button>
+                <div className="flex flex-row mt-5">
+                    <img className=" object-contain h-20 w-full hidden md:block" src="../icon.png" />
                 </div>
                 {/**Suggestion: Start */}
                 <div
@@ -211,12 +154,10 @@ const Chat = () => {
                     {/**Box: Start */}
                     <div className="hidden row-start-1 row-span-2 "></div>
                     {/**Box: End */}
-
-                    {/**Box: Start */}
                     <div>
-                        {suggestions?.map((idx,item) => {
+                        {suggestions?.map((item) => {
                             return (
-                                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg" key={idx}>
+                                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg p-6">
                                     <svg
                                         className="w-1/4"
                                         width="24"
@@ -233,39 +174,27 @@ const Chat = () => {
                                             stroke-linejoin="round"
                                         />
                                     </svg>
-                                    <p className="text-left w-2/4">
-                                    I have a specific question about my medical condition related to nutrition
+                                    <p className="text-left w-3/4">
+                                        {item}
                                     </p>
-                                    <svg
-                                        className="w-1/4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        class="lucide lucide-chevron-right"
-                                    >
-                                        <path d="m9 18 6-6-6-6" />
-                                    </svg>
                                 </div>
                             )
                         })}
 
                         {/**Box: End */}
                     </div>
+                    {/**Box: Start */}
+
+                    {/**Box: End */}
                 </div>
                 {/**Suggestion: End */}
 
                 {/**ChatBox: Start */}
                 <div className="row-start-11 flex items-center justify-center">
-                    <div className="flex w-2/3 h-full items-center justify-center">
+                    <div className="flex w-2/3 h-full items-center justify-center border border-gray-400 rounded-lg">
                         <input
                             placeholder="Ask me question"
-                            className="w-3/5 focus:outline-none h-full"
+                            className="w-4/5 focus:outline-none h-full"
                         />
                         <svg
                             className="w-1/5"
@@ -290,6 +219,12 @@ const Chat = () => {
                 <div className="row-start-12 flex items-center justify-center">
                     Wonder to have sth here !
                 </div>
+            </div>
+            <div
+                className="row-span-1 md:col-span-1 pt-5
+       md:grid md:grid-rows-12 md:h-screen md:pl-5 md:pr-5 md:pt-5 hidden md:block"
+            >
+                <ButtonAccount />
             </div>
         </main>
     );
