@@ -62,6 +62,14 @@ threadRoute.route("/threads")
         if(!req.body.threadID){
             return res.status(400).send("Request body must contains a threadID returned from OpenAI");
         }
+        try{//checking for already set threadID in thread collection
+            let existingThreadID = await Thread.find({"threadID": req.body.threadID});
+            if (existingThreadID.length != 0){
+                return res.status(400).send("The given threadID already associated to user with ID: " + existingThreadID[0].userID.toHexString());
+            }
+        }catch(err){
+            return res.status(500).send("Unexpected error when validating threadID for saving new thread: "+ err);
+        }
         if(!req.body.title){
             return res.status(400).send("New thread created must contain a title");
         }
@@ -108,8 +116,8 @@ threadRoute.route('/threads/:threadID')
     })
     //POST: Update a thread with a threadID
     .post(async(req,res)=>{
-        //TO-DO
         const threadID = req.params.threadID
+        console.log('in /threads/:threadID (POST) update a thread with ID: '+threadID)
         if(!isValidRequest(req)){
             return res.status(400).send("Request body contains an invalid field!!");
         }

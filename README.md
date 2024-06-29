@@ -18,11 +18,11 @@
 ## /threads
 - **GET**: Retrieved all threads in threads collections
 - **DELETE**: DELETE all threads in threads colllections
-- **POST**: Add a new Thread into threads collection
+- **PUT**: Add a new Thread into threads collection
     * Required fields:
         + userID: indicate to which threads belongs to what user. `userID` must already exist in users collections
         + title: the title of the new title
-        + ThreadID: the ID that is associated with the new thread created from the plat form such as OPEN_AI
+        + threadID: the ID that is associated with the new thread created from other platform such as OPEN_AI. Each ThreadID from openAI set in database must be unique
 
 ## /threads/:threadID
 - **GET**: Retrieve a single thread with a given `threadID`.
@@ -33,6 +33,22 @@
 ## /threads/u/:userID
 - **GET**: Retrieve all threads belongs to user with a given `userID`.
 - **DELETE**: Delete all threads belongs to user with a given `userID`.
+
+## /messages
+- **GET**: Retrieved all messages in messages collections
+- **DELETE**: DELETE all messages in messages colllections
+- **PUT**: Add a new Message into Messages collection
+    * Required fields:
+        + threadID: indicate to which messages belongs to what thread. `ThreadID` must already exist in users collections
+        + messageID: the ID that is associated with a new message created from other platform such as OPEN_AI
+        + message_total_token: this is the field also returned from other platform such as OPEN_AI
+    * Note: When a new message is create/put into Message database, the `update_at` field in Thread collection is also gets updated; hence no need to make 2 calls
+
+## /messages/:messageID
+- No operations support at the moment
+
+# /messages/t/:threadID
+- **GET**: Retrieve all messages that is belongs to the given threadID
 
 # Frontend Route Information
 

@@ -7,9 +7,10 @@ const threadSchema = new mongoose.Schema({
         required:true,
         ref:'User'
     },
-    threadID:{
+    threadID:{//thread ID returns from OpenAI
         type:String,
-        requried: true
+        requried: true,
+        unique: true
     },
     title:{
         type: String, 
