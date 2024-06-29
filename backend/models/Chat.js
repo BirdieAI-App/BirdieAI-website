@@ -2,16 +2,17 @@ const mongoose = require('mongoose')
 
 
 const messageSchema = mongoose.Schema({
-    ConversationID:{
-        type: mongoose.Types.ObjectId,
+    ThreadId:{
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Conversation'
+        ref: 'Thread'
     },
-    message:{
-        type:String,
+    OPEN_AI_MESSAGE_ID:{
+        type: String,
         required: true
     },
-    sender:String,
+    prompt:String,
+    response: String,
     timestamp: {
         type:Date,
         default: Date.now

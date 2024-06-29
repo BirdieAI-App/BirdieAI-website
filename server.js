@@ -8,6 +8,7 @@ const cors = require('cors');
 // const cookieParser = require('cookie-parser');
 const userRoute = require('./backend/routes/UserRoute.js');
 const authRoute = require('./backend/routes/authRoute.js');
+const threadRoute = require('./backend/routes/threadRoute.js');
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, './.env') });
@@ -26,8 +27,8 @@ app.use((req, res, next) => {
 	next();
   });
 
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.json()); // Parse JSON bodies
+// app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded bodies
+// app.use(bodyParser.json()); // Parse JSON bodies
 
 
 // CORS middleware
@@ -44,8 +45,9 @@ mongoose.connect(mongoURI)
 
 
 //define the routes
-app.use('/.api', userRoute)
-app.use('/.api', authRoute)
+app.use('/call', userRoute)
+app.use('/call', authRoute)
+app.use('/call', threadRoute)
 
 
 export default app;
