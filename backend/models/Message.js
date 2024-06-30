@@ -1,20 +1,29 @@
 const mongoose = require('mongoose')
 
 
-const messageSchema = mongoose.Schema({
-    ConversationID:{
-        type: mongoose.Types.ObjectId,
+const messageSchema = new mongoose.Schema({
+    threadID:{// the id associated from Thread collections
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'Conversation'
+        ref: 'Thread'
     },
-    message:{
-        type:String,
+    messageID:{//messageID returns from OpenAI
+        type: String,
+        required: true,
+        unique: true
+    },
+    prompt:{
+        type: String,
         required: true
     },
-    sender:String,
-    timestamp: {
+    response: String,
+    create_at: {
         type:Date,
         default: Date.now
+    },
+    message_total_token:{//number of token returns from OpenAI
+        type: Number, 
+        required: true
     }
 });
 
