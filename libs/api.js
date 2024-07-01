@@ -18,7 +18,7 @@ apiClient.createUrl = function(endpoint) {
   if (!endpoint) {
     throw new Error('Endpoint must be provided');
   }
-  return `${baseUrl.replace(/\/$/, '')}/.api/${endpoint}`;
+  return `${baseUrl.replace(/\/$/, '')}/${endpoint}`;
 };
 
 apiClient.interceptors.response.use(
