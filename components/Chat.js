@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import config from '@/config';
 import { useRouter } from 'next/navigation';
@@ -11,6 +11,8 @@ import Link from "next/link";
 const Chat = () => {
     // const [isChecked, setIsChecked] = useState(false);
     const { data: session, status } = useSession();
+    // isHidden is variable used to toggle Suggestion Part
+    const [isHidden, setIsHidden] = useState(false);
     const router = useRouter();
     const suggestions = ["I have a specific question about my medical condition related to nutrition",
         "I have a specific question about my medical condition related to nutrition",
@@ -36,10 +38,10 @@ const Chat = () => {
         return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
     }
 
-    // function onClickHandler(event) {
-    //     event.preventDefault();
-    //     setIsChecked(true);
-    // }
+    function onClickHandler(event) {
+        event.preventDefault();
+        setIsHidden(true);
+    }
 
     return (
         <main
@@ -151,10 +153,11 @@ const Chat = () => {
                     <img className=" h-20 w-full" src="../icon.png" />
                     </Link>
                 </div>
+                
                 {/**Suggestion: Start */}
                 <div
-                    className="row-start-2 row-end-11
-        grid grid-rows-12 p-5 md:p-20"
+                    className={`${isHidden ? 'hidden':''} row-start-2 row-end-11
+        grid grid-rows-12 p-5 md:p-20`}
                 >
                     {/**Box: Start */}
                     <div className="hidden row-start-1 row-span-2 "></div>
@@ -202,7 +205,7 @@ const Chat = () => {
                             className="w-4/5 focus:outline-none h-full"
                         />
                         <svg
-                            className="w-1/5"
+                            className="w-1/5 cursor-pointer"
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"
                             height="24"
@@ -213,6 +216,7 @@ const Chat = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             class="lucide lucide-send"
+                            onClick={onClickHandler}
                         >
                             <path d="m22 2-7 20-4-9-9-4Z" />
                             <path d="M22 2 11 13" />
