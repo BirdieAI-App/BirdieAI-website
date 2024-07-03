@@ -161,9 +161,9 @@ const Chat = () => {
           <div className="hidden row-start-1 row-span-2 "></div>
           {/**Box: End */}
           <div>
-            {suggestions?.map((item) => {
+            {suggestions?.map((item, idx) => {
               return (
-                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg p-6">
+                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg p-6" key={idx}>
                   <svg
                     className="w-1/4"
                     width="24"
