@@ -24,7 +24,7 @@ const Pricing = () => {
                   <span
                     className={`badge text-xs text-primary-content font-semibold border-0 bg-primary`}
                   >
-                    POPULAR
+                    RECOMMENDED
                   </span>
                 </div>
               )}

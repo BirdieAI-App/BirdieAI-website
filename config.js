@@ -33,7 +33,7 @@ const config = {
         //priceAnchor: ,
         features: [
           {
-            name: "3 conversations with AI Diet Coach for 1 hour",
+            name: "3 conversations with AI Diet Coach",
           },
           { name: "Personalized Meal plan" },
           //{ name: "Weekly nutrition newsletter" },
@@ -63,7 +63,7 @@ const config = {
             ? "price_1O5KtcAxyNprDp7iftKnrrpw"
             : "price_456",
         name: "",
-        description: "Better nutrition planning",
+        description: "Better Nutrition Planning",
         price: 10,
         //priceAnchor: 149,
         features: [
@@ -106,7 +106,7 @@ const config = {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/api/auth/signin",
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/dashboard",
+    callbackUrl: "/chat",
   },
 };
 

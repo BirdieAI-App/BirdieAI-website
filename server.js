@@ -56,5 +56,7 @@ app.use('/call', authRoute)
 app.use('/call', threadRoute)
 app.use('/call', messageRoute)
 
-
+// app.listen(port, () => {
+// 	console.log(`Server is running on port ${port}`);
+// });
 export default app;

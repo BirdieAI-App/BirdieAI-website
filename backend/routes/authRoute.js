@@ -33,7 +33,7 @@ authRoute
     console.log('reach authentication with username and password')
     let thisUser;
     const { email, password } = req.body;
-    // console.log(req.body);
+    console.log(`Receive credentials to login ${req.body}`);
     try {
       thisUser = await User.findOne({ "accountData.email": email });
       if (thisUser) {
@@ -41,7 +41,7 @@ authRoute
         const hashPassword = await bcrypt.hash(thisUser.accountData.password, genSalt);
         const match = await bcrypt.compare(password, hashPassword);
         if (match) {
-          res.status(200).send("Login successful");
+          res.status(200).send({_id: thisUser._id, email: email});
         } else {
           req.authError = "The password is incorrect. Please try again" +
             " or reset your password.";
@@ -62,6 +62,7 @@ authRoute
   .post(async (req, res, next) => {
     console.log('reach authentication with google')
     const idToken = req.body.idToken;
+    console.log(`Receive credentials to login ${idToken} with Google`);
     try {
       const ticket = await client.verifyIdToken({
         idToken: idToken,
