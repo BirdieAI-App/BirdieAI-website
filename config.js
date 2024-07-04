@@ -33,12 +33,27 @@ const config = {
         //priceAnchor: ,
         features: [
           {
-            name: "3 chats with AI Diet Coach",
+            name: "3 conversations with AI Diet Coach",
           },
           { name: "Personalized Meal plan" },
           //{ name: "Weekly nutrition newsletter" },
           //{ name: "Emails" },
         ],
+      },
+      {
+        priceId:
+        process.env.NODE_ENV === "development"
+          ? "price_1O5KtcAxyNprDp7iftKnrrpw"
+          : "price_456",
+      name: "",
+      description: "One-day Pass",
+      price: 5,
+      //priceAnchor: 149,
+      features: [
+
+        { name: "Unlimited questions with AI Diet Coach for 24 hours" },
+        { name: "Personalized Meal plan" },
+      ],  
       },
       {
         // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
@@ -48,13 +63,13 @@ const config = {
             ? "price_1O5KtcAxyNprDp7iftKnrrpw"
             : "price_456",
         name: "",
-        description: "Better nutrition planning",
-        price: 5,
+        description: "Better Nutrition Planning",
+        price: 10,
         //priceAnchor: 149,
         features: [
   
           { name: "Unlimited questions with AI Diet Coach" },
-          { name: "Personalized Meal plane" },
+          { name: "Personalized Meal plan" },
           { name: "Weekly nutrition newsletter" },
           { name: "Weekly research updates" },
           { name: "24/7 support" },
@@ -91,7 +106,7 @@ const config = {
     // REQUIRED — the path to log in users. It's use to protect private routes (like /dashboard). It's used in apiClient (/libs/api.js) upon 401 errors from our API
     loginUrl: "/api/auth/signin",
     // REQUIRED — the path you want to redirect users after successfull login (i.e. /dashboard, /private). This is normally a private page for users to manage their accounts. It's used in apiClient (/libs/api.js) upon 401 errors from our API & in ButtonSignin.js
-    callbackUrl: "/dashboard",
+    callbackUrl: "/chat",
   },
 };
 

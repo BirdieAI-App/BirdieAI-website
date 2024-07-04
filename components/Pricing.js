@@ -24,7 +24,7 @@ const Pricing = () => {
                   <span
                     className={`badge text-xs text-primary-content font-semibold border-0 bg-primary`}
                   >
-                    POPULAR
+                    RECOMMENDED
                   </span>
                 </div>
               )}
@@ -91,9 +91,9 @@ const Pricing = () => {
                 <div className="space-y-2">
                   <ButtonCheckout priceId={plan.priceId} />
 
-                  <p className="flex items-center justify-center gap-2 text-sm text-center text-base-content/80 font-medium relative">
+                  {/* <p className="flex items-center justify-center gap-2 text-sm text-center text-base-content/80 font-medium relative">
                     Pay monthly
-                  </p>
+                  </p> */}
                 </div>
               </div>
             </div>

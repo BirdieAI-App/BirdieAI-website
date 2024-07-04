@@ -42,27 +42,27 @@ const Step = ({ emoji, text }) => {
 const Problem = () => {
   return (
     <section className="bg-lime-600 text-neutral-50">
-      <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
-        <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8">
-        Mamas, we get it – figuring out the best way to nourish yourself and bub can quickly become a never-ending puzzle. 
-        </h2>
-        <p className="max-w-xl mx-auto text-lg opacity-100 leading-relaxed mb-12 md:mb-20">
-        With new questions popping up daily during pregnancy and those early parenthood months, you can easily fall into a cycle of endlessly scrolling websites, articles, and forums, only to feel overwhelmed, exhausted, and fall into decision fatigue.
-        </p>
+    <div className="max-w-7xl mx-auto px-8 py-16 md:py-32 text-center">
+      <h2 className="max-w-3xl mx-auto font-extrabold text-4xl md:text-5xl tracking-tight mb-6 md:mb-8">
+      Mama, we hear you - finding the best way to nourish yourself and your little one can be a total brainteaser. 
+      </h2>
+      <p className="max-w-xl mx-auto text-lg opacity-100 leading-relaxed mb-12 md:mb-20">
+      With new questions popping up daily during pregnancy and early motherhood, you can easily get caught in a vicious circle of scrolling through websites, articles, and forums. Next thing you know, you are overwhelmed and exhausted by decision fatigue.
+      </p>
 
-        <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6">
-          <Step emoji="🧑‍💻" text="Search for thousand questions do and don't" />
+      <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-6">
+        <Step emoji="🧑‍💻" text="Searching endlessly for gazillion do and don't questions " />
 
-          <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
+        <Arrow extraStyle="max-md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="😮‍💨" text="You are nauseous, exhausted and no energy left to think about meal plan" />
+        <Step emoji="😮‍💨" text="You are nauseous, running on fume with zero brain power left for meal planning" />
 
-          <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
+        <Arrow extraStyle="md:-scale-x-100 md:-rotate-90" />
 
-          <Step emoji="😔" text="Waiting at least 2 weeks to get dietitian's appoitment" />
-        </div>
+        <Step emoji="😔" text="Waiting at least 2 weeks to snap the dietitian's appointment " />
       </div>
-    </section>
+    </div>
+  </section>
   );
 };
 

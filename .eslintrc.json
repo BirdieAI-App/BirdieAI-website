@@ -5,6 +5,10 @@
     "node": true,
     "es6": true
   },
+  // "rules": {
+  //   // Your specific rules.
+  //   "no-unused-vars": "warn"
+  // }
   "rules": {
     // Your specific rules.
     "no-unused-vars": "warn",
