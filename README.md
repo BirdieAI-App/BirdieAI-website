@@ -19,7 +19,6 @@
 
 <!-- ## /api/auth/signin
 
-# Authentication
 
 ## /api/auth/signup
 
