@@ -6,6 +6,7 @@ import config from "@/config";
 import { useRouter } from "next/navigation";
 import ButtonAccount from "./ButtonAccount";
 import Link from "next/link";
+import { getAllThreadsByUser } from "@/libs/request";
 // import ButtonAccount from './ButtonAccount';
 
 const Chat = () => {
@@ -13,6 +14,9 @@ const Chat = () => {
   const { data: session, status } = useSession();
   // isHidden is variable used to toggle Suggestion Part
   const [isHidden, setIsHidden] = useState(false);
+  const [allThreads, setAllThreads] = useState([]);
+  const [userId, setUserId] = useState("");
+
   const router = useRouter();
   const suggestions = [
     "I have a specific question about my medical condition related to nutrition",
@@ -21,16 +25,32 @@ const Chat = () => {
     "I have a specific question about my medical condition related to nutrition",
   ];
 
+  const getThreads = async (userId) => {
+    if (userId) {
+      try {
+        const threads = await getAllThreadsByUser(userId);
+        setAllThreads(threads);
+      } catch (err) {
+        console.log(err);
+      }
+      
+    }
+  }
+
   useEffect(() => {
     if (status !== "loading" && !session) {
       router.push(config.auth.loginUrl);
       // console.log('a');
     }
+    if (session && session.user.userId) setUserId(session.user.userId);
+
   }, [session, status]);
 
   useEffect(() => {
-    console.log(session);
-  }, [session]);
+    getThreads(userId);
+  }, [userId]);
+
+  // console.log(allThreads);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -115,21 +135,8 @@ const Chat = () => {
         </div>
         {/** New Chat : End*/}
 
-        {/** Previous Chat : Start*/}
-        <div className="hidden md:row-start-2 row-span-1 md:flex md:justify-center md:items-center">
-          <div
-            className="md:col-start-1 md:col-span-1 md:flex md:justify-start md:items-start md:w-full 
-          md:p-4"
-          >
-            <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px]">
-              Previous Chat
-            </p>
-          </div>
-        </div>
-        {/** Previous Chat : End*/}
-
         {/** Upgrade Account : Start*/}
-        <div className="hidden md:row-start-3 row-span-1 md:block">
+        <div className="hidden md:row-start-2 row-span-1 md:block">
           <div
             className="md:col-start-1 md:col-span-1 md:flex md:flex-col md:justify-start md:items-start md:w-full 
           md:p-4"
@@ -140,7 +147,33 @@ const Chat = () => {
             </small>
           </div>
         </div>
+        {/** Previous Chat : Start*/}
+        <div className="hidden md:row-start-3 row-span-1 md:flex md:justify-center md:items-center">
+          <div
+            className="md:col-start-1 md:col-span-1 md:flex md:justify-start md:items-start md:w-full 
+          md:p-4"
+          >
+            <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px]">
+              Previous Chat
+            </p>
+          </div>
+        </div>
+        {/** Previous Chat : End*/}
         {/** Upgrade Account : End*/}
+        {allThreads?.map((item,idx) => {
+          const threadStyle = `hidden md:row-start-${idx + 4} row-span-1 md:justify-start md:items-start md:block`;
+          const threadTitle = item?.title;
+          return (
+            <div className={threadStyle}>
+              <div
+                className="md:col-start-1 md:col-span-1 md:flex md:justify-start md:items-start md:w-full 
+                md:p-4"
+              >
+                <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px]">{threadTitle}</p>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       {/** Second | Row */}
