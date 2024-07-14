@@ -41,7 +41,7 @@ const Chat = () => {
       // console.log(threads);
       setPaginatedThreads(previousResponse => {
         if (previousResponse === null) {
-            return response;
+            return threads;
         }
         return { data: [...previousResponse.data, ...threads.data], nextPage: threads.nextPage }
       })
