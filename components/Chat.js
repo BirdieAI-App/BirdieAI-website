@@ -13,9 +13,10 @@ const Chat = () => {
   // const [isChecked, setIsChecked] = useState(false);
   const { data: session, status } = useSession();
   // isHidden is variable used to toggle Suggestion Part
-  const [isHidden, setIsHidden] = useState(false);
+  // const [isHidden, setIsHidden] = useState(false);
   const [allThreads, setAllThreads] = useState([]);
   const [userId, setUserId] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const router = useRouter();
   const suggestions = [
@@ -36,6 +37,18 @@ const Chat = () => {
       
     }
   }
+
+  const [userInput, setUserInput] = useState('');
+
+  const handleInputChange = (event) => {
+    setUserInput(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    // Handle the user input here, e.g., send it to an API or use it in your application
+    console.log('User input submitted:', userInput);
+    setUserInput('');
+  };
 
   useEffect(() => {
     if (status !== "loading" && !session) {
@@ -60,218 +73,80 @@ const Chat = () => {
     return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
   }
 
-  function onClickHandler(event) {
-    event.preventDefault();
-    setIsHidden(!isHidden);
-  }
+  // function onClickHandler(event) {
+  //   event.preventDefault();
+  //   setIsHidden(!isHidden);
+  // }
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
 
   return (
-    <main
-      className="main grid grid-rows-12 h-screen w-screen
-     md:grid md:grid-cols-5 md:h-screen md:w-screen"
-    >
-      {/**First | Left */}
-      <div
-        className="row-span-1 md:col-span-1 pt-5
-       md:grid md:grid-rows-12 md:h-screen md:pl-5 md:pr-5 md:pt-5"
-      >
-        {/** Mobile : start*/}
-        <div className="flex items-center justify-center md:hidden">
-          <svg
-            className="w-1/3 md:hidden"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            S
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            class="lucide lucide-square-plus"
-          >
-            <rect width="18" height="18" x="3" y="3" rx="2" />
-            <path d="M8 12h8" />
-            <path d="M12 8v8" />
-          </svg>
-          <Link href="/" className="object-contain md:hidden">
-            <img className="h-20 w-full" src="../icon.png" />
-          </Link>
-          <div className="md:hidden">
-            <ButtonAccount />
-          </div>
+    <div className="flex h-screen font-sans relative">
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50`}>
+        <button className="bg-green-500 text-white py-2 px-4 rounded mb-5">New Chat</button>
+        <div className="mb-5">
+          <ButtonAccount />
+          <span className="block mt-3 mb-3">You have used 2 of 3 free chats.</span>
+          <button className="bg-orange-500 text-white py-2 px-4 rounded">Upgrade for less than $10 / month</button>
         </div>
-        {/** Mobile : End*/}
+        <div className="mb-5 flex flex-col">
+          <h4 className="mb-2">Previous Chats</h4>
+          {allThreads?.map((item, idx) => (
+            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center">{item?.title}</button>
+          ))}
+        </div>
+        <div>
+          <h4 className="mb-2">Docs</h4>
+          {/* Docs items here */}
+        </div>
+      </aside>
 
-        {/** New Chat : Start*/}
-        <div className="hidden md:flex md:justify-center md:items-center">
-          <div
-            className="md:col-start-1 md:col-span-1 md:flex md:items-center md:justify-center md:w-full 
-          md:p-4 bg-green-500 md:rounded-sm"
-          >
-            <svg
-              className="md:text-[12px] md:text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              S
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              class="lucide lucide-square-plus"
-            >
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-              <path d="M8 12h8" />
-              <path d="M12 8v8" />
-            </svg>
-            <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px] md:text-white">
-              New Chat
-            </p>
-          </div>
-        </div>
-        {/** New Chat : End*/}
+      {/* Overlay for small screens */}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black opacity-50 z-40 lg:hidden" onClick={closeSidebar}></div>}
 
-        {/** Upgrade Account : Start*/}
-        <div className="hidden md:row-start-2 row-span-1 md:block">
-          <div
-            className="md:col-start-1 md:col-span-1 md:flex md:flex-col md:justify-start md:items-start md:w-full 
-          md:p-4"
-          >
-            <p className="md:pl-3 md:text-[12px]">Upgrade Account</p>
-            <small className="md:pl-3 md:text-[12px]">
-              You have use 0 of 3 free chat
-            </small>
-          </div>
-        </div>
-        {/** Previous Chat : Start*/}
-        <div className="hidden md:row-start-3 row-span-1 md:flex md:justify-center md:items-center">
-          <div
-            className="md:col-start-1 md:col-span-1 md:flex md:justify-start md:items-start md:w-full 
-          md:p-4"
-          >
-            <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px]">
-              Previous Chat
-            </p>
-          </div>
-        </div>
-        {/** Previous Chat : End*/}
-        {/** Upgrade Account : End*/}
-        {allThreads?.map((item,idx) => {
-          const threadStyle = `hidden md:row-start-${idx + 4} row-span-1 md:justify-start md:items-start md:block`;
-          const threadTitle = item?.title;
-          return (
-            <div className={threadStyle}>
-              <div
-                className="md:col-start-1 md:col-span-1 md:flex md:justify-start md:items-start md:w-full 
-                md:p-4"
-              >
-                <p className="md:col-start-2 md:col-span-3 md:flex md:items-center md:justify-center md:pl-3 md:text-[12px]">{threadTitle}</p>
-              </div>
-            </div>
-          )
-        })}
+      <div className="flex flex-col lg:hidden p-5">
+        <button onClick={toggleSidebar} className="text-2xl p-2 focus:outline-none">
+          ☰
+        </button>
       </div>
 
-      {/** Second | Row */}
-      <div className="row-span-11 grid grid-rows-12 md:col-span-3 md:h-screen">
-        <div className="flex flex-row mt-5 items-center justify-center">
-          <Link className="object-contain hidden md:block" href="/">
-            <img className=" h-20 w-full" src="../icon.png" />
-          </Link>
+      <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
+        <div className="flex justify-center mb-5">
+          <img className="h-20 w-20" src="../icon.png" />
         </div>
-
-        {/**Suggestion: Start */}
-        {console.log(isHidden)}
-        <div
-          className={`${isHidden ? "hidden" : ""} row-start-2 row-end-11
-        grid grid-rows-12 p-5 md:p-20`}
-        >
-          {/**Box: Start */}
-          <div className="hidden row-start-1 row-span-2 "></div>
-          {/**Box: End */}
-          <div>
-            {suggestions?.map((item, idx) => {
-              return (
-                <div className="row-start-3 row-span-2 mt-4 flex items-center justify-center border border-gray-400 rounded-lg p-6" key={idx}>
-                  <svg
-                    className="w-1/4"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 18 18"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M8.99994 3L1.99994 15L8.99994 13.2222L15.9999 15L8.99994 3ZM8.99994 3L8.99994 11.5"
-                      stroke="#7CD2EB"
-                      stroke-miterlimit="16"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                  <p className="text-left w-3/4">{item}</p>
-                </div>
-              );
-            })}
-
-            {/**Box: End */}
-          </div>
-          {/**Box: Start */}
-
-          {/**Box: End */}
+        <header className="mb-5">
+          <h1 className="text-center">How can I help you?</h1>
+        </header>
+        <div className="flex flex-col flex-1 items-center">
+          {suggestions?.map((item, idx) => (
+            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center">{item}</button>
+          ))}
         </div>
-        {/**Suggestion: End */}
-
-        {/** ChatFrame : Start */}
-        <div
-          className={`${!isHidden ? "hidden" : ""} row-start-2 row-end-11
-        grid grid-rows-12 p-5 md:p-20`}>
-            ChatFrame
+        <div className="flex items-center mt-5 w-full md:w-3/4 lg:w-1/2">
+          <input
+            type="text"
+            value={userInput}
+            onChange={handleInputChange}
+            placeholder="Enter your text here"
+            className="flex-1 py-2 px-3 border border-gray-300 rounded mr-3"
+          />
+          <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-4 rounded">Submit</button>
         </div>
-        {/**ChatFrame : End */}
-        <div className="row-start-11 flex items-center justify-center">
-          <div className="flex w-5/6 h-full items-center justify-center border border-gray-400 rounded-lg">
-            <input
-              placeholder="Ask me question"
-              className="w-3/5 focus:outline-none h-full"
-            />
-            <svg
-              className="w-1/5 cursor-pointer"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              class="lucide lucide-send"
-              onClick={onClickHandler}
-            >
-              <path d="m22 2-7 20-4-9-9-4Z" />
-              <path d="M22 2 11 13" />
-            </svg>
-          </div>
-        </div>
-        {/**ChatBox: End */}
-        {/** */}
-        <div className="row-start-12 flex items-center justify-center">
-          Wonder to have sth here !
-        </div>
-      </div>
-      <div
-        className="row-span-1 md:col-span-1 pt-5
-       md:grid md:grid-rows-12 md:h-screen md:pl-5 md:pr-5 md:pt-5 hidden md:block"
-      >
-        <ButtonAccount />
-      </div>
-    </main>
+        <footer className="mt-auto text-center text-gray-600 text-sm py-5">
+          <span>
+            Birdie has a library of document templates for you to use! Just click the ☰ button or add your own custom templates.
+          </span>
+        </footer>
+      </main>
+    </div>
   );
 };
+
 
 export default Chat;
