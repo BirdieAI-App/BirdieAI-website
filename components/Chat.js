@@ -5,18 +5,15 @@ import { useSession } from "next-auth/react";
 import config from "@/config";
 import { useRouter } from "next/navigation";
 import ButtonAccount from "./ButtonAccount";
-import Link from "next/link";
 import { getAllThreadsByUser } from "@/libs/request";
-// import ButtonAccount from './ButtonAccount';
+import { getAllThreadsByUserPaginated } from "@/libs/util";
 
 const Chat = () => {
-  // const [isChecked, setIsChecked] = useState(false);
   const { data: session, status } = useSession();
-  // isHidden is variable used to toggle Suggestion Part
-  // const [isHidden, setIsHidden] = useState(false);
   const [allThreads, setAllThreads] = useState([]);
   const [userId, setUserId] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [paginatedThreads, setPaginatedThreads] = useState({data: [], nextPage: null});
 
   const router = useRouter();
   const suggestions = [
@@ -35,6 +32,21 @@ const Chat = () => {
         console.log(err);
       }
       
+    }
+  }
+
+  const getThreadsPaginated = async (page,data) => {
+    try {
+      const threads = await getAllThreadsByUserPaginated(page,data);
+      // console.log(threads);
+      setPaginatedThreads(previousResponse => {
+        if (previousResponse === null) {
+            return response;
+        }
+        return { data: [...previousResponse.data, ...threads.data], nextPage: threads.nextPage }
+      })
+    } catch (err) {
+        console.log(err);
     }
   }
 
@@ -63,7 +75,12 @@ const Chat = () => {
     getThreads(userId);
   }, [userId]);
 
+  useEffect(() => {
+    allThreads && getThreadsPaginated(0,allThreads);
+  }, [allThreads])
+
   // console.log(allThreads);
+  // console.log(paginatedThreads);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -72,11 +89,6 @@ const Chat = () => {
   if (!session) {
     return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
   }
-
-  // function onClickHandler(event) {
-  //   event.preventDefault();
-  //   setIsHidden(!isHidden);
-  // }
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -88,23 +100,29 @@ const Chat = () => {
 
   return (
     <div className="flex h-screen font-sans relative">
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50`}>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
         <button className="bg-green-500 text-white py-2 px-4 rounded mb-5">New Chat</button>
         <div className="mb-5">
           <ButtonAccount />
           <span className="block mt-3 mb-3">You have used 2 of 3 free chats.</span>
           <button className="bg-orange-500 text-white py-2 px-4 rounded">Upgrade for less than $10 / month</button>
         </div>
-        <div className="mb-5 flex flex-col">
+        <div className="mb-3 flex flex-col">
           <h4 className="mb-2">Previous Chats</h4>
-          {allThreads?.map((item, idx) => (
+          {paginatedThreads.data?.map((item, idx) => (
             <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center">{item?.title}</button>
           ))}
         </div>
-        <div>
+        <button className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center bg-white"
+        disabled={!paginatedThreads.nextPage}
+        onClick={() => {
+          paginatedThreads.nextPage && getThreadsPaginated(paginatedThreads.nextPage,allThreads);
+        }}>
+          Load more
+        </button>
+        {/* <div>
           <h4 className="mb-2">Docs</h4>
-          {/* Docs items here */}
-        </div>
+        </div> */}
       </aside>
 
       {/* Overlay for small screens */}
