@@ -4,7 +4,6 @@ import { signIn } from "next-auth/react";
 import config from "@/config";
 
 const baseURL = process.env.BASE_URL ? `${process.env.BASE_URL}/call` : 'https://www.birdieapp.co/call';
-console.log('Base URL:', baseURL); // Debugging line
 
 const apiClient = axios.create({
   baseURL: baseURL,
@@ -20,7 +19,6 @@ apiClient.createUrl = function(endpoint) {
   }
   
   const baseUrl = this.defaults.baseURL; // Use the baseURL from the axios instance
-  console.log('Base URL in createUrl:', baseUrl); // Debugging line
   
   return `${baseUrl.replace(/\/$/, '')}/${endpoint}`;
 };
