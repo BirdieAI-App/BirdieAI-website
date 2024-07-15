@@ -2,7 +2,7 @@ import apiClient from "./api";
 
 export const sendGoogleIDToken = async function (token) {
     const apiUrl = apiClient.createUrl('/auth/google');
-    console.log(apiUrl);
+    // console.log(apiUrl);
     const response = await apiClient.post(apiUrl, token);
     return response;
 }
@@ -22,5 +22,11 @@ export const postUser = async function (payload) {
 export const SignInByCredentials = async function (payload) {
     const apiUrl = apiClient.createUrl('/auth/login');
     const response = await apiClient.post(apiUrl, payload);
+    return response;
+}
+
+export const getAllThreadsByUser = async function (userId) {
+    const apiUrl = apiClient.createUrl(`/threads/u/${userId}`);
+    const response = await apiClient.get(apiUrl);
     return response;
 }
