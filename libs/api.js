@@ -3,10 +3,11 @@ import { toast } from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import config from "@/config";
 
-// use this to interact with our own API (/app/api folder) from the front-end side
-// See https://shipfa.st/docs/tutorials/api-call
+const baseURL = process.env.BASE_URL ? `${process.env.BASE_URL}/call` : 'https://www.birdieapp.co/call';
+console.log('Base URL:', baseURL); // Debugging line
+
 const apiClient = axios.create({
-  baseURL: process.env.BASE_URL+"/call" || 'https://www.birdieapp.co/call',
+  baseURL: baseURL,
   headers: {
     'Content-Type': 'application/json'
   }
@@ -14,10 +15,13 @@ const apiClient = axios.create({
 
 // Add the createUrl method to the apiClient
 apiClient.createUrl = function(endpoint) {
-  const baseUrl = this.defaults.baseURL; // Use the baseURL from the axios instance
   if (!endpoint) {
     throw new Error('Endpoint must be provided');
   }
+  
+  const baseUrl = this.defaults.baseURL; // Use the baseURL from the axios instance
+  console.log('Base URL in createUrl:', baseUrl); // Debugging line
+  
   return `${baseUrl.replace(/\/$/, '')}/${endpoint}`;
 };
 
