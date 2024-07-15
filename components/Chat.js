@@ -17,10 +17,9 @@ const Chat = () => {
 
   const router = useRouter();
   const suggestions = [
-    "I have a specific question about my medical condition related to nutrition",
-    "I have a specific question about my medical condition related to nutrition",
-    "I have a specific question about my medical condition related to nutrition",
-    "I have a specific question about my medical condition related to nutrition",
+    "Diet guideline for pregnancy",
+    "Diet guideline for postpartum and breast feeding",
+    "Diet guidelines for infants",
   ];
 
   const getThreads = async (userId) => {
@@ -41,7 +40,7 @@ const Chat = () => {
       // console.log(threads);
       setPaginatedThreads(previousResponse => {
         if (previousResponse === null) {
-            return threads;
+          return threads;
         }
         return { data: [...previousResponse.data, ...threads.data], nextPage: threads.nextPage }
       })
@@ -141,12 +140,12 @@ const Chat = () => {
         <header className="mb-5">
           <h1 className="text-center">How can I help you?</h1>
         </header>
-        <div className="flex flex-col flex-1 items-center">
+        <div className="flex flex-col flex-1 items-center w-full">
           {suggestions?.map((item, idx) => (
-            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center">{item}</button>
+            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center w-1/3">{item}</button>
           ))}
         </div>
-        <div className="flex items-center mt-5 w-full md:w-3/4 lg:w-1/2">
+        <div className="flex items-center mt-5 w-full md:w-3/4 lg:w-3/2">
           <input
             type="text"
             value={userInput}
@@ -158,7 +157,7 @@ const Chat = () => {
         </div>
         <footer className="mt-auto text-center text-gray-600 text-sm py-5">
           <span>
-            Birdie has a library of document templates for you to use! Just click the ☰ button or add your own custom templates.
+          Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline. Please consult the  healthcare providers for medical advice.
           </span>
         </footer>
       </main>
