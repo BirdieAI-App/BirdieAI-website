@@ -42,9 +42,11 @@ app.use((req, res, next) => {
 //   };
 
 app.use((req, res, next) => {
-	res.header('Access-Control-Allow-Origin', '*');
-	next();
-  });
+    res.header('Access-Control-Allow-Origin', 'https://www.birdieapp.co');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization,Origin');
+    next();
+});
 
 app.use(cors());
 
