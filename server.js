@@ -11,6 +11,9 @@ const authRoute = require('./backend/routes/authRoute.js');
 const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js');
 
+const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
+console.log(corsOrigin);
+
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, './.env') });
 
@@ -31,7 +34,7 @@ app.use((req, res, next) => {
 
 // CORS middleware
 const corsOptions = {
-	origin: '*', // Ensure this environment variable is set
+	origin: corsOrigin, // Ensure this environment variable is set
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
 	credentials: true,
