@@ -27,6 +27,7 @@ export const SignInByCredentials = async function (payload) {
 
 export const getAllThreadsByUser = async function (userId) {
     const apiUrl = apiClient.createUrl(`/threads/u/${userId}`);
+    console.log(apiUrl);
     const response = await apiClient.get(apiUrl);
     return response;
 }
