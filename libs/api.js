@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import config from "@/config";
 
-const baseURL = process.env.BASE_URL ? `${process.env.BASE_URL}/call` : 'https://www.birdieapp.co/call';
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/call` : 'https://www.birdieapp.co/call';
 console.log('Base URL:', baseURL); // Debugging line
 
 const apiClient = axios.create({

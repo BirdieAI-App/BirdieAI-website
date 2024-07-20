@@ -37,7 +37,7 @@ const Chat = () => {
   const getThreadsPaginated = async (page, data) => {
     try {
       const threads = await getAllThreadsByUserPaginated(page, data);
-      // console.log(threads);
+      console.log(threads);
       setPaginatedThreads(previousResponse => {
         if (previousResponse === null) {
           return threads;
