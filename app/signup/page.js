@@ -4,6 +4,8 @@ import { useSignUp } from "@/hooks/useSignUp";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getProviders, signIn } from 'next-auth/react';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Signup() {
     const {setEmail, setPassword, submitHandler, email, password} = useSignUp();
@@ -86,6 +88,7 @@ export default function Signup() {
                                 </span>
                             </p>
                         </form>
+                        <ToastContainer />
                     </div>
                 </div>
             </div>
