@@ -42,7 +42,7 @@ export const useSignUp = function () {
 
     try {
       const response = await postUser({ accountData: { email, password } });
-      console.log(response);
+      // console.log(response);
       const result = await signIn('credentials', {
         redirect: true,
         email,
@@ -51,8 +51,13 @@ export const useSignUp = function () {
 
       console.log(result);
     } catch (err) {
-      console.log(err);
-      toast.error('Sign up failed. Please try again.');
+      // console.log(err);
+      // toast.error('Sign up failed. Please try again.');
+      if (err.response && err.response.status === 400) {
+        toast.error('The email you entered is already in use. Please try with a different email.');
+      } else {
+        toast.error('Sign up failed. Please try again.');
+      }
     }
   };
 

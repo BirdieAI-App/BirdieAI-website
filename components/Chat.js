@@ -80,6 +80,7 @@ const Chat = () => {
 
   // console.log(allThreads);
   // console.log(paginatedThreads);
+  // console.log(userId);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -102,11 +103,13 @@ const Chat = () => {
   return (
     <div className="flex flex-col h-screen font-sans relative">
       <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
-        <button className="bg-green-500 text-white py-2 px-4 rounded-lg mb-5">New Chat</button>
+        <button className="bg-green-500 text-white py-2 px-4 rounded-lg mb-5"
+        onClick={() => window.location.reload()}
+        >New Chat</button>
         <div className="mb-5">
           <ButtonAccount />
           <span className="block mt-3 mb-3">You have used 2 of 3 free chats.</span>
-          <button className="bg-orange-500 text-white py-2 px-4 rounded">Upgrade for less than $10 / month</button>
+          <button className="bg-orange-500 text-white py-2 px-4 rounded" onClick={() => router.push('/plans')}>Upgrade for less than $10 / month</button>
         </div>
         <div className="mb-3 flex flex-col">
           <h4 className={`mb-2 ${(allThreads.length > 5) ? "" : "hidden"}`}>Previous Chats</h4>
@@ -133,7 +136,7 @@ const Chat = () => {
 
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         <div className="flex justify-center mb-5">
-          <img className="h-20 w-20" src="../icon.png" alt="Birdie Logo" />
+          <img className="h-20 w-20" src="/icon.png" alt="" />
         </div>
         <header className="mb-5">
           <h1 className="text-center">How can I help you?</h1>
