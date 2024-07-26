@@ -109,12 +109,12 @@ const Chat = () => {
         <div className="mb-5">
           <ButtonAccount />
           <span className="block mt-3 mb-3">You have used 2 of 3 free chats.</span>
-          <button className="bg-orange-500 text-white py-2 px-4 rounded" onClick={() => router.push('/plans')}>Upgrade for less than $10 / month</button>
+          <button className="bg-orange-500 text-white py-2 px-4 rounded-lg" onClick={() => router.push('/plans')}>Upgrade for less than $10 / month</button>
         </div>
         <div className="mb-3 flex flex-col">
           <h4 className={`mb-2 ${(allThreads.length > 5) ? "" : "hidden"}`}>Previous Chats</h4>
           {paginatedThreads.data?.map((item, idx) => (
-            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center">{item?.title}</button>
+            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded-lg mb-3 text-center">{item?.title}</button>
           ))}
         </div>
         <button className={`text-white py-3 px-2 rounded-lg mb-3 text-center bg-green-500 ${((allThreads.length < 5) || (paginatedThreads.nextPage === null)) ? "hidden" : ""}`}
@@ -152,13 +152,15 @@ const Chat = () => {
             value={userInput}
             onChange={handleInputChange}
             placeholder="Enter your text here"
-            className="flex-1 py-2 px-3 border border-gray-300 rounded mr-3"
+            className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3"
           />
-          <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-4 rounded">Submit</button>
+          <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-2 rounded-lg">Submit</button>
         </div>
         <footer className="mt-auto text-center text-gray-600 text-sm py-5">
-          <span>
-            Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline. Please consult the healthcare providers for medical advice.
+          <span className="disclaimer-text">
+            Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
+            <br />
+            Please consult the healthcare providers for medical advice.
           </span>
         </footer>
       </main>

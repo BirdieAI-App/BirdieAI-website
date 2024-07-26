@@ -59,9 +59,9 @@ export default function SignIn() {
     };
 
     return (
-        <section className="bg-gray-50 dark:bg-gray-900">
+        <section className="bg-gray-50">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
+                <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Sign in to your account</h1>
                         {providers.google && (
@@ -73,7 +73,7 @@ export default function SignIn() {
                             
                         )}
                         <div className="inline-flex items-center justify-center w-full">
-                            <hr className="w-full h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>
+                            <hr className="w-full h-px my-8 bg-gray-200 border-0"/>
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
                         </div>
                         {providers.credentials && (
@@ -83,7 +83,10 @@ export default function SignIn() {
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
                                     <div className="mt-2">
-                                        <input id="email" name="email" type="email" autoComplete="email" required className="pl-2 bg-white block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                        <input id="email" name="email" type="email" autoComplete="email" 
+                                        required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
+                                        placeholder="name@company.com"
+                                        />
                                     </div>
                                 </div>
 
@@ -91,11 +94,14 @@ export default function SignIn() {
                                     <div className="flex items-center justify-between">
                                         <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Password</label>
                                         <div className="text-sm">
-                                            <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+                                            <Link href="/forgot-password" className="font-semibold text-indigo-600 hover:text-indigo-500">Forgot password?</Link>
                                         </div>
                                     </div>
                                     <div className="mt-2">
-                                        <input id="password" name="password" type="password" autoComplete="current-password" required className="pl-2 bg-white block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                                        <input id="password" name="password" type="password" autoComplete="current-password" 
+                                        required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" 
+                                        placeholder="••••••••"
+                                        />
                                     </div>
                                 </div>
                                 <div>
