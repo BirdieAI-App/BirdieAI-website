@@ -18,60 +18,35 @@ const config = {
     // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
     plans: [
       {
-        // REQUIRED — we use this to find the plan in the webhook (for instance if you want to update the user's credits based on the plan)
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1Niyy5AxyNprDp7iZIqEyD2h"
-            : "price_456",
-        //  REQUIRED - Name of the plan, displayed on the pricing page
+        priceId:"",
         name: "Try Birdie for Free",
-        // A friendly description of the plan, displayed on the pricing page. Tip: explain why this plan and not others
         description: "",
-        // The price you want to display, the one user will be charged on Stripe.
         price: 0,
-        // If you have an anchor price (i.e. $29) that you want to display crossed out, put it here. Otherwise, leave it empty
-        //priceAnchor: ,
         features: [
-          {
-            name: "3 conversations with AI Diet Coach",
-          },
+          { name: "3 conversations with AI Diet Coach" },
           { name: "Personalized Meal plan" },
-          //{ name: "Weekly nutrition newsletter" },
-          //{ name: "Emails" },
         ],
       },
       {
-        priceId:
-        process.env.NODE_ENV === "development"
-          ? "price_1O5KtcAxyNprDp7iftKnrrpw"
-          : "price_456",
-      name: "",
-      description: "One-day Pass",
-      price: 5,
-      //priceAnchor: 149,
-      features: [
+        priceId:"",
+        name: "",
+        description: "One-day Pass",
+        price: 5,
+        features: [
 
-        { name: "Unlimited questions with AI Diet Coach for 24 hours" },
-        { name: "Personalized Meal plan" },
-      ],  
+          { name: "Unlimited questions with AI Diet Coach for 24 hours" },
+          { name: "Personalized Meal plan" },
+        ],  
       },
       {
-        // This plan will look different on the pricing page, it will be highlighted. You can only have one plan with isFeatured: true
         isFeatured: true,
-        priceId:
-          process.env.NODE_ENV === "development"
-            ? "price_1O5KtcAxyNprDp7iftKnrrpw"
-            : "price_456",
+        priceId:"",
         name: "",
         description: "Better Nutrition Planning",
         price: 10,
-        //priceAnchor: 149,
         features: [
-  
           { name: "Unlimited questions with AI Diet Coach" },
           { name: "Personalized Meal plan" },
-          { name: "Weekly nutrition newsletter" },
-          { name: "Weekly research updates" },
           { name: "24/7 support" },
         ],
       },
