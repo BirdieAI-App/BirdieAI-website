@@ -28,7 +28,7 @@ const config = {
         ],
       },
       {
-        priceId:"",
+        priceId:"price_1PcwSaAsroNx812F2wqMXixn",
         name: "",
         description: "One-day Pass",
         price: 5,
@@ -40,7 +40,7 @@ const config = {
       },
       {
         isFeatured: true,
-        priceId:"",
+        priceId:"price_1PcwV3AsroNx812FhEz7ZPSp",
         name: "",
         description: "Better Nutrition Planning",
         price: 10,
