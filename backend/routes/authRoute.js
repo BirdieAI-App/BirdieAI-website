@@ -160,7 +160,13 @@ authRoute
 
 authRoute
   .post('/auth/send-verification-email', async (req, res) => {
-    const { email, userId } = req.body;
+    const { email } = req.body;
+    const thisUser = await User.findOne({ "accountData.email": email });
+    let userId = '';
+
+    if (thisUser) {
+      userId = thisUser._id;
+    }
 
     if (!email || !userId) {
       return res.status(400).send('Email and User ID are required');
@@ -175,9 +181,11 @@ authRoute
 });
 
 authRoute
-  .get('/auth/verify-email', async (req,res) => {
+  .post('/auth/verify-email', async (req,res) => {
     
-    const {email,verificationCode} = req.body;
+    const { email,verificationCode } = req.body;
+    // console.log(email);
+    // console.log(verificationCode);
 
     try {
       const isValid = await verifyCode(email, verificationCode);

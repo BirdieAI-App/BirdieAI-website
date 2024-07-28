@@ -1,12 +1,13 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { sendEmail } from "@/libs/request";
+import { sendCode, sendEmail } from "@/libs/request";
 
-export const useVerification = function() {
+export const useVerification = () => {
     const [verifiedEmail, setVerifiedEmail] = useState('');
-    const [verificationCode, setVerificationCode] = useState('');
+    // const [verificationCode, setVerificationCode] = useState('');
     const [loading, setLoading] = useState(false);
-    const [popup,setPopup] = useState(0);
+    const [popup, setPopup] = useState(0);
+    const router = useRouter();
 
     const handleSubmitEmail = async (event) => {
         event.preventDefault();
@@ -17,31 +18,42 @@ export const useVerification = function() {
         const email = formData.get('email');
         setVerifiedEmail(email);
 
-        const response = await sendEmail({email, userId: "66a480484dec7af6a9221585"});
-        console.log(response);
+        try {
+            const response = await sendEmail({ email });
+            console.log(response);
 
-        setTimeout(() => 
-        {
+            setTimeout(() => {
+                setLoading(false);
+                setPopup(1);
+            }, 3000);
+        } catch (err) {
+            console.error(err);
             setLoading(false);
-            setPopup(1);
-        },3000);
-
-
-        // if (res.error) {
-        //     toast.error('The email you entered does not exist. Please try with a different email.');
-        // } else {
-        //     router.push("/chat");
-        // }
+        }
     };
 
-    const handleChange = (e) => {
-        setVerificationCode(e.target.value);
+    const handleSubmitCode = async (event) => {
+        event.preventDefault();
+
+        setLoading(true);
+        const formData = new FormData(event.target);
+        const verificationCode = formData.get('verification-code');
+        // const email = formData.get('email');
+        // console.log({email: verifiedEmail, verificationCode});
+
+        try {
+            const response = await sendCode({ email: verifiedEmail,verificationCode });
+            console.log(response);
+
+            setTimeout(() => {
+                setLoading(false);
+                // router.push('/chat');
+            }, 3000);
+        } catch (err) {
+            console.error(err);
+            setLoading(false);
+        }
     };
 
-    const handleSubmitCode = () => {}
-
-    console.log(verifiedEmail);
-
-    return {verificationCode, verifiedEmail, setVerifiedEmail, setVerificationCode, handleSubmitEmail, 
-            handleChange, popup, setPopup, handleSubmitCode,loading}
-}
+    return { verifiedEmail, setVerifiedEmail, handleSubmitEmail, popup, setPopup, handleSubmitCode, loading };
+};

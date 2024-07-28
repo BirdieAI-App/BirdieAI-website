@@ -14,7 +14,6 @@ export default function ForgotPassword() {
         loading,
         popup,
         verificationCode,
-        handleChange,
         setPopup,
         handleSubmitCode
     } = useVerification();
@@ -70,15 +69,15 @@ export default function ForgotPassword() {
                         <input
                             type="text"
                             id="verification-code"
+                            name="verification-code"
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm"
-                            value={verificationCode}
-                            onChange={handleChange}
                         />
                         <button
                             type="submit"
                             className="mt-4 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
+                            disabled={loading}
                         >
-                            Verify
+                            {loading ? "Verifying code..." : "Verify code"}
                         </button>
                     </form>
                     <div className="text-center">
@@ -97,5 +96,5 @@ export default function ForgotPassword() {
                 </div>
             )}
         </section>
-    )
+    );
 }
