@@ -33,31 +33,25 @@ apiClient.interceptors.response.use(
     let message = "";
 
     if (error.response?.status === 401) {
-      // User not auth, ask to re login
-      toast.error("Please login");
-      // automatically redirect to /dashboard page after login
-      return signIn(undefined, { callbackUrl: config.auth.callbackUrl });
+      // User not auth, ask to re-login
+      message = error?.response?.data || "Please login";
+      signIn(undefined, { callbackUrl: config.auth.callbackUrl });
     } else if (error.response?.status === 403) {
       // User not authorized, must subscribe/purchase/pick a plan
       message = "Pick a plan to use this feature";
     } else {
-      message =
-        error?.response?.data?.error || error.message || error.toString();
+      message = error?.response?.data?.error || error.message || error.toString();
     }
 
-    error.message =
-      typeof message === "string" ? message : JSON.stringify(message);
+    error.message = typeof message === "string" ? message : JSON.stringify(message);
 
-    console.error(error.message);
-
-    // Automatically display errors to the user
-    if (error.message) {
-      // toast.error(error.message);
-      console.log(error.message);
-    } else {
-      toast.error("something went wrong...");
-    }
-    return Promise.reject(error);
+    // Attach additional information to the error object
+    return Promise.reject({
+      message: error.message,
+      status: error.response?.status,
+      ok: false,
+      url: error.config.url
+    });
   }
 );
 

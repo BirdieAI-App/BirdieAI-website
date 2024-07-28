@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { toast } from "react-toastify";
+
 export const THREADS_PER_PAGE = 5;
 
 export const getAllThreadsByUserPaginated = async function (page, data) {
@@ -15,5 +18,26 @@ export const getAllThreadsByUserPaginated = async function (page, data) {
     return {
         nextPage,
         data: data.slice(start, end),
+    }
+}
+
+const zObject = z.object({
+    email: z.string().email('Invalid email'),
+    password: z.string().min(8, 'Password must contain at least 8 characters'),
+});
+
+const toastConfig = {
+    autoClose: 6000, // Close after 6 seconds
+};
+
+export const validateData = (payload) => {
+    try {
+        zObject.parse(payload);
+        return true;
+    } catch (error) {
+        error.errors.forEach(err => {
+            toast.error(err.message, toastConfig);
+        });
+        return false;
     }
 }

@@ -7,6 +7,7 @@ import { getCsrfToken } from "next-auth/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
+import { validateData } from '@/libs/util';
 
 export default function SignIn() {
     const [providers, setProviders] = useState(null);
@@ -43,18 +44,28 @@ export default function SignIn() {
         const email = formData.get('email');
         const password = formData.get('password');
 
+        if (!validateData({email,password})) {
+            setTimeout(setLoading(false),500);
+            return;
+        }
+
         const res = await signIn('credentials', {
             redirect: false,
             email,
             password
         });
 
-        setLoading(false);
+        // console.log(res);
 
         if (res.error) {
-            toast.error('The email you entered does not exist. Please try with a different email.');
+            const err = JSON.parse(res.error);
+            toast.error(err?.message|| "An error occurred");
+            setLoading(false);
         } else {
-            router.push("/chat");
+            setTimeout(() => {
+                setLoading(false);
+                router.push("/chat");
+            }, 2000);
         }
     };
 

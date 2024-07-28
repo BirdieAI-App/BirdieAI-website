@@ -40,8 +40,8 @@ export const authOptions = {
             return null;
           }
         } catch (err) {
-          console.log("Error in authorize:", err);
-          return null;
+          throw new Error(JSON.stringify(err));
+          // return null;
         }
       },
     }),
