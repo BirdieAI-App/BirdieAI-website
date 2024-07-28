@@ -10,43 +10,70 @@ const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const VerificationCode = require('../models/VerificationCode');
 
-// Configure the SMTP transporter
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Use your preferred email service
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: "birdieai.dev@gmail.com",
-    pass: "Birdie2024+",
-  },
-});
+/* utils */
+async function sendVerificationEmail(toEmail,code) {
+  const fromEmail = 'dev@birdieapp.co';
+  const password = "cigd bcje kxdd stbn"; // Use an app-specific password if you have 2FA enabled
+  const subject = `${code} is your verification code`;
+  const message = `Verification Code\n\nEnter the following verification code when prompted:\n\n${code}\n\nTo protect your account, do not share this code.`
 
-// utils
-const sendVerificationEmail = async function (email, userId) {
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-  const baseURL = process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/call` : 'https://www.birdieapp.co/call';
-  const verificationLink = `${baseURL}/auth/verify-email?token=${token}`;
-  console.log(verificationLink);
+  // Create a transporter
+  let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+          user: fromEmail,
+          pass: password // App-specific password or your Gmail password
+      }
+  });
 
-  const mailOptions = {
-    from: "birdieai.dev@gmail.com",
-    to: "ong_t1@denison.edu",
-    subject: 'Email Verification',
-    html: `<p>Please verify your email by clicking the following link: <a href="${verificationLink}">Verify Email</a></p>`,
+  // Email options
+  let mailOptions = {
+      from: fromEmail,
+      to: toEmail,
+      subject: subject,
+      text: message
   };
 
+  console.log("Start sending email...")
+
+  // Send email
   try {
-    await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        return console.log(error);
-      }
+      let info = await transporter.sendMail(mailOptions);
       console.log('Email sent: ' + info.response);
-    });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+      console.error('Error sending email: ', error);
   }
+}
+
+/* utils */
+function generateVerificationCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+/* save code to VerificationCode database */
+async function saveVerificationCode(email, code) {
+  const generatedAt = Date.now();
+  const expiredAt = new Date(Date.now() + 10 * 60 * 1000); // Code expires in 10 minutes
+  const verificationCode = new VerificationCode({ email, code, expiredAt, generatedAt });
+  await verificationCode.save();
+}
+
+/* verify code */
+async function verifyCode(email, code) {
+  const record = await VerificationCode.findOne({ email, code });
+
+  if (!record) {
+    throw new Error('Invalid code');
+  }
+
+  if (new Date() > record.expiresAt) {
+    throw new Error('Code has expired');
+  }
+
+  // Code is valid
+  return true;
 }
 
 authRoute.get('/auth/logout', (req, res) => {
@@ -139,29 +166,44 @@ authRoute
       return res.status(400).send('Email and User ID are required');
     }
 
-    sendVerificationEmail(email, userId);
+    // sendVerificationEmail(email, userId);
+    const verificationCode = generateVerificationCode();
+    await saveVerificationCode(email,verificationCode);
+    await sendVerificationEmail(email,verificationCode);
 
-    res.send('Verification email sent');
+    res.status(200).send('Verification email sent');
 });
 
 authRoute
   .get('/auth/verify-email', async (req,res) => {
-    const token = req.query.token;
+    
+    const {email,verificationCode} = req.body;
 
-    if (!token) {
-      return res.status(400).send('Verification token is missing');
+    try {
+      const isValid = await verifyCode(email, verificationCode);
+      if (isValid) {
+        res.status(200).send('Code is valid');
+        // Proceed with user verification
+      }
+    } catch (error) {
+      res.status(401).send(error.message);
+      // Handle error (e.g., send an error response to the user)
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(400).send('Invalid or expired token');
-      }
+    // if (!token) {
+    //   return res.status(400).send('Verification code is missing');
+    // }
 
-      // Activate the user's account, e.g., update the user record in the database
-      console.log('User verified:', decoded.userId);
+    // jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    //   if (err) {
+    //     return res.status(400).send('Invalid or expired token');
+    //   }
 
-      res.send('Email successfully verified');
-    });
+    //   // Activate the user's account, e.g., update the user record in the database
+    //   console.log('User verified:', decoded.userId);
+
+    //   res.send('Email successfully verified');
+    // });
 });
 
 

@@ -6,7 +6,6 @@ export const useVerification = function() {
     const [verifiedEmail, setVerifiedEmail] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
     const [loading, setLoading] = useState(false);
-    const router = useRouter();
     const [popup,setPopup] = useState(0);
 
     const handleSubmitEmail = async (event) => {
@@ -19,7 +18,7 @@ export const useVerification = function() {
         setVerifiedEmail(email);
 
         const response = await sendEmail({email, userId: "66a480484dec7af6a9221585"});
-        // console.log(response);
+        console.log(response);
 
         setTimeout(() => 
         {
@@ -39,11 +38,10 @@ export const useVerification = function() {
         setVerificationCode(e.target.value);
     };
 
-    const handleSubmitCode = async(e) => {
-        
-    }
+    const handleSubmitCode = () => {}
 
     console.log(verifiedEmail);
 
-    return {verificationCode, verifiedEmail, setVerifiedEmail, setVerificationCode, handleSubmitEmail, handleChange, popup, setPopup, handleSubmitCode,loading}
+    return {verificationCode, verifiedEmail, setVerifiedEmail, setVerificationCode, handleSubmitEmail, 
+            handleChange, popup, setPopup, handleSubmitCode,loading}
 }
