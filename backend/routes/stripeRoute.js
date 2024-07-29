@@ -44,7 +44,6 @@ stripeRoute.post('/stripe/create-checkout', async(req,res)=>{
         };
         const extraParameter = {
             allow_promotion_codes: true,
-            billing_address_collection: 'required',
             consent_collection: {
                 terms_of_service: 'required'
             },
