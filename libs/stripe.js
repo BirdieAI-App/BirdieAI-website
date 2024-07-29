@@ -1,57 +1,59 @@
 import Stripe from "stripe";
+import User from "../backend/models/User.js"
+
 
 // This is used to create a Stripe Checkout for one-time payments. It's usually triggered with the <ButtonCheckout /> component. Webhooks are used to update the user's state in the database.
-export const createCheckout = async ({
-  priceId,
-  mode,
-  successUrl,
-  cancelUrl,
-  couponId,
-  clientReferenceId,
-  user,
-}) => {
+export const createCheckout = async ({ priceId, successUrl, cancelUrl, clientReferenceID, email}) => {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  console.log(clientReferenceID)
+  const dbUser = await User.findById(clientReferenceID);
+  console.log(dbUser)
+  
+  
 
-  const extraParams = {};
 
-  if (user?.customerId) {
-    extraParams.customer = user.customerId;
-  } else {
-    if (mode === "payment") {
-      extraParams.customer_creation = "always";
-      // The option below costs 0.4% (up to $2) per invoice. Alternatively, you can use https://zenvoice.io/ to create unlimited invoices automatically.
-      // extraParams.invoice_creation = { enabled: true };
-      extraParams.payment_intent_data = { setup_future_usage: "on_session" };
-    }
-    if (user?.email) {
-      extraParams.customer_email = user.email;
-    }
-    extraParams.tax_id_collection = { enabled: true };
-  }
+  
+  return "https://www.google.com"
+  // const extraParams = {};
 
-  const stripeSession = await stripe.checkout.sessions.create({
-    mode,
-    allow_promotion_codes: true,
-    client_reference_id: clientReferenceId,
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    discounts: couponId
-      ? [
-          {
-            coupon: couponId,
-          },
-        ]
-      : [],
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    ...extraParams,
-  });
+  // if (user?.customerId) {
+  //   extraParams.customer = user.customerId;
+  // } else {
+  //   if (mode === "payment") {
+  //     extraParams.customer_creation = "always";
+  //     // The option below costs 0.4% (up to $2) per invoice. Alternatively, you can use https://zenvoice.io/ to create unlimited invoices automatically.
+  //     // extraParams.invoice_creation = { enabled: true };
+  //     extraParams.payment_intent_data = { setup_future_usage: "on_session" };
+  //   }
+  //   if (user?.email) {
+  //     extraParams.customer_email = user.email;
+  //   }
+  //   extraParams.tax_id_collection = { enabled: true };
+  // }
 
-  return stripeSession.url;
+  // const stripeSession = await stripe.checkout.sessions.create({
+  //   mode,
+  //   allow_promotion_codes: true,
+  //   client_reference_id: clientReferenceId,
+  //   line_items: [
+  //     {
+  //       price: priceId,
+  //       quantity: 1,
+  //     },
+  //   ],
+  //   discounts: couponId
+  //     ? [
+  //         {
+  //           coupon: couponId,
+  //         },
+  //       ]
+  //     : [],
+  //   success_url: successUrl,
+  //   cancel_url: cancelUrl,
+  //   ...extraParams,
+  // });
+
+  // return stripeSession.url;
 };
 
 // This is used to create Customer Portal sessions, so users can manage their subscriptions (payment methods, cancel, etc..)

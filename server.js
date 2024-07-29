@@ -10,6 +10,7 @@ const userRoute = require('./backend/routes/UserRoute.js');
 const authRoute = require('./backend/routes/authRoute.js');
 const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js');
+const stripeRoute = require('./backend/routes/stripeRoute.js');
 
 const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
 console.log(corsOrigin);
@@ -60,6 +61,7 @@ app.use('/call', userRoute)
 app.use('/call', authRoute)
 app.use('/call', threadRoute)
 app.use('/call', messageRoute)
+app.use('/call' , stripeRoute)
 
 // app.listen(port, () => {
 // 	console.log(`Server is running on port ${port}`);

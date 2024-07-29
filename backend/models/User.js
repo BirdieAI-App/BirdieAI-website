@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
         password:String
     },
     profileData:{
+        stripeCustomerId: String,
         firstName: String,
         lastName: String,
         DOB: Date,
