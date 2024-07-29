@@ -2,6 +2,7 @@ import GoogleProvider from "next-auth/providers/google";
 import config from "@/config";
 import { sendGoogleIDToken, SignInByCredentials } from "./request";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { sendCode } from "./request";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -27,22 +28,36 @@ export const authOptions = {
       credentials: {
         email: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
+        verificationCode: { label: "Verification Code", type: "text", placeholder: "***" },
       },
       async authorize(credentials, req) {
-        const { email, password } = credentials;
+        const { email, password, verificationCode } = credentials;
         let user = { email, password };
+        // console.log(email);
+        // console.log(password);
+        // console.log(verificationCode);
+
         try {
-          const response = await SignInByCredentials(user);
+          // Attempt sign-in with email and password
+          let response = await SignInByCredentials(user);
           if (response) {
             user.userId = response._id;
             return user;
-          } else {
-            return null;
           }
         } catch (err) {
-          throw new Error(JSON.stringify(err));
-          // return null;
+          console.log('Error during authorization:', err);
+          // If sign-in fails, attempt verification code sign-in
+          response = await sendCode({ email, verificationCode });
+          // console.log(response);
+          if (response) {
+            // console.log(response);
+            user.userId = response._id;
+            return user;
+          } else {
+            console.log('Both methods fail!');
+          }
         }
+        return null;
       },
     }),
   ],

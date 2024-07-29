@@ -5,6 +5,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { useVerification } from '@/hooks/useVerification';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
+import { getCsrfToken } from 'next-auth/react';
+import { getProviders } from 'next-auth/react';
 
 export default function ForgotPassword() {
     const router = useRouter();
@@ -15,8 +19,37 @@ export default function ForgotPassword() {
         popup,
         verificationCode,
         setPopup,
-        handleSubmitCode
+        handleSubmitCode,
+        validResponse,
+        setValidResponse
     } = useVerification();
+    const { data: session, status } = useSession();
+    const [providers, setProviders] = useState(null);
+    const [csrfToken, setCsrfToken] = useState("");
+
+    useEffect(() => {
+        if (session && session.user) console.log(session.user.userId);
+    }, [session])
+
+    useEffect(() => {
+        async function fetchProviders() {
+            const res = await getProviders();
+            setProviders(res);
+            // console.log(res);
+        }
+
+        const fetchCsrfToken = async () => {
+            const token = await getCsrfToken();
+            setCsrfToken(token);
+        };
+          
+        fetchCsrfToken();
+        fetchProviders();
+    }, []);
+
+    if (!providers) {
+        return <div>Loading...</div>;
+    } 
 
     return (
         <section className="flex flex-col items-center justify-center bg-gray-50 mx-auto md:h-screen">
@@ -64,7 +97,9 @@ export default function ForgotPassword() {
                             Edit
                         </button>
                     </div>
-                    <form onSubmit={handleSubmitCode} className="mb-4 mt-10">
+                    {providers.credentials && (
+                    <form onSubmit={handleSubmitCode} method="post" className="mb-4 mt-10">
+                        <input name="csrfToken" type="hidden" defaultValue={csrfToken}/>
                         <label htmlFor="verification-code" className="block text-sm font-bold text-gray-700">Verification code</label>
                         <input
                             type="text"
@@ -79,7 +114,7 @@ export default function ForgotPassword() {
                         >
                             {loading ? "Verifying code..." : "Verify code"}
                         </button>
-                    </form>
+                    </form>)}
                     <div className="text-center">
                         <button
                             onClick={() => setPopup(0)}

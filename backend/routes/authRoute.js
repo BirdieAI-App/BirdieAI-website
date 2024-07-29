@@ -184,13 +184,15 @@ authRoute
   .post('/auth/verify-email', async (req,res) => {
     
     const { email,verificationCode } = req.body;
-    // console.log(email);
-    // console.log(verificationCode);
+    const thisUser = await User.findOne({ "accountData.email": email });
+    console.log(email);
+    console.log(verificationCode);
 
     try {
       const isValid = await verifyCode(email, verificationCode);
+      // console.log(isValid);
       if (isValid) {
-        res.status(200).send('Code is valid');
+        res.status(200).send({email: email,userId: thisUser?._id});
         // Proceed with user verification
       }
     } catch (error) {

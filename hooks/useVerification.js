@@ -1,12 +1,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { sendCode, sendEmail } from "@/libs/request";
+import { getProviders, signIn } from 'next-auth/react';
 
 export const useVerification = () => {
     const [verifiedEmail, setVerifiedEmail] = useState('');
     // const [verificationCode, setVerificationCode] = useState('');
     const [loading, setLoading] = useState(false);
     const [popup, setPopup] = useState(0);
+    const [validResponse, setValidResponse] = useState(null);
     const router = useRouter();
 
     const handleSubmitEmail = async (event) => {
@@ -38,22 +40,29 @@ export const useVerification = () => {
         setLoading(true);
         const formData = new FormData(event.target);
         const verificationCode = formData.get('verification-code');
-        // const email = formData.get('email');
-        // console.log({email: verifiedEmail, verificationCode});
+        const email = verifiedEmail;
+        console.log(verificationCode);
 
         try {
-            const response = await sendCode({ email: verifiedEmail,verificationCode });
-            console.log(response);
+            const response = await signIn('credentials', {
+                redirect: false,
+                email,
+                verificationCode
+            });
+            // console.log(response);
 
             setTimeout(() => {
                 setLoading(false);
-                // router.push('/chat');
+                // Uncomment and modify the following lines if needed
+                router.push('/chat');
+                // setValidResponse(response);
             }, 3000);
         } catch (err) {
             console.error(err);
-            setLoading(false);
+            setLoading(false); // Ensure loading is stopped in case of error
         }
     };
 
-    return { verifiedEmail, setVerifiedEmail, handleSubmitEmail, popup, setPopup, handleSubmitCode, loading };
+    return { verifiedEmail, setVerifiedEmail, handleSubmitEmail, popup, setPopup, 
+        handleSubmitCode, loading, validResponse, setValidResponse };
 };
