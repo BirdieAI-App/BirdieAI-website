@@ -2,6 +2,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { sendCode, sendEmail } from "@/libs/request";
 import { getProviders, signIn } from 'next-auth/react';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const useVerification = () => {
     const [verifiedEmail, setVerifiedEmail] = useState('');
@@ -49,14 +50,20 @@ export const useVerification = () => {
                 email,
                 verificationCode
             });
-            // console.log(response);
+            console.log(response);
 
-            setTimeout(() => {
+            if (response.error) {
+                const err = JSON.parse(response.error);
+                console.log(err);
+                // toast.error(err?.message|| "An error occurred");
                 setLoading(false);
-                // Uncomment and modify the following lines if needed
-                router.push('/chat');
-                // setValidResponse(response);
-            }, 3000);
+            } else {
+                setTimeout(() => {
+                    setLoading(false);
+                    router.push("/chat");
+                }, 2000);
+            }
+
         } catch (err) {
             console.error(err);
             setLoading(false); // Ensure loading is stopped in case of error

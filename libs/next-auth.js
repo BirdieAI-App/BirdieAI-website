@@ -48,13 +48,13 @@ export const authOptions = {
           try {
             res = await sendCode({ email, verificationCode });
             if (res) {
-              console.log(res);
+              // console.log(res);
               user.userId = res.userId;
               return user;
             }
           } catch (err) {
-            console.log(err);
-            return null;
+            throw new Error(err);
+            // return null;
           }
         }
         // return null;
