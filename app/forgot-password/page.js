@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useRouter } from 'next/navigation';
 import { useVerification } from '@/hooks/useVerification';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
 import { getCsrfToken } from 'next-auth/react';
 import { getProviders } from 'next-auth/react';
@@ -23,13 +22,8 @@ export default function ForgotPassword() {
         validResponse,
         setValidResponse
     } = useVerification();
-    const { data: session, status } = useSession();
     const [providers, setProviders] = useState(null);
     const [csrfToken, setCsrfToken] = useState("");
-
-    useEffect(() => {
-        if (session && session.user) console.log(session.user.userId);
-    }, [session])
 
     useEffect(() => {
         async function fetchProviders() {

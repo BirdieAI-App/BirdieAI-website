@@ -66,7 +66,9 @@ const Chat = () => {
       router.push(config.auth.loginUrl);
       // console.log('a');
     }
-    if (session && session.user.userId) setUserId(session.user.userId);
+    if (session && session.user.userId) {
+      setUserId(session.user.userId);
+    }
 
   }, [session, status]);
 
@@ -81,6 +83,7 @@ const Chat = () => {
   // console.log(allThreads);
   // console.log(paginatedThreads);
   // console.log(userId);
+  // console.log(session);
 
   if (status === "loading") {
     return <p>Loading...</p>;

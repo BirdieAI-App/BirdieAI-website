@@ -33,31 +33,31 @@ export const authOptions = {
       async authorize(credentials, req) {
         const { email, password, verificationCode } = credentials;
         let user = { email, password };
-        // console.log(email);
-        // console.log(password);
-        // console.log(verificationCode);
-
+        let res;
         try {
           // Attempt sign-in with email and password
-          let response = await SignInByCredentials(user);
-          if (response) {
-            user.userId = response._id;
+          res = await SignInByCredentials({email,password});
+          if (res) {
+            // console.log(response);
+            user.userId = res._id;
             return user;
           }
         } catch (err) {
           console.log('Error during authorization:', err);
           // If sign-in fails, attempt verification code sign-in
-          response = await sendCode({ email, verificationCode });
-          // console.log(response);
-          if (response) {
-            // console.log(response);
-            user.userId = response._id;
-            return user;
-          } else {
-            console.log('Both methods fail!');
+          try {
+            res = await sendCode({ email, verificationCode });
+            if (res) {
+              console.log(res);
+              user.userId = res.userId;
+              return user;
+            }
+          } catch (err) {
+            console.log(err);
+            return null;
           }
         }
-        return null;
+        // return null;
       },
     }),
   ],
