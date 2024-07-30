@@ -53,8 +53,8 @@ export const authOptions = {
               return user;
             }
           } catch (err) {
-            throw new Error(err);
-            // return null;
+            // throw new Error(err);
+            return null;
           }
         }
         // return null;
