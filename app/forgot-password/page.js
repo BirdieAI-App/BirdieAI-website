@@ -122,6 +122,7 @@ export default function ForgotPassword() {
                             </Link>
                         </div>
                     </div>
+                    <ToastContainer />
                 </div>
             )}
         </section>

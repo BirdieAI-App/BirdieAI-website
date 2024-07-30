@@ -3,6 +3,7 @@ import { useState } from "react";
 import { sendCode, sendEmail } from "@/libs/request";
 import { getProviders, signIn } from 'next-auth/react';
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 
 export const useVerification = () => {
     const [verifiedEmail, setVerifiedEmail] = useState('');
@@ -32,6 +33,7 @@ export const useVerification = () => {
         } catch (err) {
             console.error(err);
             setLoading(false);
+            toast.error("No account created with your email. Try to signup!")
         }
     };
 
@@ -53,10 +55,9 @@ export const useVerification = () => {
             console.log(response);
 
             if (response.error) {
-                const err = JSON.parse(response.error);
-                console.log(err);
-                // toast.error(err?.message|| "An error occurred");
+                // const err = JSON.parse(response.error);
                 setLoading(false);
+                toast.error("Expired verification code!");
             } else {
                 setTimeout(() => {
                     setLoading(false);

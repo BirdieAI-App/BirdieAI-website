@@ -58,9 +58,9 @@ export default function SignIn() {
         // console.log(res);
 
         if (res.error) {
-            const err = JSON.parse(res.error);
-            toast.error(err?.message|| "An error occurred");
+            // const err = JSON.parse(res.error);
             setLoading(false);
+            toast.error("Your email does not exist OR your password does not match. Please retry!");
         } else {
             setTimeout(() => {
                 setLoading(false);

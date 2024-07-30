@@ -27,6 +27,7 @@ const zObject = z.object({
 });
 
 const toastConfig = {
+    position: "top-center",
     autoClose: 6000, // Close after 6 seconds
 };
 
