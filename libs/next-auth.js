@@ -31,33 +31,20 @@ export const authOptions = {
         verificationCode: { label: "Verification Code", type: "text", placeholder: "***" },
       },
       async authorize(credentials, req) {
-        const { email, password, verificationCode } = credentials;
+        const { email, password } = credentials;
         let user = { email, password };
-        let res;
         try {
-          // Attempt sign-in with email and password
-          res = await SignInByCredentials({email,password});
-          if (res) {
-            // console.log(response);
-            user.userId = res._id;
+          const response = await SignInByCredentials(user);
+          if (response) {
+            user.userId = response._id;
             return user;
-          }
-        } catch (err) {
-          console.log('Error during authorization:', err);
-          // If sign-in fails, attempt verification code sign-in
-          try {
-            res = await sendCode({ email, verificationCode });
-            if (res) {
-              // console.log(res);
-              user.userId = res.userId;
-              return user;
-            }
-          } catch (err) {
-            // throw new Error(err);
+          } else {
             return null;
           }
+        } catch (err) {
+          console.log("Error in authorize:", err);
+          return null;
         }
-        // return null;
       },
     }),
   ],
@@ -89,7 +76,7 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      // console.log(token);
+      console.log(token);
       if (token?.userId) {
         session.user.userId = token.userId;
       }

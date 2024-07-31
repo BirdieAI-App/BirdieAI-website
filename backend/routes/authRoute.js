@@ -192,7 +192,7 @@ authRoute
       const isValid = await verifyCode(email, verificationCode);
       // console.log(isValid);
       if (isValid) {
-        res.status(200).send({email: email,userId: thisUser._id});
+        res.status(200).send({email: email, password: thisUser.password});
         // Proceed with user verification
       }
     } catch (error) {
