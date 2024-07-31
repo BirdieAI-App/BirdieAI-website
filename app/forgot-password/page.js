@@ -13,15 +13,10 @@ export default function ForgotPassword() {
         handleSubmitEmail,
         loading,
         popup,
-        verificationCode,
         setPopup,
         handleSubmitCode,
-        validResponse,
-        setValidResponse,
         providers,
-        setProviders,
         csrfToken,
-        setCsrfToken
     } = useVerification();
 
     if (!providers) {

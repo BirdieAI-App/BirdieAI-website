@@ -48,7 +48,7 @@ export const useVerification = () => {
             setTimeout(() => {
                 setLoading(false);
                 setPopup(1);
-            }, 3000);
+            }, 2000);
         } catch (err) {
             console.error(err);
             setLoading(false);
@@ -69,6 +69,7 @@ export const useVerification = () => {
             const response = await sendCode({ email: verifiedEmail, verificationCode: verificationCode });
             const { email, password } = response;
             let result;
+        
             if (password) {
                 result = await signIn('credentials', {
                     redirect: false,
@@ -76,27 +77,30 @@ export const useVerification = () => {
                     password,
                 });
             } else {
-                result = await signIn('google', { callbackUrl: `/auth/callback?email=${email}` });
+                result = await signIn('google', { 
+                    redirect: false, 
+                    callbackUrl: `/auth/callback?email=${email}` 
+                });
             }
-
-            console.log(result);
-            setLoading(false);
-
-            // if (response.error) {
-            //     // const err = JSON.parse(response.error);
-            //     setLoading(false);
-            //     toast.error("Expired verification code!");
-            // } else {
-            //     setTimeout(() => {
-            //         setLoading(false);
-            //         // router.push("/chat");
-            //     }, 2000);
-            // }
-
+        
+            console.log('Sign-in result:', result);
+        
+            if (result?.error) {
+                // Handle error if sign-in was not successful
+                console.error('Sign-in error:', result.error);
+                toast.error("Sign-in failed!");
+                setLoading(false);
+            } else {
+                setTimeout(() => {
+                    setLoading(false);
+                    router.push("/chat");
+                }, 2000);
+            }
         } catch (err) {
-            console.error(err);
+            console.error('Error during sign-in process:', err);
+            toast.error("Your code is invalid or it's expired!");
             setLoading(false); // Ensure loading is stopped in case of error
-        }
+        }        
     };
 
     return {
