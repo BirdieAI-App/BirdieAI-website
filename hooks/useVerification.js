@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sendCode, sendEmail } from "@/libs/request";
-import { getProviders, signIn } from 'next-auth/react';
+import { getProviders, signIn, getCsrfToken } from 'next-auth/react';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
 
@@ -12,6 +12,25 @@ export const useVerification = () => {
     const [popup, setPopup] = useState(0);
     const [validResponse, setValidResponse] = useState(null);
     const router = useRouter();
+
+    const [providers, setProviders] = useState(null);
+    const [csrfToken, setCsrfToken] = useState("");
+
+    useEffect(() => {
+        async function fetchProviders() {
+            const res = await getProviders();
+            setProviders(res);
+            // console.log(res);
+        }
+
+        const fetchCsrfToken = async () => {
+            const token = await getCsrfToken();
+            setCsrfToken(token);
+        };
+
+        fetchCsrfToken();
+        fetchProviders();
+    }, []);
 
     const handleSubmitEmail = async (event) => {
         event.preventDefault();
@@ -43,27 +62,36 @@ export const useVerification = () => {
         setLoading(true);
         const formData = new FormData(event.target);
         const verificationCode = formData.get('verification-code');
-        const email = verifiedEmail;
-        console.log(verificationCode);
+        // const email = verifiedEmail;
+        // console.log(verificationCode);
 
         try {
-            const response = await signIn('credentials', {
-                redirect: false,
-                email,
-                verificationCode
-            });
-            console.log(response);
-
-            if (response.error) {
-                // const err = JSON.parse(response.error);
-                setLoading(false);
-                toast.error("Expired verification code!");
+            const response = await sendCode({ email: verifiedEmail, verificationCode: verificationCode });
+            const { email, password } = response;
+            let result;
+            if (password) {
+                result = await signIn('credentials', {
+                    redirect: false,
+                    email,
+                    password,
+                });
             } else {
-                setTimeout(() => {
-                    setLoading(false);
-                    router.push("/chat");
-                }, 2000);
+                result = await signIn('google', { callbackUrl: `/auth/callback?email=${email}` });
             }
+
+            console.log(result);
+            setLoading(false);
+
+            // if (response.error) {
+            //     // const err = JSON.parse(response.error);
+            //     setLoading(false);
+            //     toast.error("Expired verification code!");
+            // } else {
+            //     setTimeout(() => {
+            //         setLoading(false);
+            //         // router.push("/chat");
+            //     }, 2000);
+            // }
 
         } catch (err) {
             console.error(err);
@@ -71,6 +99,8 @@ export const useVerification = () => {
         }
     };
 
-    return { verifiedEmail, setVerifiedEmail, handleSubmitEmail, popup, setPopup, 
-        handleSubmitCode, loading, validResponse, setValidResponse };
+    return {
+        verifiedEmail, setVerifiedEmail, handleSubmitEmail, popup, setPopup,
+        handleSubmitCode, loading, validResponse, setValidResponse, providers, csrfToken, setCsrfToken, setProviders
+    };
 };

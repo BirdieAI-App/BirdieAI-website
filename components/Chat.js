@@ -67,6 +67,7 @@ const Chat = () => {
       // console.log('a');
     }
     if (session && session.user.userId) {
+      console.log(session);
       setUserId(session.user.userId);
     }
 
