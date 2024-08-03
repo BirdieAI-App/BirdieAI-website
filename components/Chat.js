@@ -10,6 +10,7 @@ import { getAllThreadsByUserPaginated } from "@/libs/util";
 import ChatRecommendation from "./ChatRecommendation";
 import ChatSidebar from "./ChatSidebar";
 import ChatBubble from "./ChatBubble";
+import Conversation from "./ChatConversation";
 
 const Chat = () => {
   const { data: session, status } = useSession();
@@ -18,6 +19,7 @@ const Chat = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [sentFirstMessage, setSentFirstMessage] = useState(true);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
+  const [conversation,setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4']);
 
   const router = useRouter();
   // const suggestions = [
@@ -117,15 +119,16 @@ const Chat = () => {
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {(!sentFirstMessage) ?
           <ChatRecommendation /> :
-          <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-150px)]">
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-            <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
-          </div>
+          // <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-150px)]">
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          // </div>
+          <Conversation user={session?.user} conversation={conversation}/>
         }
         <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
           <div className="flex flex-row items-center w-3/4">
@@ -134,7 +137,7 @@ const Chat = () => {
               value={userInput}
               onChange={handleInputChange}
               placeholder="Enter your text here"
-              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3"
+              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
             />
             <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-2 rounded-lg">Submit</button>
           </div>
