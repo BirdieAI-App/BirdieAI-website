@@ -19,7 +19,7 @@ const Chat = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [sentFirstMessage, setSentFirstMessage] = useState(true);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
-  const [conversation,setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4']);
+  const [conversation,setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4', 'Conversation 5']);
 
   const router = useRouter();
   // const suggestions = [

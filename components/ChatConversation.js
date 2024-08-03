@@ -5,7 +5,7 @@ export default function Conversation({conversation,user}) {
         <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">
         {conversation.map((bubble,id) => {
             return (
-                <ChatBubble userImage={user?.image} userName={user?.name} />
+                <ChatBubble userImage={user?.image} userName={user?.name} order={id % 2}/>
             )
         })}
         </div>
