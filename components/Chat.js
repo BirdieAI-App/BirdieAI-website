@@ -115,6 +115,7 @@ const Chat = () => {
       <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
         allThreads={allThreads} paginatedThreads={paginatedThreads}
         closeSidebar={closeSidebar}
+        getThreadsPaginated={getThreadsPaginated}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {(!sentFirstMessage) ?
