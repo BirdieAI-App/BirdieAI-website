@@ -4,15 +4,16 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
     accountData:{
-        email:{
+        email: {
             type: String,
             unique: true,
-            validate: {
-                validator: function(v) {
-                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-                },
-                message: props => `${props.value} is not a valid email address!`
-            }
+            // validate: {
+            //     validator: function(v) {
+            //         const regex = /^(?=.{6,30}$)(?!.*\.\.)(?!^\.)[a-zA-Z0-9.]*[a-zA-Z0-9]$/;
+            //         return regex.test(v);
+            //     },
+            //     message: props => `${props.value} is not a valid email address!`
+            // }
         },
         password:String
     },

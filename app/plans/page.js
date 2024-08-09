@@ -5,7 +5,7 @@ import ButtonAccount from "@/components/ButtonAccount";
 export default function PlansPage() {
     return (
       <LayoutPrivate>
-        <ButtonAccount />
+        {/* <ButtonAccount /> */}
         <Pricing />
       </LayoutPrivate>
     );
