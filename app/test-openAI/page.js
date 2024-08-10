@@ -119,6 +119,13 @@ import { useRouter } from "next/navigation";
 import config from "@/config";
 import axios from "axios";
 import OpenAI from "openai";
+import { Remarkable } from 'remarkable';
+
+const md = new Remarkable();
+md.renderer.rules.link_open = (tokens, idx) => {
+  const href = tokens[idx].href || tokens[idx].attrs[0][1];
+  return `<a href="${href}" class="text-blue-600">`;
+};
 
 // Message Input Component
 const MessageInput = ({ message, onChange, onFocus, onClick }) => (
@@ -142,7 +149,10 @@ const ConversationHistory = ({ conversation }) => (
         return (
           <div key={index}>
             <p>Role: {item.role}</p>
-            <p>Content: {item.content}</p>
+            <div
+          className="prose"
+          dangerouslySetInnerHTML={{ __html: md.render(item.content) }}
+        />
           </div>
         );
       }
@@ -156,7 +166,11 @@ const StreamingResponse = ({ streaming, data }) => (
     {streaming ? (
       <div>
         <p>Role: assistant</p>
-        <p>Content: {data}</p>
+        {/* <p>Content: {data}</p> */}
+        <div
+          className="prose"
+          dangerouslySetInnerHTML={{ __html: md.render(data) }}
+        />
       </div>
     ) : (
       <p></p>
