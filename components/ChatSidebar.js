@@ -1,9 +1,12 @@
 import ButtonAccount from "./ButtonAccount";
+import { useRouter } from "next/navigation";
 
-export default function ChatSidebar({isSidebarOpen,allThreads,paginatedThreads,toggleSidebar,closeSidebar}) {
-    return (
+
+export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated }) {
+  const router = useRouter();
+  return (
     <div>
-        <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
         <button className="bg-green-500 text-white py-2 px-4 rounded-lg mb-5"
           onClick={() => window.location.reload()}
         >New Chat</button>
@@ -36,5 +39,5 @@ export default function ChatSidebar({isSidebarOpen,allThreads,paginatedThreads,t
         </button>
       </div>
     </div>
-    )
+  )
 }
