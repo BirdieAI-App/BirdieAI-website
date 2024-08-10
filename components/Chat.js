@@ -23,7 +23,7 @@ const Chat = () => {
   // const [conversation, setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4', 'Conversation 5']);
   
   const { streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage,
-  sentFirstMessage, setSentFirstMessage} = useChat();
+  sentFirstMessage, setSentFirstMessage, currentResponse, setCurrentResponse} = useChat();
 
   const router = useRouter();
   
@@ -111,7 +111,8 @@ const Chat = () => {
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {(!sentFirstMessage) ?
           <ChatRecommendation setCurrentMessage={setMessage}/> :
-          <Conversation user={session?.user} conversation={conversation} />
+          <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
+          currentResponse = {currentResponse} />
         }
         <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
           <div className="flex flex-row items-center w-3/4">

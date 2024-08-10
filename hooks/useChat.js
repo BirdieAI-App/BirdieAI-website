@@ -73,5 +73,6 @@ export function useChat() {
         setCurrentResponse("");
     }
 
-    return { streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage};
+    return { streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage,
+    currentResponse, setCurrentResponse};
 }
