@@ -13,6 +13,7 @@ const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js')
 const chatRoute = require('./backend/routes/chatRoute.js')
 const openAiIntegrateRoute = require('./backend/routes/openAIIntegrateRoute.js')
+const compression = require('compression');
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, './.env') });
@@ -42,6 +43,7 @@ const corsOptions = {
   };
 
 app.use(cors(corsOptions));
+app.use(compression())
 
 
 //making connection to MongoDB

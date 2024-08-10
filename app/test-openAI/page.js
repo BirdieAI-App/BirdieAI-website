@@ -1,3 +1,117 @@
+// "use client";
+// import React, { useState, useEffect } from "react";
+// import { useSession } from "next-auth/react";
+// import { useRouter } from "next/navigation";
+// import config from "@/config";
+// import axios from "axios";
+// import OpenAI from "openai";
+
+// const StreamingComponent = () => {
+//   const [data, setData] = useState("");
+//   const [streaming, setStreaming] = useState(false);
+//   const [conversation, setConversation] = useState([
+//     {
+//       role: "system",
+//       content: process.env.CONTENT,
+//     },
+//   ]);
+//   const [message, setMessage] = useState("");
+
+//   /**
+//    *
+//    * have useEffect here to load conversation which is getAllMessageByThreadIDOrderByASC in Backend
+//    *
+//    */
+
+//   const openai = new OpenAI({
+//     apiKey: process.env.OPENAI_API_KEY,
+//     dangerouslyAllowBrowser: true,
+//   });
+
+//   async function handleOnClick(params) {
+//     // setStreaming(false);
+//     const newConversation = [
+//       ...conversation,
+//       {
+//         role: "user",
+//         content: message,
+//       },
+//     ];
+//     setConversation(newConversation);
+
+//     const stream = await openai.chat.completions.create({
+//       model: "gpt-4o-mini",
+//       messages: newConversation,
+//       stream: true,
+//       // functions: [{ name: "get_resposne", parameters: schema }],
+//       // function_call: { name: "get_resposne" },
+//     });
+
+//     for await (const chunk of stream) {
+//       const content = chunk.choices[0]?.delta?.content || "";
+//       if (content.length > 0) {
+//         setStreaming(true);
+//       }
+//       setData((prev) => prev + content);
+//     }
+
+//     setMessage("");
+//   }
+//   function handleOnChange(event) {
+//     setMessage(event.target.value);
+//     console.log(event.target.value);
+//   }
+//   function handleOnFocus(event) {
+//     setStreaming(false);
+//     if (conversation.length > 1 && data.length > 0) {
+//       const newConversation = [
+//         ...conversation,
+//         {
+//           role: "assistant",
+//           content: data,
+//         },
+//       ];
+//       setConversation(newConversation);
+//     }
+//     setData("");
+//   }
+
+//   return (
+//     <div>
+//       <div>
+//         <input
+//           onChange={handleOnChange}
+//           onFocus={handleOnFocus}
+//           type="text"
+//           value={message}
+//           style={{ border: "1px solid black" }}
+//         />
+//         <button onClick={handleOnClick}>Send</button>
+//         {conversation.map((item, index) => {
+//           if (index > 0) {
+//             return (
+//               <div key={index}>
+//                 <p>Role : {item.role}</p>
+//                 <p>Content: {item.content}</p>
+//               </div>
+//             );
+//           }
+//         })}
+//         {streaming ? (
+//           <div>
+//             <p>Role : assistant</p>
+//             <p>Content : {data}</p>
+//           </div>
+//         ) : (
+//           <p></p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default StreamingComponent;
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
@@ -6,109 +120,124 @@ import config from "@/config";
 import axios from "axios";
 import OpenAI from "openai";
 
-const TestOpenAI = () => {
-  const { data: session, status } = useSession();
-  const [userId, setUserId] = useState("");
-  const router = useRouter();
+// Message Input Component
+const MessageInput = ({ message, onChange, onFocus, onClick }) => (
+  <div>
+    <input
+      type="text"
+      value={message}
+      onChange={onChange}
+      onFocus={onFocus}
+      style={{ border: "1px solid black" }}
+    />
+    <button onClick={onClick}>Send</button>
+  </div>
+);
 
-  useEffect(() => {
-    if (status !== "loading" && !session) {
-      router.push(config.auth.loginUrl);
-    }
-    if (session && session.user.userId) setUserId(session.user.userId);
-  }, [session, status]);
-
-  async function getMyAssistant() {
-    const url = `http://localhost:3000/call/threads/asst/getall`;
-    try {
-      const response = await axios.get(url);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function createThread(params) {
-    var url = "http://localhost:3000/call/openai/thread";
-
-    try {
-      const response = await axios.post(url);
-      const newThreadData = {
-        userID: userId, // Replace with actual userID
-        threadID: response.data.id, // Replace with actual threadID from OpenAI
-        title: "Title - Hardcode", // Replace with actual title
-        create_at: response.data.created_at,
-      };
-      setThread(response.data.id);
-      // url for backend
-      url = "http://localhost:3000/call/threads";
-      try {
-        const response = await axios.put(url, newThreadData);
-        console.log("Thread saved successfully:", response.data);
-        setThread("successfully");
-      } catch (error) {
-        console.error("Error saving thread:", error);
-        setThread("Failed");
+// Conversation History Component
+const ConversationHistory = ({ conversation }) => (
+  <div>
+    {conversation.map((item, index) => {
+      if (index > 0) {
+        return (
+          <div key={index}>
+            <p>Role: {item.role}</p>
+            <p>Content: {item.content}</p>
+          </div>
+        );
       }
-    } catch (error) {
-      console.error("Error:", error);
-      setThread("Error");
-    }
-  }
+    })}
+  </div>
+);
 
-  async function runThread(params) {
-    const threadID = "thread_aOXJvIpLnIDAKkNkFoxTSNlJ";
-    const url = `http://localhost:3000/call/openai/thread?threadID=${threadID}`;
-    console.log("Running Thread : Start");
-    try {
-      const response = await axios.get(url);
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
+// Streaming Response Component
+const StreamingResponse = ({ streaming, data }) => (
+  <div>
+    {streaming ? (
+      <div>
+        <p>Role: assistant</p>
+        <p>Content: {data}</p>
+      </div>
+    ) : (
+      <p></p>
+    )}
+  </div>
+);
 
-  async function addMsg(params) {
-    const apiKey = process.env.OPENAI_API_KEY;
-    const threadID = "thread_ydrAUIHGqzyCsDsHhpJIHMud";
-    const url = `https://api.openai.com/v1/threads/${threadID}/messages`;
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      "OpenAI-Beta": "assistants=v1",
-    };
-    const body = {
-      role: "user",
-      metadata: {
-        modified: "true",
-        user: "6674995c959c5e30c737d6a3",
+const StreamingComponent = () => {
+  const [data, setData] = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const [conversation, setConversation] = useState([
+    {
+      role: "system",
+      content: process.env.CONTENT,
+    },
+  ]);
+  const [message, setMessage] = useState("");
+
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
+
+  async function handleOnClick() {
+    const newConversation = [
+      ...conversation,
+      {
+        role: "user",
+        content: message,
       },
-      content: " Testing Message 2",
-    };
+    ];
+    setConversation(newConversation);
 
-    try {
-      const response = await axios.post(url, body, { headers });
-    } catch (error) {
-      console.error("Error:", error);
+    const stream = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: newConversation,
+      stream: true,
+    });
+
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content || "";
+      if (content.length > 0) {
+        setStreaming(true);
+      }
+      setData((prev) => prev + content);
     }
+
+    setMessage("");
   }
 
-  const [thread, setThread] = useState("None");
-  const [msg, setMsg] = useState("None");
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
+  function handleOnChange(event) {
+    setMessage(event.target.value);
+  }
+
+  function handleOnFocus() {
+    setStreaming(false);
+    if (conversation.length > 1 && data.length > 0) {
+      const newConversation = [
+        ...conversation,
+        {
+          role: "assistant",
+          content: data,
+        },
+      ];
+      setConversation(newConversation);
+    }
+    setData("");
+  }
 
   return (
     <div>
-      <button onClick={createThread}>Create Thread</button>
-      <p>{thread}</p>
-      <button onClick={addMsg}>Add Msg</button>
-      <p>{msg}</p>
-      <button onClick={runThread}>Run thread</button>
-      <p></p>
-      <button onClick={getMyAssistant}>Get assistant</button>
+      <MessageInput
+        message={message}
+        onChange={handleOnChange}
+        onFocus={handleOnFocus}
+        onClick={handleOnClick}
+      />
+      <ConversationHistory conversation={conversation} />
+      <StreamingResponse streaming={streaming} data={data} />
     </div>
   );
 };
 
-export default TestOpenAI;
+export default StreamingComponent;
