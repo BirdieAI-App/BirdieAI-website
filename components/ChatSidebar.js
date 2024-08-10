@@ -15,7 +15,8 @@ export default function ChatSidebar({isSidebarOpen,allThreads,paginatedThreads,t
         <div className="mb-3 flex flex-col">
           <h4 className={`mb-2 ${(allThreads.length > 5) ? "" : "hidden"}`}>Previous Chats</h4>
           {paginatedThreads.data?.map((item, idx) => (
-            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded-lg mb-3 text-center">{item?.title}</button>
+            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded-lg mb-3 text-center"
+            onClick={() => {}}>{item?.title}</button>
           ))}
         </div>
         <button className={`text-white py-3 px-2 rounded-lg mb-3 text-center bg-green-500 ${((allThreads.length < 5) || (paginatedThreads.nextPage === null)) ? "hidden" : ""}`}
