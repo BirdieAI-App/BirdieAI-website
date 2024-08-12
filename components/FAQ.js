@@ -2,28 +2,65 @@
 
 import { useRef, useState } from "react";
 
-// <FAQ> component is a lsit of <Item> component
+// <FAQ> component is a list of <Item> component
 // Just import the FAQ & add your FAQ content to the const faqList
 
 const faqList = [
   {
     question: "How does Birdie work?",
-    answer: <div className="space-y-2 leading-relaxed"> We use AI and Large Language Modal with custom training from credible medical sources such as webmd, mayoclinic for medical related questions. We gathers a huge collection of recipes from top food channels and analysize the ingreadients and map them with specific nutrition needs to provide the personalized and appropriate nutrition plan. You can simply enter your questions about a spefic topics. If you don't know how to start, just describe your condition and ask for guidance. Birdie is here to help</div>,
+    answer: (
+      <div className="space-y-2 leading-relaxed">
+        Birdie is your friendly, science-backed nutrition coach! Here's how it works:
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            <strong>Listens to You:</strong> Birdie carefully reads your question to understand what you're looking for, whether it's general advice or specific nutrition tips.
+          </li>
+          <li>
+            <strong>Finds Trustworthy Information:</strong> Birdie searches through thousands of scientific medical papers and trusted health resources like PubMed, Mayo Clinic, and USDA. We update our database monthly to ensure you get the latest research-backed information.
+          </li>
+          <li>
+            <strong>Analyzes for Accuracy:</strong> Birdie uses advanced technology to match keywords and understand context, ensuring that the information it finds is truly relevant to your question. This careful analysis helps provide you with accurate, up-to-date advice.
+          </li>
+          <li>
+            <strong>Combines Expert Knowledge:</strong> Birdie doesn't just repeat one source. Birdie looks at multiple trusted studies and expert opinions to give you a well-rounded answer.
+          </li>
+          <li>
+            <strong>Explains it Clearly:</strong> Birdie takes all this scientific information and translates it into simple, easy-to-understand language. Birdie will provide references, so you can see exactly where the advice comes from.
+          </li>
+        </ul>
+        With Birdie, you get reliable, evidence-based nutrition advice tailored just for you, making it easier to make informed decisions. It's like having a nutrition expert and a caring friend, all in one!
+      </div>
+    ),
   },
   {
     question: "How do I know if information is correct?",
     answer: (
-      <p>
-        For nutrition related questions, our AI Diet coach is trained with research contents and articles from trustworthy medical sites about nutrition, pregnancy care, children health and food ingredient review. 
-        Our criteria to select the source is based on the following criteria: the site has to be accredited by reputable health organizations or recognized by authorities in the medical field, content in the site is evidence-based, relying on peer-reviewed research or guidelines from recognized medical institutions, and information is written or reviewed by medical professionals with expertise in the relevant fields. The list of medical sites also includes websites from schools of health at well-established universities that often provide reliable and authoritative information on various health topics, including nutrition, pregnancy care, and children's health and top hospitals in women's and children's healthcare.
-        For recipes, we gather thousand of popular and high-review recipes from different diet types to address user preference.
-      </p>
+      <div className="space-y-2 leading-relaxed">
+        Birdie uses the following criteria for data selection to ensure the reliability and accuracy of the information:
+        <ul className="list-decimal pl-5 space-y-2">
+          <li>
+            <strong>Accreditation:</strong> Sites should be accredited by reputable health organizations or be recognized authorities in the medical field.
+          </li>
+          <li>
+            <strong>Evidence-Based Information:</strong> Content should be evidence-based, relying on peer-reviewed research or guidelines from recognized medical institutions.
+          </li>
+          <li>
+            <strong>Transparency:</strong> The site should clearly disclose its mission, funding, and any potential conflicts of interest.
+          </li>
+          <li>
+            <strong>Updates:</strong> The site should regularly update its content to reflect the latest medical research and guidelines.
+          </li>
+          <li>
+            <strong>User Privacy:</strong> Trustworthy sites should have clear policies that protect user privacy and data.
+          </li>
+        </ul>
+      </div>
     ),
   },
   {
     question: "How do I contact Birdie if I have another question?",
     answer: (
-      <div className="space-y-2 leading-relaxed">Cool, contact us by email  dev@birdieapp.co</div>
+      <div className="space-y-2 leading-relaxed"> You can contact us by email at dev@birdieapp.co</div>
     ),
   },
 ];
