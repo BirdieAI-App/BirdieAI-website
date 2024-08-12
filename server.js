@@ -11,9 +11,6 @@ const userRoute = require('./backend/routes/UserRoute.js');
 const authRoute = require('./backend/routes/authRoute.js');
 const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js')
-const chatRoute = require('./backend/routes/chatRoute.js')
-const openAiIntegrateRoute = require('./backend/routes/openAIIntegrateRoute.js')
-const compression = require('compression');
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, './.env') });
@@ -25,7 +22,7 @@ const mongoURI = process.env.MONGODB_URI;
 
 // Body parsing middleware
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-// app.use(express.json()); // Parse JSON bodies
+app.use(express.json()); // Parse JSON bodies
 
 app.use((req, res, next) => {
 	console.log(`Received ${req.method} request for ${req.url}`);
@@ -35,7 +32,7 @@ app.use((req, res, next) => {
 
 // CORS middleware
 const corsOptions = {
-	origin: '*', // Ensure this environment variable is set
+	origin: corsOrigin, // Ensure this environment variable is set
 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
 	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
 	credentials: true,
