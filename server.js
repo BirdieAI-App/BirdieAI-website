@@ -1,4 +1,3 @@
-
 const dotenv = require('dotenv');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -10,7 +9,10 @@ const cors = require('cors');
 const userRoute = require('./backend/routes/UserRoute.js');
 const authRoute = require('./backend/routes/authRoute.js');
 const threadRoute = require('./backend/routes/threadRoute.js');
-const messageRoute = require('./backend/routes/messageRoute.js')
+const messageRoute = require('./backend/routes/messageRoute.js');
+
+const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
+console.log(corsOrigin);
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, './.env') });
@@ -40,7 +42,6 @@ const corsOptions = {
   };
 
 app.use(cors(corsOptions));
-app.use(compression())
 
 
 //making connection to MongoDB
@@ -56,9 +57,7 @@ mongoose.connect(mongoURI)
 app.use('/call', userRoute)
 app.use('/call', authRoute)
 app.use('/call', threadRoute)
-app.use('/call', openAiIntegrateRoute)
 app.use('/call', messageRoute)
-app.use('/call', chatRoute)
 
 // app.listen(port, () => {
 // 	console.log(`Server is running on port ${port}`);
