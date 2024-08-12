@@ -14,7 +14,7 @@ const features = [
   {
     title: "Answers from credible sources",
     description:
-    "Search through trustworthy medical sources: National Library of Medicine, Mayo Clinic, National Institute of Health, US Department of Agriculture, Medline Plus Library, My Plate Plan",
+      "Search through trustworthy medical sources: National Library of Medicine, Mayo Clinic, National Institute of Health, US Department of Agriculture, Medline Plus Library, My Plate Plan",
     //type: "video",
     //path: "https://d3m8mk7e1mf7xn.cloudfront.net/app/newsletter.webm",
     //format: "video/webm",
@@ -37,7 +37,7 @@ const features = [
   {
     title: "Personalized nutrition plan",
     description:
-    "Create a plan based on your diet goal, taste preference, and food seasonality from various diet styles such as plant-based, nutrition-dense, weight loss, breastfeeding-friendly",
+      "Create a plan based on your diet goal, taste preference, and food seasonality from various diet styles such as plant-based, nutrition-dense, weight loss, breastfeeding-friendly",
     //type: "image",
     //path: "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3540&q=80",
     //alt: "A computer",
@@ -59,7 +59,7 @@ const features = [
   {
     title: "Shopping list curated",
     description:
-    "Birdie makes it easy to turn meal plans into action",
+      "Birdie makes it easy to turn meal plans into action",
     svg: (
      <svg xmlns="http://www.w3.org/2000/svg" 
           width="24" 
