@@ -1,8 +1,8 @@
 import apiClient from "./api";
 
 export const sendGoogleIDToken = async function (token) {
-    const apiUrl = apiClient.createUrl('/auth/google');
-    console.log(apiUrl);
+    const apiUrl = apiClient.createUrl('auth/google');
+    console.log("In Request.js:", apiUrl);
     const response = await apiClient.post(apiUrl, token);
     return response;
 }
