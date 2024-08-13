@@ -27,8 +27,13 @@ export const SignInByCredentials = async function (payload) {
 
 export const getAllThreadsByUser = async function (userId) {
     const apiUrl = apiClient.createUrl(`threads/u/${userId}`);
-    console.log(apiUrl);
     const response = await apiClient.get(apiUrl);
+    return response;
+}
+
+export const createCheckoutSession = async function(payload){
+    const apiUrl = apiClient.createUrl('/stripe/create-checkout');
+    const response = await apiClient.post(apiUrl, payload);
     return response;
 }
 

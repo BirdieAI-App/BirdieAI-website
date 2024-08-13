@@ -1,5 +1,5 @@
 import GoogleProvider from "next-auth/providers/google";
-import config from "@/config";
+import config from "../config";
 import { sendGoogleIDToken, SignInByCredentials } from "./request";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { sendCode } from "./request";
@@ -76,7 +76,7 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
-      console.log(token);
+      // console.log(token);
       if (token?.userId) {
         session.user.userId = token.userId;
       }
@@ -85,7 +85,7 @@ export const authOptions = {
     async redirect({ url, baseUrl }) {
       return baseUrl + "/chat";
     },
-  },
+  },                                                          
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60 // 30 days before opting out
