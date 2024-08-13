@@ -55,5 +55,4 @@ async function handleAccessRevoke(invoice) {
     }
 }
 
-
 module.exports = stripeWebhookRoute;
