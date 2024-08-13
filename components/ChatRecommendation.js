@@ -1,4 +1,4 @@
-export default function ChatRecommendation() {
+export default function ChatRecommendation({setCurrentMessage}) {
     const suggestions = [
         "Diet guideline for pregnancy",
         "Diet guideline for postpartum and breast feeding",
@@ -14,7 +14,8 @@ export default function ChatRecommendation() {
             </header>
             <div className="flex flex-col flex-1 items-center w-full">
                 {suggestions?.map((item, idx) => (
-                    <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center w-full md:w-1/2 lg:w-1/3">{item}</button>
+                    <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded-lg mb-3 text-center w-full md:w-1/2 lg:w-1/3"
+                    onClick={() => setCurrentMessage(item)}>{item}</button>
                 ))}
             </div>
         </div>
