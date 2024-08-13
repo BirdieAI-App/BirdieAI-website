@@ -7,20 +7,26 @@ import { useRouter } from "next/navigation";
 import ButtonAccount from "./ButtonAccount";
 import { getAllThreadsByUser } from "@/libs/request";
 import { getAllThreadsByUserPaginated } from "@/libs/util";
+import ChatRecommendation from "./ChatRecommendation";
+import ChatSidebar from "./ChatSidebar";
+import ChatBubble from "./ChatBubble";
+import Conversation from "./ChatConversation";
 
 const Chat = () => {
   const { data: session, status } = useSession();
   const [allThreads, setAllThreads] = useState([]);
   const [userId, setUserId] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sentFirstMessage, setSentFirstMessage] = useState(true);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
+  const [conversation,setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4']);
 
   const router = useRouter();
-  const suggestions = [
-    "Diet guideline for pregnancy",
-    "Diet guideline for postpartum and breast feeding",
-    "Diet guidelines for infants",
-  ];
+  // const suggestions = [
+  //   "Diet guideline for pregnancy",
+  //   "Diet guideline for postpartum and breast feeding",
+  //   "Diet guidelines for infants",
+  // ];
 
   const getThreads = async (userId) => {
     if (userId) {
@@ -66,7 +72,10 @@ const Chat = () => {
       router.push(config.auth.loginUrl);
       // console.log('a');
     }
-    if (session && session.user.userId) setUserId(session.user.userId);
+    if (session && session.user.userId) {
+      console.log(session);
+      setUserId(session.user.userId);
+    }
 
   }, [session, status]);
 
@@ -80,6 +89,8 @@ const Chat = () => {
 
   // console.log(allThreads);
   // console.log(paginatedThreads);
+  // console.log(userId);
+  // console.log(session);
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -100,66 +111,48 @@ const Chat = () => {
   // console.log(paginatedThreads);
 
   return (
-    <div className="flex flex-col h-screen font-sans relative">
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
-        <button className="bg-green-500 text-white py-2 px-4 rounded-lg mb-5">New Chat</button>
-        <div className="mb-5">
-          <ButtonAccount />
-          <span className="block mt-3 mb-3">You have used 2 of 3 free chats.</span>
-          <button className="bg-orange-500 text-white py-2 px-4 rounded">Upgrade for less than $10 / month</button>
-        </div>
-        <div className="mb-3 flex flex-col">
-          <h4 className={`mb-2 ${(allThreads.length > 5) ? "" : "hidden"}`}>Previous Chats</h4>
-          {paginatedThreads.data?.map((item, idx) => (
-            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center">{item?.title}</button>
-          ))}
-        </div>
-        <button className={`text-white py-3 px-2 rounded-lg mb-3 text-center bg-green-500 ${((allThreads.length < 5) || (paginatedThreads.nextPage === null)) ? "hidden" : ""}`}
-          onClick={() => {
-            paginatedThreads.nextPage && getThreadsPaginated(paginatedThreads.nextPage, allThreads);
-          }}>
-          Load more
-        </button>
-      </aside>
-
-      {/* Overlay for small screens */}
-      {isSidebarOpen && <div className="fixed inset-0 bg-black opacity-50 z-40 lg:hidden" onClick={closeSidebar}></div>}
-
-      <div className="flex lg:hidden p-5">
-        <button onClick={toggleSidebar} className="text-2xl p-2 focus:outline-none">
-          ☰
-        </button>
-      </div>
-
+    <div className="flex flex-col font-sans relative">
+      <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
+        allThreads={allThreads} paginatedThreads={paginatedThreads}
+        closeSidebar={closeSidebar}
+        getThreadsPaginated={getThreadsPaginated}
+      />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
-        <div className="flex justify-center mb-5">
-          <img className="h-20 w-20" src="../icon.png" alt="Birdie Logo" />
+        {(!sentFirstMessage) ?
+          <ChatRecommendation /> :
+          // <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-150px)]">
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          //   <ChatBubble userImage={session?.user?.image} userName={session?.user?.name} />
+          // </div>
+          <Conversation user={session?.user} conversation={conversation}/>
+        }
+        <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
+          <div className="flex flex-row items-center w-3/4">
+            <input
+              type="text"
+              value={userInput}
+              onChange={handleInputChange}
+              placeholder="Enter your text here"
+              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+            />
+            <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-2 rounded-lg">Submit</button>
+          </div>
+          <footer className="mt-auto text-center text-gray-600 text-sm py-5">
+            <span className="disclaimer-text">
+              Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
+              <br />
+              Please consult the healthcare providers for medical advice.
+            </span>
+          </footer>
         </div>
-        <header className="mb-5">
-          <h1 className="text-center">How can I help you?</h1>
-        </header>
-        <div className="flex flex-col flex-1 items-center w-full">
-          {suggestions?.map((item, idx) => (
-            <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded mb-3 text-center w-full md:w-1/2 lg:w-1/3">{item}</button>
-          ))}
-        </div>
-        <div className="flex items-center mt-5 w-full md:w-3/4 lg:w-3/2">
-          <input
-            type="text"
-            value={userInput}
-            onChange={handleInputChange}
-            placeholder="Enter your text here"
-            className="flex-1 py-2 px-3 border border-gray-300 rounded mr-3"
-          />
-          <button onClick={handleSubmit} className="bg-green-500 text-white py-2 px-4 rounded">Submit</button>
-        </div>
-        <footer className="mt-auto text-center text-gray-600 text-sm py-5">
-          <span>
-            Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline. Please consult the healthcare providers for medical advice.
-          </span>
-        </footer>
       </main>
     </div>
+
 
   );
 };

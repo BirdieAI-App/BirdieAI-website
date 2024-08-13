@@ -36,3 +36,16 @@ export const createCheckoutSession = async function(payload){
     const response = await apiClient.post(apiUrl, payload);
     return response;
 }
+
+export const sendEmail = async function (payload) {
+    const apiUrl = apiClient.createUrl(`/auth/send-verification-email`);
+    const response = await apiClient.post(apiUrl,payload);
+    return response;
+}
+
+export const sendCode = async function (payload) {
+    const apiUrl = apiClient.createUrl(`/auth/verify-email`);
+    // console.log(payload);
+    const response = await apiClient.post(apiUrl,payload);
+    return response;
+}

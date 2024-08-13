@@ -17,7 +17,7 @@ const ButtonCheckout = ({ priceId}) => {
   const handlePayment = async () => {
     //redirect to Signin Page if user is not logged in
     if(!session){
-      signIn(undefined, { callbackUrl: config.auth.callbackUrl });
+      signIn(undefined, { callbackUrl: "/#pricing" });
     }
 
     setIsLoading(true);
@@ -29,7 +29,7 @@ const ButtonCheckout = ({ priceId}) => {
       });
       window.location.href = res.url;
     } catch (e) {
-      console.error(e);
+      console.log(e.message);
     }
 
     setIsLoading(false);

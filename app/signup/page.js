@@ -4,6 +4,8 @@ import { useSignUp } from "@/hooks/useSignUp";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getProviders, signIn } from 'next-auth/react';
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Signup() {
     const {setEmail, setPassword, submitHandler, email, password} = useSignUp();
@@ -25,9 +27,9 @@ export default function Signup() {
 
     
     return (
-        <section className="bg-gray-50 dark:bg-gray-900">
+        <section className="bg-gray-50">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
+                <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                             Create an account
@@ -41,7 +43,7 @@ export default function Signup() {
                             
                         )}
                         <div className="inline-flex items-center justify-center w-full">
-                            <hr className="w-full h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"/>
+                            <hr className="w-full h-px my-8 bg-gray-200 border-0"/>
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
                         </div>
                         <form className="space-y-4 md:space-y-6" onSubmit={submitHandler}>
@@ -77,15 +79,16 @@ export default function Signup() {
                                 <input id="terms" aria-describedby="terms" type="checkbox" className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800" required />
                                 </div> */}
                                 <div className="text-sm">
-                                <label htmlFor="terms" className="font-light text-gray-500 dark:text-gray-300">By creating an account, I accept the <span><a className="font-medium text-primary-600 hover:underline" href="#">Terms and Conditions</a></span></label>
+                                <label htmlFor="terms" className="font-light text-gray-500">By creating an account, I accept the <span><a className="font-medium text-primary-600 hover:underline" href="#">Terms and Conditions</a></span></label>
                                 </div>
                             </div>
                             <p className="text-sm font-light text-gray-500">
                                 Already have an account? 
-                                <span><Link href="/api/auth/signin" className="font-medium text-indigo-600 hover:underline"> Login here</Link>
+                                <span><Link href="/api/auth/signin" className="font-medium text-indigo-600"> Login here</Link>
                                 </span>
                             </p>
                         </form>
+                        <ToastContainer />
                     </div>
                 </div>
             </div>

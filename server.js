@@ -25,8 +25,8 @@ const mongoURI = process.env.MONGODB_URI;
 
 
 app.use((req, res, next) => {
-	console.log(`Received ${req.method} request for ${req.url}`);
-	console.log('Request body:', req.body);
+	// console.log(`Received ${req.method} request for ${req.url}`);
+	// console.log('Request body:', req.body);
 	next();
 })
 
@@ -65,7 +65,4 @@ app.use('/call', messageRoute)
 app.use('/call', stripeRoute)
 app.use('/call', stripeWebhookRoute)
 
-// app.listen(port, () => {
-// 	console.log(`Server is running on port ${port}`);
-// });
 export default app;

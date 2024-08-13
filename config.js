@@ -28,17 +28,6 @@ const config = {
         ],
       },
       {
-        priceId:"price_1PcwSaAsroNx812F2wqMXixn",
-        name: "",
-        description: "One-day Pass",
-        price: 5,
-        features: [
-
-          { name: "Unlimited questions with AI Diet Coach for 24 hours" },
-          { name: "Personalized Meal plan" },
-        ],  
-      },
-      {
         isFeatured: true,
         priceId:"price_1PcwV3AsroNx812FhEz7ZPSp",
         name: "",

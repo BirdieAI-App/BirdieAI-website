@@ -22,16 +22,17 @@ stripeRoute.post('/stripe/create-checkout', async(req,res)=>{
         let stripeCustomerId = dbUser.profileData.stripeCustomerId;
         //CREATING A NEW CUSTOMER IN STRIPE IF USER HAS NOT MADE ANY PREVIOUSE SUBSCRIPTION
         if(!stripeCustomerId){
+            console.log("UserID " + dbUser._id+" does not have an associated stripe account. Creating")
             const customer = await stripe.customers.create({
                 email: session.user.email,
                 name: session.user.email
             });
             stripeCustomerId = customer.id;
+            console.log("Saving stripeID: "+ stripeCustomerId+"to UserID: " + dbUser._id );
             //UPDATE corresponding user in database to contain stripeCustomerId
             dbUser.profileData.stripeCustomerId = stripeCustomerId;
             await dbUser.save();
         }
-
         const requiredParamater = {
             success_url: successUrl,
             cancel_url: cancelUrl,
@@ -41,6 +42,8 @@ stripeRoute.post('/stripe/create-checkout', async(req,res)=>{
                 price: priceId,
                 quantity: 1
             }],
+            // customer_email: session.user.email,
+            customer: stripeCustomerId
         };
         const extraParameter = {
             allow_promotion_codes: true,
@@ -50,12 +53,13 @@ stripeRoute.post('/stripe/create-checkout', async(req,res)=>{
             expires_at: Math.floor(Date.now() / 1000) + (60 * 30)
         };       
         try{
-        const stripeCheckoutSession = await stripe.checkout.sessions.create({
-            ...requiredParamater,
-            ...extraParameter
-          });
-          return res.status(200).json({url: stripeCheckoutSession.url});
+            const stripeCheckoutSession = await stripe.checkout.sessions.create({
+                ...requiredParamater,
+                ...extraParameter
+            });
+            return res.status(200).json({url: stripeCheckoutSession.url});
         }catch(err){
+            console.log(err.message)
             return res.status(500).send("Unexpected Error occured while creating stripe checkout session: " + err.message);
         }
     })

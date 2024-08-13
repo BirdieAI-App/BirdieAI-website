@@ -2,6 +2,7 @@ import GoogleProvider from "next-auth/providers/google";
 import config from "../config";
 import { sendGoogleIDToken, SignInByCredentials } from "./request";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { sendCode } from "./request";
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -27,6 +28,7 @@ export const authOptions = {
       credentials: {
         email: { label: "Email", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" },
+        verificationCode: { label: "Verification Code", type: "text", placeholder: "***" },
       },
       async authorize(credentials, req) {
         const { email, password } = credentials;
@@ -40,8 +42,8 @@ export const authOptions = {
             return null;
           }
         } catch (err) {
-          console.log("Error in authorize:", err);
-          return null;
+          throw new Error(err);
+          // return null;
         }
       },
     }),
@@ -74,6 +76,7 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }) {
+      // console.log(token);
       if (token?.userId) {
         session.user.userId = token.userId;
       }
