@@ -33,7 +33,10 @@ export const getAllThreadsByUser = async function (userId) {
 }
 
 export const createCheckoutSession = async function (payload) {
-    console.log(payload);
+    // console.log(payload);
+    const apiUrl = apiClient.createUrl('stripe/create-checkout');
+    const response = await apiClient.post(apiUrl, payload);
+    return response;
 }
 
 export const sendEmail = async function (payload) {

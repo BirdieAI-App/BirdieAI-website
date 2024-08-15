@@ -10,6 +10,8 @@ const userRoute = require('./backend/routes/UserRoute.js');
 const authRoute = require('./backend/routes/authRoute.js');
 const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js');
+const stripeRoute = require('./backend/routes/stripeRoute.js');
+const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
 
 const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
 console.log(corsOrigin);
@@ -24,7 +26,7 @@ const mongoURI = process.env.MONGODB_URI;
 
 // Body parsing middleware
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.json()); // Parse JSON bodies
+// app.use(express.json()); // Parse JSON bodies
 
 app.use((req, res, next) => {
 	console.log(`Received ${req.method} request for ${req.url}`);
@@ -58,6 +60,8 @@ app.use('/call', userRoute)
 app.use('/call', authRoute)
 app.use('/call', threadRoute)
 app.use('/call', messageRoute)
+app.use('/call', stripeRoute)
+app.use('/call', stripeWebhookRoute)
 
 // app.listen(port, () => {
 // 	console.log(`Server is running on port ${port}`);

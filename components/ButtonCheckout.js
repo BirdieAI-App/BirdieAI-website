@@ -1,16 +1,34 @@
-"use client";
-
 import config from "@/config";
 import { usePayment } from "@/hooks/usePayment";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
-const ButtonCheckout = ({ priceId, userId }) => {
+const ButtonCheckout = ({ priceId }) => {
   const {handlePayment, isLoading} = usePayment();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [userId, setUserId] = useState();
+
+  useEffect(() => {
+    if (status !== "loading" && !session) {
+      router.push(config.auth.loginUrl);
+      // console.log('a');
+    }
+    if (session && session.user.userId) {
+      console.log(session);
+      setUserId(session.user.userId);
+    }
+
+  }, [session, status]);
+  // console.log(userId);
+  // console.log(session);
 
   return (
     <button
       className="btn btn-primary btn-block group"
-      onClick={() => handlePayment({priceId,userId})}
+      onClick={() => userId && handlePayment({priceId,userId})}
     >
       {isLoading ? (
         <span className="loading loading-spinner loading-xs"></span>

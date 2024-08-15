@@ -16,7 +16,8 @@ export function usePayment() {
                 successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/chat`,
                 cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/#pricing`,
             });
-            window.location.href = res.url;
+            window.location.href = res?.url;
+            // console.log(res);
         } catch (e) {
             console.log(e.message);
         }
