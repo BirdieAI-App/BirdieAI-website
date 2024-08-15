@@ -60,7 +60,7 @@ export const authOptions = {
           const data = await sendGoogleIDToken(token);
           if (data._id) {
             token.userId = data._id;
-            console.log(token);
+            // console.log(token);
             return token;
           }
         } catch (err) {
