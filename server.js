@@ -35,10 +35,10 @@ app.use((req, res, next) => {
 })
 
 // Body parsing middleware
-// if(!process.env.NEXT_PUBLIC_BASE_URL.includes('localhost')){
-// 	app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-// 	app.use(express.json()); // Parse JSON bodies
-// }
+if(!process.env.NEXT_PUBLIC_BASE_URL.includes('localhost')){
+	app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+	app.use(express.json()); // Parse JSON bodies
+}
 
 // CORS middleware
 const corsOptions = {
