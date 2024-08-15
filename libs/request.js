@@ -32,6 +32,10 @@ export const getAllThreadsByUser = async function (userId) {
     return response;
 }
 
+export const createCheckoutSession = async function (payload) {
+    console.log(payload);
+}
+
 export const sendEmail = async function (payload) {
     const apiUrl = apiClient.createUrl(`/auth/send-verification-email`);
     const response = await apiClient.post(apiUrl,payload);

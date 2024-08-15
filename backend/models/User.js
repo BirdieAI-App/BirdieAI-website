@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
         password:String
     },
     profileData:{
+        stripeCustomerId: String,
+        hasAccess:{
+            type: Boolean,
+            default: false
+        },
         firstName: String,
         lastName: String,
         DOB: Date,
