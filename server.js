@@ -6,12 +6,12 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 // const cookieParser = require('cookie-parser');
-const userRoute =         	require('./backend/routes/UserRoute.js');
-const authRoute = 		  	require('./backend/routes/authRoute.js');
-const threadRoute = 	  	require('./backend/routes/threadRoute.js');
-const messageRoute = 	  	require('./backend/routes/messageRoute.js');
-const stripeRoute = 		require('./backend/routes/stripeRoute.js');
-const stripeWebhookRoute = 	require('./backend/routes/stripeWebhookRoute.js')
+const userRoute = require('./backend/routes/UserRoute.js');
+const authRoute = require('./backend/routes/authRoute.js');
+const threadRoute = require('./backend/routes/threadRoute.js');
+const messageRoute = require('./backend/routes/messageRoute.js');
+const stripeRoute = require('./backend/routes/stripeRoute.js');
+const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
 
 const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
 console.log(corsOrigin);

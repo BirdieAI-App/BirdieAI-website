@@ -1,44 +1,34 @@
-"use client";
-
-import { useState } from "react";
-import apiClient from "@/libs/api";
 import config from "@/config";
-import { useSession, signIn } from "next-auth/react";
-import {createCheckoutSession} from '@/libs/request.js';
+import { usePayment } from "@/hooks/usePayment";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-// This component is used to create Stripe Checkout Sessions
-// It calls the /api/stripe/create-checkout route with the priceId, successUrl and cancelUrl
-// By default, it doesn't force users to be authenticated. But if they are, it will prefill the Checkout data with their email and/or credit card. You can change that in the API route
 // You can also change the mode to "subscription" if you want to create a subscription instead of a one-time payment
-const ButtonCheckout = ({ priceId}) => {
+const ButtonCheckout = ({ priceId }) => {
+  const {handlePayment, isLoading} = usePayment();
   const { data: session, status } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [userId, setUserId] = useState();
 
-  const handlePayment = async () => {
-    //redirect to Signin Page if user is not logged in
-    if(!session){
-      signIn(undefined, { callbackUrl: "/#pricing" });
+  useEffect(() => {
+    if (status !== "loading" && !session) {
+      router.push(config.auth.loginUrl);
+      // console.log('a');
+    }
+    if (session && session.user.userId) {
+      console.log(session);
+      setUserId(session.user.userId);
     }
 
-    setIsLoading(true);
-    try {
-      const res = await createCheckoutSession({
-        priceId,
-        successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/chat`,
-        cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/#pricing`,
-      });
-      window.location.href = res.url;
-    } catch (e) {
-      console.log(e.message);
-    }
-
-    setIsLoading(false);
-  };
+  }, [session, status]);
+  // console.log(userId);
+  // console.log(session);
 
   return (
     <button
       className="btn btn-primary btn-block group"
-      onClick={() => handlePayment()}
+      onClick={() => userId && handlePayment({priceId,userId})}
     >
       {isLoading ? (
         <span className="loading loading-spinner loading-xs"></span>

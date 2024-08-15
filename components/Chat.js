@@ -101,6 +101,7 @@ const Chat = () => {
   };
 
   // console.log(paginatedThreads);
+  // console.log(userId);
 
   return (
     <div className="flex flex-col font-sans relative">
