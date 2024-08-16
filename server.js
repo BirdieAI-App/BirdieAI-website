@@ -11,8 +11,6 @@ const userRoute = require('./backend/routes/UserRoute.js');
 const authRoute = require('./backend/routes/authRoute.js');
 const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js')
-const chatRoute = require('./backend/routes/chatRoute.js')
-const openAiIntegrateRoute = require('./backend/routes/openAIIntegrateRoute.js')
 const compression = require('compression');
 
 // Load environment variables from .env file
@@ -59,9 +57,7 @@ mongoose.connect(mongoURI)
 app.use('/call', userRoute)
 app.use('/call', authRoute)
 app.use('/call', threadRoute)
-app.use('/call', openAiIntegrateRoute)
 app.use('/call', messageRoute)
-app.use('/call', chatRoute)
 
 // app.listen(port, () => {
 // 	console.log(`Server is running on port ${port}`);

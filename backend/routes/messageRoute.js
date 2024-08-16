@@ -48,40 +48,50 @@ messageRoute.route("/messages")
             return res.status(400).send("Request body contains an invalid field")
         }
         if(!req.body.threadID){
+            console.log("Request body must contains threadID to associate the message with")
             return res.status(400).send("Request body must contains threadID to associate the message with");
         }
+
         try{//checking for existing thread in database
-            const thread = await Thread.findById(req.body.threadID);
+            const thread = await Thread.find({threadID : req.body.threadID});
             if(!thread){
+                console.log("Thread with ID="+req.body.threadID+" does NOT exist in database")
                 return res.status(400).send("Thread with ID="+req.body.threadID+" does NOT exist in database");
             }
         }catch(err){
             return res.status(500).send("Unexpected error occured when validating threadID for (PUT) in /message: "+err);
         }
+
         if(!req.body.messageID){
+            console.log("Request body must contains messageID returns from OpenAI")
             return res.status(400).send("Request body must contains messageID returns from OpenAI");
         }
         try{//checking to see if messageID already been set
             const existingMessage = await Message.find({"messageID": req.body.messageID})
             if(existingMessage.length != 0){
+                console.log("The given messageID is already been set")
                 return res.status(400).send("The given messageID is already been set");
             }
         }catch(err){
             return res.status(500).send("Unexpected error occurred while validating messageID: "+ err);
         }
+
         if(!req.body.prompt){
+            console.log("request body must contains user's prompt")
             return res.status(400).send("request body must contains user's prompt")
         }
+
         if(!req.body.message_total_token){
             return res.status(400).send("request body must contains total number of token returns from OpenAI")
         }
+
         const newMessageBody = {}
         for(const key in req.body){
             newMessageBody[key] = req.body[key]
         }
         try{//adding new message into message collection and update 'update_at' field in Thread collection
             const message = await new Message(newMessageBody).save();
-            await Thread.updateOne({"_id": req.body.threadID},{$set:{"update_at": Date.now()}})
+            await Thread.updateOne({"ThreadID": req.body.threadID},{$set:{"update_at": Date.now()}})
             return res.status(200).json(message);
         }catch(err){
             return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);
