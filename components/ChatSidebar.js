@@ -12,7 +12,7 @@ export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThread
         >New Chat</button>
         <div className="mb-5">
           <ButtonAccount />
-          <span className="block mt-3 mb-3">You have used 2 of 3 free chats.</span>
+          <span className="block mt-3 mb-3">You have used 0 of 3 free chats.</span>
           <button className="bg-orange-500 text-white py-2 px-4 rounded-lg" onClick={() => router.push('/plans')}>Upgrade for less than $10 / month</button>
         </div>
         <div className="mb-3 flex flex-col">

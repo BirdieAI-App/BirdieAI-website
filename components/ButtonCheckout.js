@@ -12,10 +12,10 @@ const ButtonCheckout = ({ priceId }) => {
   const [userId, setUserId] = useState();
 
   useEffect(() => {
-    if (status !== "loading" && !session) {
-      router.push(config.auth.loginUrl);
-      // console.log('a');
-    }
+    // if (status !== "loading" && !session) {
+    //   router.push(config.auth.loginUrl);
+    //   // console.log('a');
+    // }
     if (session && session.user.userId) {
       console.log(session);
       setUserId(session.user.userId);
@@ -28,7 +28,7 @@ const ButtonCheckout = ({ priceId }) => {
   return (
     <button
       className="btn btn-primary btn-block group"
-      onClick={() => userId && handlePayment({priceId,userId})}
+      onClick={() => userId ? handlePayment({priceId,userId}) : router.push('/api/auth/signin')}
     >
       {isLoading ? (
         <span className="loading loading-spinner loading-xs"></span>

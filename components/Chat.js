@@ -12,6 +12,9 @@ import ChatSidebar from "./ChatSidebar";
 import ChatBubble from "./ChatBubble";
 import Conversation from "./ChatConversation";
 import { useChat } from "@/hooks/useChat";
+import { Inter } from "next/font/google";
+
+const font = Inter({ subsets: ["latin"] });
 
 const Chat = () => {
   const { data: session, status } = useSession();
@@ -102,9 +105,10 @@ const Chat = () => {
 
   // console.log(paginatedThreads);
   // console.log(userId);
+  const chatStyle = `flex flex-col relative ${font.className}`
 
   return (
-    <div className="flex flex-col font-sans relative">
+    <div className={chatStyle}>
       <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
         allThreads={allThreads} paginatedThreads={paginatedThreads}
         closeSidebar={closeSidebar}
