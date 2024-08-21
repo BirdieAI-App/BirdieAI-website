@@ -93,12 +93,39 @@ const Chat = () => {
   const openThreadByID = async function (id) {
     try {
         setThreadID(id);
+        setConversation([]);
         const data = await retrieveAllMessagesByThreadID(id);
         // Update the conversation state with the retrieved data
         if (data && data.length > 0) {
             console.log(data);
-            setConversation(data);
-        }
+            setConversation(() => {
+              const updatedData = []
+              data?.forEach(message => {
+                // Create user prompt object
+                const userPrompt = {
+                    ...message, // Copy all original properties
+                    role: 'user',
+                    content: message.prompt // Set content to the prompt value
+                };
+                delete userPrompt.prompt; // Remove the original prompt field
+                delete userPrompt.response; // Remove the original response field
+        
+                // Create bot response object
+                const botResponse = {
+                    ...message, // Copy all original properties
+                    role: 'bot',
+                    content: message.response // Set content to the response value
+                };
+                delete botResponse.prompt; // Remove the original prompt field
+                delete botResponse.response; // Remove the original response field
+        
+                // Push both objects into the splitMessages array
+                updatedData.push(userPrompt, botResponse);
+            });
+        
+            return updatedData;
+            });
+        } 
     } catch (err) {
         console.log(err);
     }
