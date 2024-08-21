@@ -13,9 +13,9 @@ export default function ChatRecommendation({ setCurrentMessage }) {
                 <header className="mb-5">
                     <h1 className="text-center">Have no ideas? Here are some questions that other Moms often ask!</h1>
                 </header>
-                <div className="flex flex-row flex-1 items-center w-full">
+                <div className="flex flex-col flex-1 items-center w-full">
                     {suggestions?.map((item, idx) => (
-                        <button key={idx} className="text-black py-3 mx-2 border border-gray-300 rounded-lg mb-3 text-center w-full md:w-1/2 lg:w-1/3"
+                        <button key={idx} className="text-black py-3 mx-2 border border-gray-300 rounded-lg mb-3 text-center w-full md:w-1/2 lg:w-1/2"
                             onClick={() => setCurrentMessage(item)}>{item}</button>
                     ))}
                 </div>
