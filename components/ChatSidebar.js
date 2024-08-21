@@ -3,15 +3,11 @@ import ButtonAccount from "./ButtonAccount";
 import { useRouter } from "next/navigation";
 
 
-export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated }) {
+export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID }) {
   const router = useRouter();
-  const {setThreadID, retrieveAllMessagesByThreadID}  = useChat();
+  // const {conversation}  = useChat();
 
-  const openThreadByID = async function (id) {
-    setThreadID(id);
-    // console.log(id);
-    await retrieveAllMessagesByThreadID(id);
-  }
+  // console.log(conversation);
 
   return (
     <div>
@@ -28,7 +24,7 @@ export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThread
           <h4 className={`mb-2 ${(allThreads.length > 5) ? "" : "hidden"}`}>Previous Chats</h4>
           {paginatedThreads.data?.map((item, idx) => (
             <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded-lg mb-3 text-center"
-            onClick={() => openThreadByID(item?._id)}>{item?.title}</button>
+            onClick={() => openThreadByID(item?.threadID)}>{item?.title}</button>
           ))}
         </div>
         <button className={`text-white py-3 px-2 rounded-lg mb-3 text-center bg-green-500 ${((allThreads.length < 5) || (paginatedThreads.nextPage === null)) ? "hidden" : ""}`}

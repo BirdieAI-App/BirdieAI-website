@@ -4,12 +4,9 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import config from "@/config";
 import { useRouter } from "next/navigation";
-import ButtonAccount from "./ButtonAccount";
 import { getAllThreadsByUser } from "@/libs/request";
 import { getAllThreadsByUserPaginated } from "@/libs/util";
-import ChatRecommendation from "./ChatRecommendation";
 import ChatSidebar from "./ChatSidebar";
-import ChatBubble from "./ChatBubble";
 import Conversation from "./ChatConversation";
 import { useChat } from "@/hooks/useChat";
 import { Inter } from "next/font/google";
@@ -25,8 +22,8 @@ const Chat = () => {
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
   // const [conversation, setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4', 'Conversation 5']);
   
-  const { streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage,
-  sentFirstMessage, setSentFirstMessage, currentResponse, setCurrentResponse, threadID} = useChat();
+  const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse, 
+    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation } = useChat();
 
   const router = useRouter();
   
@@ -45,7 +42,7 @@ const Chat = () => {
   const getThreadsPaginated = async (page, data) => {
     try {
       const threads = await getAllThreadsByUserPaginated(page, data);
-      console.log(threads);
+      // console.log(threads);
       setPaginatedThreads(previousResponse => {
         if (previousResponse === null) {
           return threads;
@@ -57,23 +54,13 @@ const Chat = () => {
     }
   }
 
-  // const handleMessageChange = (event) => {
-  //   setCurrentMessage(event.target.value);
-  // };
-
-  // const handleSubmit = () => {
-  //   // Handle the user input here, e.g., send it to an API or use it in your application
-  //   console.log('User input submitted:', userInput);
-  //   setUserInput('');
-  // };
-
   useEffect(() => {
     if (status !== "loading" && !session) {
       router.push(config.auth.loginUrl);
       // console.log('a');
     }
     if (session && session.user.userId) {
-      console.log(session);
+      // console.log(session);
       setUserId(session.user.userId);
     }
 
@@ -103,9 +90,26 @@ const Chat = () => {
     setIsSidebarOpen(false);
   };
 
-  console.log(paginatedThreads);
+  const openThreadByID = async function (id) {
+    try {
+        setThreadID(id);
+        const data = await retrieveAllMessagesByThreadID(id);
+        // Update the conversation state with the retrieved data
+        if (data && data.length > 0) {
+            console.log(data);
+            setConversation(data);
+        }
+    } catch (err) {
+        console.log(err);
+    }
+    
+}
+
+  // console.log(paginatedThreads);
   // console.log(userId);
-  const chatStyle = `flex flex-col relative ${font.className}`
+  const chatStyle = `flex flex-col relative ${font.className}`;
+  console.log(threadID);
+  console.log(conversation);
 
   return (
     <div className={chatStyle}>
@@ -113,14 +117,18 @@ const Chat = () => {
         allThreads={allThreads} paginatedThreads={paginatedThreads}
         closeSidebar={closeSidebar}
         getThreadsPaginated={getThreadsPaginated}
+        openThreadByID = {openThreadByID}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
-        {(!sentFirstMessage) ?
+        {/* {(!sentFirstMessage) ?
           <ChatRecommendation setCurrentMessage={setMessage}/> :
           <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
           currentResponse = {currentResponse} />
-        }
-        {(!threadID) ? <></> : <></>}
+        } */}
+        {/* {(!threadID || !sentFirstMessage) ? <ChatRecommendation setCurrentMessage={setMessage}/> : <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
+          currentResponse = {currentResponse} />}  */}
+        <Conversation user={session?.user} streaming={streaming} 
+          currentResponse = {currentResponse} conversation={conversation}/>
         <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
           <div className="flex flex-row items-center w-3/4">
             <input

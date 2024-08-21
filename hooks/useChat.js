@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import config from "@/config";
 import axios from "axios";
 import OpenAI from "openai";
 
@@ -32,8 +29,8 @@ export function useChat() {
 
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
-            const data = await axios.get(`http://localhost:3000/call/messages/t/${id}`);
-            console.log(data);
+            const response = await axios.get(`http://localhost:3000/call/messages/t/${id}`);
+            return response.data;
         } catch (err) {
             console.log(err);
         }
@@ -41,6 +38,7 @@ export function useChat() {
 
     const handleOnClick = async function () {
         if (!sentFirstMessage) setSentFirstMessage(true);
+        console.log(threadID);
         setMessage("");
         const newConversation = [
             ...conversation,
@@ -63,6 +61,7 @@ export function useChat() {
             if (content.length > 0) {
                 setStreaming(true);
             }
+            collectedData += content;
             setCurrentResponse((prev) => prev + content);
         }
 
@@ -95,6 +94,8 @@ export function useChat() {
 
         // Save Message
         // If doing like this, User can create new Message when previous message have not been 
+        console.log(collectedData);
+
         if (collectedData.length > 0) {
             const messageBody = {
                 threadID: upatedThreadID.length == 0 ? threadID : upatedThreadID,
@@ -135,10 +136,13 @@ export function useChat() {
         }
         setCurrentResponse("");
     }
-    console.log(threadID);
+
+    
+    // console.log(threadID);
+    // console.log(conversation);
 
     return {
         streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage,
-        currentResponse, setCurrentResponse, setThreadID, retrieveAllMessagesByThreadID
+        currentResponse, setCurrentResponse, setThreadID, threadID, retrieveAllMessagesByThreadID
     };
 }
