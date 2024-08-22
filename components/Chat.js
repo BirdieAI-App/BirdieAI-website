@@ -10,6 +10,8 @@ import ChatSidebar from "./ChatSidebar";
 import Conversation from "./ChatConversation";
 import { useChat } from "@/hooks/useChat";
 import { Inter } from "next/font/google";
+import ChatRecommendation from "./ChatRecommendation";
+
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -21,12 +23,14 @@ const Chat = () => {
   // const [sentFirstMessage, setSentFirstMessage] = useState(false);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
   // const [conversation, setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4', 'Conversation 5']);
-  
-  const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse, 
-    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation } = useChat();
+
+  const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse,
+    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage } = useChat();
+
+  const [loadingLatestMessages, setLoadingLatestMessages] = useState(false);
 
   const router = useRouter();
-  
+
   const getThreads = async (userId) => {
     if (userId) {
       try {
@@ -52,6 +56,31 @@ const Chat = () => {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  const filterConversationData = function (updatedData, data) {
+    data?.forEach(message => {
+      // Create user prompt object
+      const userPrompt = {
+        ...message, // Copy all original properties
+        role: 'user',
+        content: message.prompt // Set content to the prompt value
+      };
+      delete userPrompt.prompt; // Remove the original prompt field
+      delete userPrompt.response; // Remove the original response field
+
+      // Create bot response object
+      const botResponse = {
+        ...message, // Copy all original properties
+        role: 'assistant',
+        content: message.response // Set content to the response value
+      };
+      delete botResponse.prompt; // Remove the original prompt field
+      delete botResponse.response; // Remove the original response field
+
+      // Push both objects into the splitMessages array
+      updatedData.push(userPrompt, botResponse);
+    });
   }
 
   useEffect(() => {
@@ -92,45 +121,26 @@ const Chat = () => {
 
   const openThreadByID = async function (id) {
     try {
-        setThreadID(id);
-        setConversation([]);
-        const data = await retrieveAllMessagesByThreadID(id);
-        // Update the conversation state with the retrieved data
-        if (data && data.length > 0) {
-            console.log(data);
-            setConversation(() => {
-              const updatedData = []
-              data?.forEach(message => {
-                // Create user prompt object
-                const userPrompt = {
-                    ...message, // Copy all original properties
-                    role: 'user',
-                    content: message.prompt // Set content to the prompt value
-                };
-                delete userPrompt.prompt; // Remove the original prompt field
-                delete userPrompt.response; // Remove the original response field
-        
-                // Create bot response object
-                const botResponse = {
-                    ...message, // Copy all original properties
-                    role: 'bot',
-                    content: message.response // Set content to the response value
-                };
-                delete botResponse.prompt; // Remove the original prompt field
-                delete botResponse.response; // Remove the original response field
-        
-                // Push both objects into the splitMessages array
-                updatedData.push(userPrompt, botResponse);
-            });
-        
-            return updatedData;
-            });
-        } 
+      setThreadID(id);
+      setLoadingLatestMessages(true);
+      setConversation([]);
+      const data = await retrieveAllMessagesByThreadID(id);
+      // Update the conversation state with the retrieved data
+      if (data && data.length > 0) {
+        console.log(data);
+        setSentFirstMessage(true);
+        setConversation(() => {
+          const updatedData = [];
+          filterConversationData(updatedData, data);
+          return updatedData;
+        });
+      }
+      setLoadingLatestMessages(false);
     } catch (err) {
-        console.log(err);
+      console.log(err);
+      setLoadingLatestMessages(false);
     }
-    
-}
+  }
 
   // console.log(paginatedThreads);
   // console.log(userId);
@@ -144,18 +154,38 @@ const Chat = () => {
         allThreads={allThreads} paginatedThreads={paginatedThreads}
         closeSidebar={closeSidebar}
         getThreadsPaginated={getThreadsPaginated}
-        openThreadByID = {openThreadByID}
+        openThreadByID={openThreadByID}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {/* {(!sentFirstMessage) ?
           <ChatRecommendation setCurrentMessage={setMessage}/> :
           <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
           currentResponse = {currentResponse} />
+        }
+        {(!threadID || !sentFirstMessage) ? <ChatRecommendation setCurrentMessage={setMessage}/> : <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
+          currentResponse = {currentResponse} />} 
+        {loadingLatestMessages ?
+          <>
+            <p> Loading latest messages... </p>
+          </> :
+          <Conversation user={session?.user} streaming={streaming}
+            currentResponse={currentResponse} conversation={conversation} />
         } */}
-        {/* {(!threadID || !sentFirstMessage) ? <ChatRecommendation setCurrentMessage={setMessage}/> : <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
-          currentResponse = {currentResponse} />}  */}
-        <Conversation user={session?.user} streaming={streaming} 
-          currentResponse = {currentResponse} conversation={conversation}/>
+        {loadingLatestMessages ? (
+          <div>
+          <p>Loading latest messages...</p>
+          </div>
+        ) : (!threadID) ? (
+          <ChatRecommendation setCurrentMessage={setMessage} />
+        ) : (
+          <Conversation 
+            user={session?.user} 
+            conversation={conversation} 
+            streaming={streaming} 
+            currentResponse={currentResponse} 
+          />
+        )}
+
         <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
           <div className="flex flex-row items-center w-3/4">
             <input
@@ -166,7 +196,7 @@ const Chat = () => {
               placeholder="Enter your text here"
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
             />
-            <button onClick={handleOnClick} className="bg-green-500 text-white py-2 px-2 rounded-lg">Submit</button>
+            <button onClick={() => handleOnClick(userId)} className="bg-green-500 text-white py-2 px-2 rounded-lg">Submit</button>
           </div>
           <footer className="mt-auto text-center text-gray-600 text-sm py-5">
             <span className="disclaimer-text">

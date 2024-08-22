@@ -36,10 +36,11 @@ export function useChat() {
         }
     }
 
-    const handleOnClick = async function () {
+    const handleOnClick = async function (userID) {
         if (!sentFirstMessage) setSentFirstMessage(true);
         console.log(threadID);
         setMessage("");
+        console.log(conversation);
         const newConversation = [
             ...conversation,
             {
@@ -74,7 +75,7 @@ export function useChat() {
                 upatedThreadID = thread.id;
                 setThreadID(upatedThreadID);
                 const newThreadBody = {
-                    userID: "66be7d53693c72a8dd5e630e",
+                    userID: userID,
                     threadID: upatedThreadID,
                     title: "Summary Task Later",
                     create_at: thread.created_at,
