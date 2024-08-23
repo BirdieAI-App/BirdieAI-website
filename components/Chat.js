@@ -99,9 +99,9 @@ const Chat = () => {
     getThreads(userId);
   }, [userId]);
 
-  useEffect(() => {
-    allThreads && getThreadsPaginated(0, allThreads);
-  }, [allThreads])
+  // useEffect(() => {
+  //   allThreads && getThreadsPaginated(0, allThreads);
+  // }, [allThreads])
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -155,6 +155,8 @@ const Chat = () => {
         closeSidebar={closeSidebar}
         getThreadsPaginated={getThreadsPaginated}
         openThreadByID={openThreadByID}
+        setThreadID={setThreadID}
+        setConversation={setConversation}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {/* {(!sentFirstMessage) ?
@@ -173,16 +175,16 @@ const Chat = () => {
         } */}
         {loadingLatestMessages ? (
           <div>
-          <p>Loading latest messages...</p>
+            <p>Loading latest messages...</p>
           </div>
         ) : (!threadID) ? (
           <ChatRecommendation setCurrentMessage={setMessage} />
         ) : (
-          <Conversation 
-            user={session?.user} 
-            conversation={conversation} 
-            streaming={streaming} 
-            currentResponse={currentResponse} 
+          <Conversation
+            user={session?.user}
+            conversation={conversation}
+            streaming={streaming}
+            currentResponse={currentResponse}
           />
         )}
 
@@ -196,7 +198,23 @@ const Chat = () => {
               placeholder="Enter your text here"
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
             />
-            <button onClick={() => handleOnClick(userId)} className="bg-green-500 text-white py-2 px-2 rounded-lg">Submit</button>
+            <button
+              onClick={async () => {
+                const newThread = await handleOnClick(userId);
+                if (newThread) {
+                  setAllThreads((prevThreads) => {
+                    const remainingThreads = prevThreads.filter(
+                      (thread) => thread.threadID !== newThread.threadID
+                    );
+                    return [...remainingThreads, newThread];
+                  });
+                }
+              }}
+              className="bg-green-500 text-white py-2 px-2 rounded-lg"
+            >
+              Submit
+            </button>
+
           </div>
           <footer className="mt-auto text-center text-gray-600 text-sm py-5">
             <span className="disclaimer-text">

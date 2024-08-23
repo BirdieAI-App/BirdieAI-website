@@ -49,13 +49,13 @@ export function useChat() {
             },
         ];
         setConversation(newConversation);
-
+    
         const stream = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: newConversation,
             stream: true,
         });
-
+    
         let collectedData = "";
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || "";
@@ -65,59 +65,65 @@ export function useChat() {
             collectedData += content;
             setCurrentResponse((prev) => prev + content);
         }
-
+    
         setMessage("");
-        let upatedThreadID = "";
-        if (threadID.length == 0) {
+        let updatedThreadID = threadID;
+        let threadResponse = null;
+    
+        if (threadID.length === 0) {
             try {
-                // create Thread
+                // Create Thread
                 const thread = await openai.beta.threads.create();
-                upatedThreadID = thread.id;
-                setThreadID(upatedThreadID);
+                updatedThreadID = thread.id;
+                setThreadID(updatedThreadID);
+    
                 const newThreadBody = {
                     userID: userID,
-                    threadID: upatedThreadID,
+                    threadID: updatedThreadID,
                     title: "Summary Task Later",
                     create_at: thread.created_at,
                     file_ID: "Do not know what this is for",
                     modified_thread: false,
                     update_at: null,
                 };
+    
                 // Save Thread
                 const url = "http://localhost:3000/call/threads";
-                const response = await axios.put(url, newThreadBody);
-                console.log(response.data);
-                console.log("Save Thread successfully !");
+                threadResponse = await axios.put(url, newThreadBody);
+                console.log(threadResponse.data);
+                console.log("Thread saved successfully!");
+    
             } catch (error) {
-                console.log(`Error when trying to save Thread.`);
+                console.log(`Error when trying to save Thread: ${error}`);
+                return null;
             }
         }
-
+    
         // Save Message
-        // If doing like this, User can create new Message when previous message have not been 
-        console.log(collectedData);
-
-        if (collectedData.length > 0) {
+        if (collectedData.length > 0 && updatedThreadID.length > 0) {
             const messageBody = {
-                threadID: upatedThreadID.length == 0 ? threadID : upatedThreadID,
+                threadID: updatedThreadID,
                 messageID: Date.now().toString(),
                 create_at: Date.now(),
                 prompt: message,
                 response: collectedData,
                 message_total_token: 1200,
             };
+    
             try {
-                // add functions to request.js to fix
-                const response = await axios.put(
+                const messageResponse = await axios.put(
                     "http://localhost:3000/call/messages",
                     messageBody
                 );
-                console.log(response);
+                console.log(messageResponse);
             } catch (error) {
-                console.log(`Error when trying to Save Message.`);
+                console.log(`Error when trying to save Message: ${error}`);
             }
         }
-    }
+    
+        return threadResponse ? threadResponse.data : null;
+    };
+    
 
     function handleOnChange(event) {
         setMessage(event.target.value);

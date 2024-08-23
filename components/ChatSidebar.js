@@ -1,9 +1,8 @@
-import { useChat } from "@/hooks/useChat";
 import ButtonAccount from "./ButtonAccount";
 import { useRouter } from "next/navigation";
 
 
-export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID }) {
+export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID, setThreadID, setConversation }) {
   const router = useRouter();
   // const {conversation}  = useChat();
 
@@ -13,7 +12,12 @@ export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThread
     <div>
       <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
         <button className="bg-green-500 text-white py-2 px-4 rounded-lg mb-5"
-          onClick={() => router.push('/chat')}
+          onClick={() => {
+            setThreadID("");
+            setConversation([]);
+            router.push('/chat');
+          }
+          }
         >New Chat</button>
         <div className="mb-5">
           <ButtonAccount />
@@ -22,17 +26,17 @@ export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThread
         </div>
         <div className="mb-3 flex flex-col">
           <h4 className={`mb-2 ${(allThreads.length > 5) ? "" : "hidden"}`}>Previous Chats</h4>
-          {paginatedThreads.data?.map((item, idx) => (
+          {allThreads?.map((item, idx) => (
             <button key={idx} className="text-black py-3 px-2 border border-gray-300 rounded-lg mb-3 text-center"
-            onClick={() => openThreadByID(item?.threadID)}>{item?.title}</button>
+              onClick={() => openThreadByID(item?.threadID)}>{item?.threadID}</button>
           ))}
         </div>
-        <button className={`text-white py-3 px-2 rounded-lg mb-3 text-center bg-green-500 ${((allThreads.length < 5) || (paginatedThreads.nextPage === null)) ? "hidden" : ""}`}
+        {/* <button className={`text-white py-3 px-2 rounded-lg mb-3 text-center bg-green-500 ${((allThreads.length < 5) || (paginatedThreads.nextPage === null)) ? "hidden" : ""}`}
           onClick={() => {
             paginatedThreads.nextPage && getThreadsPaginated(paginatedThreads.nextPage, allThreads);
           }}>
           Load more
-        </button>
+        </button> */}
       </aside>
 
       {/* Overlay for small screens */}
