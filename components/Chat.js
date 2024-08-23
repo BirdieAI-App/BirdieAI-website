@@ -203,6 +203,7 @@ const Chat = () => {
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
             />
             <button
+              disabled = {loadingLatestMessages}
               onClick={async () => {
                 const newThread = await handleOnClick(userId);
                 if (newThread) {
