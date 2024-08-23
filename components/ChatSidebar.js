@@ -2,7 +2,7 @@ import ButtonAccount from "./ButtonAccount";
 import { useRouter } from "next/navigation";
 
 
-export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID, setThreadID, setConversation }) {
+export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage }) {
   const router = useRouter();
   // const {conversation}  = useChat();
 
@@ -15,10 +15,9 @@ export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThread
           onClick={() => {
             setThreadID("");
             setConversation([]);
+            setSentFirstMessage(false);
             router.push('/chat');
-          }
-          }
-        >New Chat</button>
+          }}> New Chat </button>
         <div className="mb-5">
           <ButtonAccount />
           <span className="block mt-3 mb-3">You have used 0 of 3 free chats.</span>

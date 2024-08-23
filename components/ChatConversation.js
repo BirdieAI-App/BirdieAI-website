@@ -11,7 +11,7 @@ md.renderer.rules.link_open = (tokens, idx) => {
 
 export default function Conversation({ conversation, user, streaming, currentResponse }) {
   // const {conversation} = useChat();
-  console.log(conversation);
+  // console.log(conversation);
 
   return (
     <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">

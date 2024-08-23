@@ -120,6 +120,8 @@ export function useChat() {
                 console.log(`Error when trying to save Message: ${error}`);
             }
         }
+
+        setSentFirstMessage(false);
     
         return threadResponse ? threadResponse.data : null;
     };
@@ -150,6 +152,6 @@ export function useChat() {
 
     return {
         streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage,
-        currentResponse, setCurrentResponse, setThreadID, threadID, retrieveAllMessagesByThreadID
+        currentResponse, setCurrentResponse, setThreadID, threadID, retrieveAllMessagesByThreadID, setStreaming
     };
 }
