@@ -28,6 +28,7 @@ const Chat = () => {
     threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage, setStreaming } = useChat();
 
   const [loadingLatestMessages, setLoadingLatestMessages] = useState(false);
+  const [loadingAllThreads, setLoadingAllThreads] = useState(true);
 
   const router = useRouter();
 
@@ -98,6 +99,7 @@ const Chat = () => {
 
   useEffect(() => {
     getThreads(userId);
+    setLoadingAllThreads(false);
   }, [userId]);
 
   // useEffect(() => {
@@ -161,6 +163,7 @@ const Chat = () => {
         setThreadID={setThreadID}
         setConversation={setConversation}
         setSentFirstMessage={setSentFirstMessage}
+        loadingAllThreads={loadingAllThreads}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {/* {(!sentFirstMessage) ?
