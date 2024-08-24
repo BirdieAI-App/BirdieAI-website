@@ -47,18 +47,42 @@ stripeRoute.post('/stripe/create-checkout', async(req,res)=>{
             consent_collection: {
                 terms_of_service: 'required'
             },
-            expires_at: Math.floor(Date.now() / 1000) + (60 * 30)
+            expires_at: Math.floor(Date.now() / 1000) + (60 * 30),
+            metadata:{
+                paymentProcessed: 'false'
+            },
+            subscription_data: {
+                metadata: {
+                  sessionId: '{{CHECKOUT_SESSION_ID}}'
+                }
+              }            
         };       
         try{
             const stripeCheckoutSession = await stripe.checkout.sessions.create({
                 ...requiredParamater,
                 ...extraParameter
             });
-            return res.status(200).json({url: stripeCheckoutSession.url});
+            return res.status(200).json({
+                url: stripeCheckoutSession.url,
+                checkoutSessionId: stripeCheckoutSession.id
+            });
         }catch(err){
             console.log(err.message)
             return res.status(500).send("Unexpected Error occured while creating stripe checkout session: " + err.message);
         }
-    })
+    }
+)
+
+stripeRoute.get('/stripe/session/:sessionID', async(req,res)=>{
+    console.log("in /stripe/session/:sessionID checkin Payment Status")
+    const sessionID = req.params.sessionID;
+    try {
+        const session = await stripe.checkout.sessions.retrieve(sessionID);
+        res.status(200).json({ paymentProcessed: session.metadata.paymentProcessed });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+
+})    
 
 module.exports = stripeRoute;
