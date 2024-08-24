@@ -26,9 +26,10 @@ const Chat = () => {
   // const [conversation, setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4', 'Conversation 5']);
 
   const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse,
-    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage } = useChat();
+    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage, setStreaming } = useChat();
 
   const [loadingLatestMessages, setLoadingLatestMessages] = useState(false);
+  const [loadingAllThreads, setLoadingAllThreads] = useState(true);
 
   const router = useRouter();
   const [userTier, setUserTier] = useState("");
@@ -69,7 +70,8 @@ const Chat = () => {
     }
   }
 
-  const filterConversationData = function (updatedData, data) {
+  const filterConversationData = function (updatedData, data, id) {
+    // data = data.filter((msg,idx) => msg.threadID == id);
     data?.forEach(message => {
       // Create user prompt object
       const userPrompt = {
@@ -135,6 +137,7 @@ const Chat = () => {
 
   useEffect(() => {
     getThreads(userId);
+    setLoadingAllThreads(false);
   }, [userId]);
 
   // useEffect(() => {
@@ -187,14 +190,16 @@ const Chat = () => {
       setThreadID(id);
       setLoadingLatestMessages(true);
       setConversation([]);
+      setStreaming(false);
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
         console.log(data);
-        setSentFirstMessage(true);
+        setSentFirstMessage(false);
         setConversation(() => {
           const updatedData = [];
-          filterConversationData(updatedData, data);
+          filterConversationData(updatedData, data, id);
+          console.log(updatedData)
           return updatedData;
         });
       }
@@ -210,6 +215,8 @@ const Chat = () => {
   const chatStyle = `flex flex-col relative ${font.className}`;
   // console.log(threadID);
   // console.log(conversation);
+  // console.log(threadID);
+  // console.log(conversation);
 
   return (
     <div className={chatStyle}>
@@ -220,6 +227,8 @@ const Chat = () => {
         openThreadByID={openThreadByID}
         setThreadID={setThreadID}
         setConversation={setConversation}
+        setSentFirstMessage={setSentFirstMessage}
+        loadingAllThreads={loadingAllThreads}
         subscriptionTier={userTier}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
@@ -241,7 +250,7 @@ const Chat = () => {
           <div>
             <p>Loading latest messages...</p>
           </div>
-        ) : (!threadID) ? (
+        ) : (!threadID && !sentFirstMessage) ? (
           <ChatRecommendation setCurrentMessage={setMessage} />
         ) : (
           <Conversation
@@ -263,6 +272,7 @@ const Chat = () => {
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
             />
             <button
+              disabled = {loadingLatestMessages}
               onClick={async () => {
                 const newThread = await handleOnClick(userId);
                 if (newThread) {
