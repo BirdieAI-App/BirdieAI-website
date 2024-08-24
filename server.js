@@ -64,7 +64,4 @@ app.use('/call', messageRoute)
 app.use('/call', stripeRoute)
 app.use('/call', stripeWebhookRoute)
 
-// app.listen(port, () => {
-// 	console.log(`Server is running on port ${port}`);
-// });
 export default app;
