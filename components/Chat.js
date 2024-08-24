@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import config from "@/config";
 import { useRouter } from "next/navigation";
-import { getAllThreadsByUser } from "@/libs/request";
+import { getAllThreadsByUser, checkPaymentStatus, getUserByID } from "@/libs/request";
 import { getAllThreadsByUserPaginated } from "@/libs/util";
 import ChatSidebar from "./ChatSidebar";
 import Conversation from "./ChatConversation";
 import { useChat } from "@/hooks/useChat";
 import { Inter } from "next/font/google";
 import ChatRecommendation from "./ChatRecommendation";
+import LoadingSpinner from "./LoadingSpinner";
 
 
 const font = Inter({ subsets: ["latin"] });
@@ -30,6 +31,17 @@ const Chat = () => {
   const [loadingLatestMessages, setLoadingLatestMessages] = useState(false);
 
   const router = useRouter();
+  const [userTier, setUserTier] = useState("");
+  const effectRan = useRef(false); //using useRef to stop double invoke
+  const [loadedUserInfo, setLoadedUserInfo] = useState(false);
+
+  /*
+  Read this:
+  In development mode, React intentionally double-invokes certain lifecycle methods, 
+  including the effect hook, to help identify potential issues with side effects. 
+  Without this hook, page will be loaded twice
+  */
+
 
   const getThreads = async (userId) => {
     if (userId) {
@@ -39,7 +51,6 @@ const Chat = () => {
       } catch (err) {
         console.log(err);
       }
-
     }
   }
 
@@ -83,13 +94,40 @@ const Chat = () => {
     });
   }
 
+  const stripePaymentStatus = async (checkoutSessionID) => {
+    if (!checkoutSessionID) return false;
+    try {
+      let res = await checkPaymentStatus(checkoutSessionID);
+      if (res.paymentProcessed === 'true') {
+        sessionStorage.removeItem('checkoutSessionID');
+        alert("payment is processed!!!!!!");
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return stripePaymentStatus(checkoutSessionID);
+      }
+    } catch (err) {
+      console.log(err);
+      return false
+    }
+  }
+
+  const getUserInfo = async (userId) => {
+    if (!userId || userId.length === 0) return null;
+    try {
+      const user = await getUserByID(userId); 
+      setLoadedUserInfo(true);
+      return user;
+    } catch (err) {
+      console.error("Error getting user in chat:", err.message);
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (status !== "loading" && !session) {
       router.push(config.auth.loginUrl);
-      // console.log('a');
     }
     if (session && session.user.userId) {
-      // console.log(session);
       setUserId(session.user.userId);
     }
 
@@ -103,8 +141,33 @@ const Chat = () => {
   //   allThreads && getThreadsPaginated(0, allThreads);
   // }, [allThreads])
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
+  //Check user Subscription Tier
+  useEffect(() => {
+    const checkUserSubscription = async () => {
+      if (!userId) return;
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromStripe = urlParams.get('stripeRedirect');
+      if (fromStripe) {
+        const paymentProcessed = await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
+        if (paymentProcessed) {
+          window.history.replaceState({}, document.title, "/chat");
+        }
+      }
+      const user = await getUserInfo(userId);
+      if (user && user.profileData) {
+        setUserTier(user.profileData.subscriptionTier);
+      }
+    };
+
+    checkUserSubscription();
+  }, [userId]);
+
+  if (!loadedUserInfo || status === "loading") {
+    return (
+      <div className="w-screen h-screen flex flex-col items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
   }
 
   if (!session) {
@@ -145,8 +208,8 @@ const Chat = () => {
   // console.log(paginatedThreads);
   // console.log(userId);
   const chatStyle = `flex flex-col relative ${font.className}`;
-  console.log(threadID);
-  console.log(conversation);
+  // console.log(threadID);
+  // console.log(conversation);
 
   return (
     <div className={chatStyle}>
@@ -157,6 +220,7 @@ const Chat = () => {
         openThreadByID={openThreadByID}
         setThreadID={setThreadID}
         setConversation={setConversation}
+        subscriptionTier={userTier}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {/* {(!sentFirstMessage) ?

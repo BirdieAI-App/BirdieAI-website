@@ -11,11 +11,24 @@ stripeWebhookRoute.post('/stripe/webhook', async(req,res)=>{
     switch (event.type) {
         case 'invoice.payment_succeeded':
             await handleAccessGrant(event.data.object);
+            await updateSessionMetadata(event.data.object.subscription);
+
             break;
         case 'invoice.payment_failed':
         case 'customer.subscription.deleted':
             await handleAccessRevoke(event.data.object);
             break;
+
+        case 'checkout.session.completed':
+            //case to store checkout sessionID into subscription
+            const session = event.data.object;
+            if (session.subscription) {
+                await stripe.subscriptions.update(session.subscription, {
+                metadata: {
+                    sessionId: session.id
+                }
+                });
+            }
         default:
             console.log(`Unhandled event type ${event.type}`);
     }
@@ -26,7 +39,7 @@ stripeWebhookRoute.post('/stripe/webhook', async(req,res)=>{
 async function handleAccessGrant(invoice) {
     try {
         const filter = {"profileData.stripeCustomerId": invoice.customer};
-        const update = {"profileData.hasAccess": true};
+        const update = {"profileData.subscriptionTier": "Monthly"};
         const option = {"new": true};
         const user = await User.findOneAndUpdate(filter, update, option);
         if (!user) {
@@ -42,7 +55,7 @@ async function handleAccessGrant(invoice) {
 async function handleAccessRevoke(invoice) {
     try {
         const filter = {"profileData.stripeCustomerId": invoice.customer};
-        const update = {"profileData.hasAccess": false};
+        const update = {"profileData.subscriptionTier": "Free"};
         const option = {"new": true};
         const user = await User.findOneAndUpdate(filter, update, option);
         if (!user) {
@@ -54,5 +67,19 @@ async function handleAccessRevoke(invoice) {
         console.error("Error in handleAccessRevoke:", err.message);
     }
 }
+
+async function updateSessionMetadata(subscriptionId) {
+    try {
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+        const session = await stripe.checkout.sessions.retrieve(subscription.metadata.sessionId);
+        const updated = await stripe.checkout.sessions.update(session.id, {
+            metadata: { paymentProcessed: 'true' }
+        });
+    } catch (err) {
+        console.error("Error updating session metadata:", err.message);
+    }
+}
+
+
 
 module.exports = stripeWebhookRoute;

@@ -13,7 +13,6 @@ export const getAllUSers = async function () {
 }
 
 export const postUser = async function (payload) {
-    // console.log(payload);
     const apiUrl = apiClient.createUrl(`/users`);
     const response = await apiClient.post(apiUrl, payload);
     return response;
@@ -32,7 +31,6 @@ export const getAllThreadsByUser = async function (userId) {
 }
 
 export const createCheckoutSession = async function (payload) {
-    // console.log(payload);
     const apiUrl = apiClient.createUrl('stripe/create-checkout');
     const response = await apiClient.post(apiUrl, payload);
     return response;
@@ -46,7 +44,18 @@ export const sendEmail = async function (payload) {
 
 export const sendCode = async function (payload) {
     const apiUrl = apiClient.createUrl(`/auth/verify-email`);
-    // console.log(payload);
     const response = await apiClient.post(apiUrl,payload);
+    return response;
+}
+
+export const checkPaymentStatus = async function(sessionID){
+    const apiUrl = apiClient.createUrl(`/stripe/session/${sessionID}`);
+    const response = await apiClient.get(apiUrl);
+    return response;
+}
+
+export const getUserByID = async function (userId){
+    const apiUrl = apiClient.createUrl(`/users/${userId}`);
+    const response = await apiClient.get(apiUrl);
     return response;
 }

@@ -19,16 +19,12 @@ const userSchema = new mongoose.Schema({
     },
     profileData:{
         stripeCustomerId: String,
-        hasAccess:{
-            type: Boolean,
-            default: false
-        },
         firstName: String,
         lastName: String,
         DOB: Date,
         subscriptionTier:{
             type:String,
-            enum: ['Free', 'Paid'],
+            enum: ['Free', 'Monthly', 'Quarter', 'Annually'],
             default: 'Free'
         },
         creationTime:{
