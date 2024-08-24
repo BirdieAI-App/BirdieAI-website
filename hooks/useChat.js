@@ -13,6 +13,7 @@ export function useChat() {
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
     // console.log(process.env.OPENAI_API_KEY);
+    console.log(process.env.NEXT_PUBLIC_BASE_URL);
 
     const [conversation, setConversation] = useState([
         {
@@ -29,7 +30,7 @@ export function useChat() {
 
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
-            const response = await axios.get(`http://localhost:3000/call/messages/t/${id}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${id}`);
             return response.data;
         } catch (err) {
             console.log(err);
@@ -86,9 +87,11 @@ export function useChat() {
                     modified_thread: false,
                     update_at: null,
                 };
+
+                console.log(newThreadBody);
     
                 // Save Thread
-                const url = "http://localhost:3000/call/threads";
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
                 console.log(threadResponse.data);
                 console.log("Thread saved successfully!");
@@ -112,7 +115,7 @@ export function useChat() {
     
             try {
                 const messageResponse = await axios.put(
-                    "http://localhost:3000/call/messages",
+                    `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
                     messageBody
                 );
                 console.log(messageResponse);

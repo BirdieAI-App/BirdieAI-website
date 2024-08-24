@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 
 
 export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, 
-  getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage, loadingAllThreads }) {
+  getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage, loadingAllThreads, subscriptionTier }) {
   const router = useRouter();
   // const {conversation}  = useChat();
 

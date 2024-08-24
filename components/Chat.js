@@ -229,6 +229,7 @@ const Chat = () => {
         setConversation={setConversation}
         setSentFirstMessage={setSentFirstMessage}
         loadingAllThreads={loadingAllThreads}
+        subscriptionTier={userTier}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {/* {(!sentFirstMessage) ?
