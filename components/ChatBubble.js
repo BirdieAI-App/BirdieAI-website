@@ -20,7 +20,7 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                 width={24}
                 height={24}
             />
-            <div class="flex flex-col w-full max-w-[480px] leading-1.5 p-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
+            <div class="flex flex-col w-full max-w-[560px] leading-1.5 px-8 py-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
                 <div class="flex items-center space-x-2 rtl:space-x-reverse">
                     <span class="text-sm font-semibold text-gray-900">{role === "user" ? userName : "Birdie Bot"}</span>
                     <span class="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
@@ -31,7 +31,7 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                     dangerouslySetInnerHTML={{ __html: md.render(content) }}
                 />
                 </p>
-                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Delivered</span>
+                {/* <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Delivered</span> */}
             </div>
             <button id="dropdownMenuIconButton" data-dropdown-placement="bottom-start" class="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:focus:ring-gray-600" type="button"
                 onClick={() => setOpenDropdown(!openDropdown)}>

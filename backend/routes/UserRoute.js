@@ -11,7 +11,7 @@ userRoute.route('/users/:userId')
         const userId = req.params.userId;
         console.log("in /users/:userId route (GET) user with userId = " + JSON.stringify(userId));
         try{
-            let user = await User.find({"_id": userId});
+            let user = await User.findById(userId);
             if(!user){
                 return res.status(404).send("User with id: "+ userId+" does not exist in database");
             }

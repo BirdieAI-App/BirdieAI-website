@@ -13,9 +13,10 @@ export function usePayment() {
             const res = await createCheckoutSession({
                 priceId,
                 userId,
-                successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/chat`,
-                cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/#pricing`,
+                successUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/chat?stripeRedirect=true`,
+                cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/plans`,
             });
+            sessionStorage.setItem('checkoutSessionID', res.checkoutSessionId);
             window.location.href = res?.url;
             // console.log(res);
         } catch (e) {

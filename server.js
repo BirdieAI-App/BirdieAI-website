@@ -28,17 +28,12 @@ const mongoURI = process.env.MONGODB_URI;
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 app.use(express.json()); // Parse JSON bodies
 
-app.use((req, res, next) => {
-	// console.log(`Received ${req.method} request for ${req.url}`);
-	// console.log('Request body:', req.body);
-	next();
-})
+// app.use((req, res, next) => {
+// 	console.log(`Received ${req.method} request for ${req.url}`);
+// 	console.log('Request body:', req.body);
+// 	next();
+// })
 
-// Body parsing middleware
-if(!process.env.NEXT_PUBLIC_BASE_URL.includes('localhost')){
-	app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-	app.use(express.json()); // Parse JSON bodies
-}
 
 // CORS middleware
 const corsOptions = {
