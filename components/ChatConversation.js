@@ -19,7 +19,7 @@ export default function Conversation({ conversation, user, streaming, currentRes
         {conversation?.map((bubble, id) => {
           const { role, content } = bubble;
           return (
-            <div>
+            <div key={id}>
             {role !== "system" && <ChatBubble userImage={user?.image} userName={user?.name} key={id % 2} role={role} content={content} />}
             </div>
           )
