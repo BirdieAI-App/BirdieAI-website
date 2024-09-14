@@ -102,7 +102,7 @@ const Chat = () => {
       let res = await checkPaymentStatus(checkoutSessionID);
       if (res.paymentProcessed === 'true') {
         sessionStorage.removeItem('checkoutSessionID');
-        alert("payment is processed!!!!!!");
+        setLoadedUserInfo(false);
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return stripePaymentStatus(checkoutSessionID);
@@ -163,9 +163,9 @@ const Chat = () => {
     };
 
     checkUserSubscription();
-  }, [userId]);
+  }, []);
 
-  if (!loadedUserInfo || status === "loading") {
+  if (loadedUserInfo || status === "loading") {
     return (
       <div className="w-screen h-screen flex flex-col items-center justify-center">
         <LoadingSpinner />
@@ -217,6 +217,18 @@ const Chat = () => {
   // console.log(conversation);
   // console.log(threadID);
   // console.log(conversation);
+
+  const handleUserInput = async () => {
+    const newThread = await handleOnClick(userId);
+    if (newThread) {
+      setAllThreads((prevThreads) => {
+        const remainingThreads = prevThreads.filter(
+          (thread) => thread.threadID !== newThread.threadID
+        );
+        return [...remainingThreads, newThread];
+      });
+    }
+  }
 
   return (
     <div className={chatStyle}>
@@ -273,17 +285,7 @@ const Chat = () => {
             />
             <button
               disabled = {loadingLatestMessages}
-              onClick={async () => {
-                const newThread = await handleOnClick(userId);
-                if (newThread) {
-                  setAllThreads((prevThreads) => {
-                    const remainingThreads = prevThreads.filter(
-                      (thread) => thread.threadID !== newThread.threadID
-                    );
-                    return [...remainingThreads, newThread];
-                  });
-                }
-              }}
+              onClick={handleUserInput}
               className="bg-green-500 text-white py-2 px-2 rounded-lg"
             >
               Submit
