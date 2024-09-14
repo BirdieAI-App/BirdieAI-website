@@ -219,6 +219,18 @@ const Chat = () => {
   // console.log(threadID);
   // console.log(conversation);
 
+  const handleUserInput = async () => {
+    const newThread = await handleOnClick(userId);
+    if (newThread) {
+      setAllThreads((prevThreads) => {
+        const remainingThreads = prevThreads.filter(
+          (thread) => thread.threadID !== newThread.threadID
+        );
+        return [...remainingThreads, newThread];
+      });
+    }
+  }
+
   return (
     <div className={chatStyle}>
       <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
@@ -274,17 +286,7 @@ const Chat = () => {
             />
             <button
               disabled = {loadingLatestMessages}
-              onClick={async () => {
-                const newThread = await handleOnClick(userId);
-                if (newThread) {
-                  setAllThreads((prevThreads) => {
-                    const remainingThreads = prevThreads.filter(
-                      (thread) => thread.threadID !== newThread.threadID
-                    );
-                    return [...remainingThreads, newThread];
-                  });
-                }
-              }}
+              onClick={handleUserInput}
               className="bg-green-500 text-white py-2 px-2 rounded-lg"
             >
               Submit

@@ -4,7 +4,7 @@ const express = require("express");
 const Thread = require("../models/Thread.js");
 const User = require("../models/User.js");
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
 
 const threadRoute = express.Router();
