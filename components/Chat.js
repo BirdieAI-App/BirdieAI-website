@@ -102,7 +102,7 @@ const Chat = () => {
       let res = await checkPaymentStatus(checkoutSessionID);
       if (res.paymentProcessed === 'true') {
         sessionStorage.removeItem('checkoutSessionID');
-        alert("payment is processed!!!!!!");
+        setLoadedUserInfo(false);
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return stripePaymentStatus(checkoutSessionID);
@@ -152,6 +152,7 @@ const Chat = () => {
       const fromStripe = urlParams.get('stripeRedirect');
       if (fromStripe) {
         const paymentProcessed = await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
+        setLoadedUserInfo(true);
         if (paymentProcessed) {
           window.history.replaceState({}, document.title, "/chat");
         }
@@ -165,7 +166,7 @@ const Chat = () => {
     checkUserSubscription();
   }, [userId]);
 
-  if (!loadedUserInfo || status === "loading") {
+  if (loadedUserInfo || status === "loading") {
     return (
       <div className="w-screen h-screen flex flex-col items-center justify-center">
         <LoadingSpinner />
