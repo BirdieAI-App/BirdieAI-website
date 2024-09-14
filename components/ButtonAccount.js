@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { useSession, signOut } from "next-auth/react";
 import apiClient from "@/libs/api";
+import { useRouter } from "next/navigation";
 
 // A button to show user some account actions
 //  1. Billing: open a Stripe Customer Portal to manage their billing (cancel subscription, update payment method, etc.).
@@ -15,6 +16,7 @@ import apiClient from "@/libs/api";
 const ButtonAccount = () => {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });
@@ -38,6 +40,9 @@ const ButtonAccount = () => {
   // Don't show anything if not authenticated (we don't have any info about the user)
   if (status === "unauthenticated") return null;
 
+  const handleProfile = () => {
+    router.push("/profile");
+  };
   return (
     <Popover className="relative z-10">
       {({ open }) => (
@@ -108,6 +113,24 @@ const ButtonAccount = () => {
                       />
                     </svg>
                     Billing
+                  </button>
+                  <button
+                    className="flex items-center gap-2 hover:bg-base-300 duration-200 py-1.5 px-4 w-full rounded-lg font-medium"
+                    onClick={handleProfile}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 12a2 2 0 100-4 2 2 0 000 4zm-7 5a7 7 0 0114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    My Profile
                   </button>
                   <button
                     className="flex items-center gap-2 hover:bg-error/20 hover:text-error duration-200 py-1.5 px-4 w-full rounded-lg font-medium"
