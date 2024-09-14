@@ -152,7 +152,6 @@ const Chat = () => {
       const fromStripe = urlParams.get('stripeRedirect');
       if (fromStripe) {
         const paymentProcessed = await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
-        setLoadedUserInfo(true);
         if (paymentProcessed) {
           window.history.replaceState({}, document.title, "/chat");
         }
@@ -164,7 +163,7 @@ const Chat = () => {
     };
 
     checkUserSubscription();
-  }, [userId]);
+  }, []);
 
   if (loadedUserInfo || status === "loading") {
     return (
