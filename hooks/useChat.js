@@ -42,7 +42,6 @@ export function useChat() {
     const [sentFirstMessage, setSentFirstMessage] = useState(false);
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
-    // console.log(process.env.OPENAI_API_KEY);
 
     const [conversation, setConversation] = useState([
         {
@@ -73,13 +72,11 @@ export function useChat() {
         try{
             const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/users/${userID}`;
             const response = await axios.get(url);
-            console.log(response);
+            userTier = response.data.profileData.subscriptionTier;
         }catch(err){
             console.log("error during in handleOnClick: " + err.message);
         }
-        console.log(threadID);
         setMessage("");
-        console.log(conversation);
         const newConversation = [
             ...conversation,
             {
@@ -119,7 +116,7 @@ export function useChat() {
                 const newThreadBody = {
                     userID: userID,
                     threadID: updatedThreadID,
-                    // status:,//userTier by the time of thread creation
+                    status: userTier,//userTier by the time of thread creation
                     title: "Summary Task Later",
                     create_at: thread.created_at,
                     file_ID: "Do not know what this is for",

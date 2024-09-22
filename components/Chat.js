@@ -32,7 +32,7 @@ const Chat = () => {
   const router = useRouter();
   const [userTier, setUserTier] = useState("");
   const effectRan = useRef(false); //using useRef to stop double invoke
-  const [loadedUserInfo, setLoadedUserInfo] = useState(false);
+  const [loadingUserInfo, setLoadingUserInfo] = useState(false);
 
   /*
   Read this:
@@ -99,7 +99,7 @@ const Chat = () => {
       let res = await checkPaymentStatus(checkoutSessionID);
       if (res.paymentProcessed === 'true') {
         sessionStorage.removeItem('checkoutSessionID');
-        setLoadedUserInfo(false);
+        setLoadingUserInfo(true);
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return stripePaymentStatus(checkoutSessionID);
@@ -114,13 +114,14 @@ const Chat = () => {
     if (!userId || userId.length === 0) return null;
     try {
       const user = await getUserByID(userId); 
-      setLoadedUserInfo(true);
+      setLoadingUserInfo(false);
       return user;
     } catch (err) {
       console.error("Error getting user in chat:", err.message);
       return null;
     }
   };
+  
 
   useEffect(() => {
     if (status !== "loading" && !session) {
@@ -153,11 +154,10 @@ const Chat = () => {
         setUserTier(user.profileData.subscriptionTier);
       }
     };
-
     checkUserSubscription();
-  }, []);
+  }, [userId]);
 
-  if (loadedUserInfo || status === "loading") {
+  if (loadingUserInfo || status === "loading") {
     return (
       <div className="w-screen h-screen flex flex-col items-center justify-center">
         <LoadingSpinner />
