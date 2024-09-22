@@ -69,14 +69,29 @@ export function useChat() {
         if (!sentFirstMessage) setSentFirstMessage(true);
         let userTier = null;
         //grabbing user info for userTier
-        try{
+        try {
             const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/users/${userID}`;
             const response = await axios.get(url);
             userTier = response.data.profileData.subscriptionTier;
-        }catch(err){
+        } catch (err) {
             console.log("error during in handleOnClick: " + err.message);
         }
         setMessage("");
+        //checking whether or not if user has reached limit for free tier user
+        let threadCount = 0;
+        try {
+            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}`;
+            const response = await axios.get(url);
+            threadCount = response.data.length
+        } catch (err) {
+            console.log("error durring getting all threads in handleOnClick: " + err.message);
+        }
+
+        if (userTier === "Free" && threadCount >= 3) {
+            alert("Free Tier Limit reached");
+            setSentFirstMessage(false);
+            return;
+        }
         const newConversation = [
             ...conversation,
             {
@@ -124,12 +139,9 @@ export function useChat() {
                     update_at: null,
                 };
 
-                console.log(newThreadBody);
-
                 // Save Thread
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
-                console.log(threadResponse.data);
                 console.log("Thread saved successfully!");
 
             } catch (error) {
@@ -154,7 +166,6 @@ export function useChat() {
                     `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
                     messageBody
                 );
-                console.log(messageResponse);
             } catch (error) {
                 console.log(`Error when trying to save Message: ${error}`);
             }
