@@ -79,12 +79,14 @@ export function useChat() {
         setMessage("");
         //checking whether or not if user has reached limit for free tier user
         let threadCount = 0;
-        try {
-            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}`;
-            const response = await axios.get(url);
-            threadCount = response.data.length
-        } catch (err) {
-            console.log("error durring getting all threads in handleOnClick: " + err.message);
+        if (userTier === "Free") {
+            try {
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
+                const repsonse = await axios.get(url)
+                threadCount = response.data.count
+            } catch (err) {
+                console.log("error durring getting all threads in handleOnClick: " + err.message);
+            }
         }
 
         if (userTier === "Free" && threadCount >= 3) {

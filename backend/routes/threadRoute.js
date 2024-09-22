@@ -181,4 +181,18 @@ threadRoute
     }
   });
 
+threadRoute
+  .route("/threads/u/:userID/count/:tier")
+  //GET: counting number of threads belongs to a user with given ID based on the threadTier
+  .get(async(req,res)=>{
+    const userID = req.params.userID; 
+    const tier = req.params.tier
+    console.log("in /threads/u/:userID/count/:tier (GET) all threads belongs to userID: " + userID + "that is tier: " + tier);
+    try {
+      const ThreadCount = await Thread.countDocuments({userID: userID,status: tier});
+      return res.status(200).json({ count: ThreadCount });
+    } catch (err) {
+      return res.status(500).send("Unexpected error occurred when getting the count of threads: " + err);
+    }
+  })  
 module.exports = threadRoute;
