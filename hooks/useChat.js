@@ -13,7 +13,6 @@ export function useChat() {
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
     // console.log(process.env.OPENAI_API_KEY);
-    console.log(process.env.NEXT_PUBLIC_BASE_URL);
 
     const [conversation, setConversation] = useState([
         {
@@ -148,10 +147,6 @@ export function useChat() {
         }
         setCurrentResponse("");
     }
-
-    
-    // console.log(threadID);
-    // console.log(conversation);
 
     return {
         streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage,
