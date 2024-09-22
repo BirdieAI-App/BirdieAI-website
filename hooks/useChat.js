@@ -38,6 +38,15 @@ export function useChat() {
 
     const handleOnClick = async function (userID) {
         if (!sentFirstMessage) setSentFirstMessage(true);
+        let userTier = null;
+        //grabbing user info for userTier
+        try{
+            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/users/${userID}`;
+            const response = await axios.get(url);
+            console.log(response);
+        }catch(err){
+            console.log("error during in handleOnClick: " + err.message);
+        }
         console.log(threadID);
         setMessage("");
         console.log(conversation);
@@ -49,13 +58,13 @@ export function useChat() {
             },
         ];
         setConversation(newConversation);
-    
+
         const stream = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: newConversation,
             stream: true,
         });
-    
+
         let collectedData = "";
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || "";
@@ -65,21 +74,22 @@ export function useChat() {
             collectedData += content;
             setCurrentResponse((prev) => prev + content);
         }
-    
+
         setMessage("");
         let updatedThreadID = threadID;
         let threadResponse = null;
-    
+
         if (threadID.length === 0) {
             try {
                 // Create Thread
                 const thread = await openai.beta.threads.create();
                 updatedThreadID = thread.id;
                 setThreadID(updatedThreadID);
-    
+
                 const newThreadBody = {
                     userID: userID,
                     threadID: updatedThreadID,
+                    // status:,//userTier by the time of thread creation
                     title: "Summary Task Later",
                     create_at: thread.created_at,
                     file_ID: "Do not know what this is for",
@@ -88,19 +98,19 @@ export function useChat() {
                 };
 
                 console.log(newThreadBody);
-    
+
                 // Save Thread
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
                 console.log(threadResponse.data);
                 console.log("Thread saved successfully!");
-    
+
             } catch (error) {
                 console.log(`Error when trying to save Thread: ${error}`);
                 return null;
             }
         }
-    
+
         // Save Message
         if (collectedData.length > 0 && updatedThreadID.length > 0) {
             const messageBody = {
@@ -111,7 +121,7 @@ export function useChat() {
                 response: collectedData,
                 message_total_token: 1200,
             };
-    
+
             try {
                 const messageResponse = await axios.put(
                     `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
@@ -124,10 +134,10 @@ export function useChat() {
         }
 
         setSentFirstMessage(false);
-    
+
         return threadResponse ? threadResponse.data : null;
     };
-    
+
 
     function handleOnChange(event) {
         setMessage(event.target.value);
@@ -149,7 +159,26 @@ export function useChat() {
     }
 
     return {
-        streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage,
-        currentResponse, setCurrentResponse, setThreadID, threadID, retrieveAllMessagesByThreadID, setStreaming
+        // State management
+        setConversation,
+        conversation,
+        message,
+        setMessage,
+        sentFirstMessage,
+        setSentFirstMessage,
+        currentResponse,
+        setCurrentResponse,
+        setThreadID,
+        threadID,
+        setStreaming,
+
+        // Event handlers
+        handleOnChange,
+        handleOnClick,
+        handleOnFocus,
+
+        // Functions
+        retrieveAllMessagesByThreadID,
+        streaming
     };
 }
