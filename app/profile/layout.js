@@ -1,3 +1,5 @@
+//import { getServerSession } from "next-auth";
+//import { authOptions } from "@/libs/next-auth";
 import ButtonAccount from "@/components/ButtonAccount";
 
 // This is a server-side component to ensure the user is logged in.
@@ -17,3 +19,12 @@ export default function Layout({ children }) {
   );
 }
 
+/*export default async function LayoutPrivate({ children }) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
+  }
+
+  return <>{children}</>;
+} */
