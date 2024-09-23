@@ -25,11 +25,7 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                     <span className="text-sm font-semibold text-gray-900">{role === "user" ? userName : "Birdie Bot"}</span>
                     <span className="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
                 </div>
-                <p className="text-sm font-normal py-2.5 text-gray-900">
-                <div
-                    className="prose"
-                    dangerouslySetInnerHTML={{ __html: md.render(content) }}
-                />
+                <p className="text-sm font-normal py-2.5 text-gray-900 prose" dangerouslySetInnerHTML={{ __html: md.render(content) }}>
                 </p>
                 {/* <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Delivered</span> */}
             </div>
