@@ -11,7 +11,8 @@ export default function ChatRecommendation({ setCurrentMessage }) {
                     <img className="h-20 w-20" src="/icon.png" alt="" />
                 </div>
                 <header className="mb-5">
-                    <h1 className="text-center">Have no ideas? Here are some questions that other Moms often ask!</h1>
+                    <h1 className="text-center">I am Birdie, your diet coach. I'm here to assist with dietary questions in Prenatal, Postpartum, and Pediatric Nutrition. Let's start by sharing your concerns or questions in the chat box. <br/>
+                        Have no ideas? Here are some questions that other Moms often ask!</h1>
                 </header>
                 <div className="flex flex-col flex-1 items-center w-full">
                     {suggestions?.map((item, idx) => (
