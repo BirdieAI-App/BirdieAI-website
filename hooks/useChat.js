@@ -68,6 +68,8 @@ export function useChat() {
     const handleOnClick = async function (userID) {
         if (!sentFirstMessage) setSentFirstMessage(true);
         let userTier = null;
+        let threadCount = 0;
+        let messageCount = 0;
         //grabbing user info for userTier
         try {
             const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/users/${userID}`;
@@ -77,21 +79,36 @@ export function useChat() {
             console.log("error during in handleOnClick: " + err.message);
         }
         setMessage("");
-        //checking whether or not if user has reached limit for free tier user
-        let threadCount = 0;
+        //checking whether or not if user has reached thread limit for free tier user
         if (userTier === "Free") {
             try {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
                 const repsonse = await axios.get(url)
-                threadCount = response.data.count
+                threadCount = repsonse.data.count
             } catch (err) {
-                console.log("error durring getting all threads in handleOnClick: " + err.message);
+                console.log("error while counting number of threads in handleOnClick: " + err.message);
+                return;
+            }
+        }
+        //checking whether or not if free user has more than 3 messages in the current thread
+        if(userTier === 'Free'){
+            try {
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
+                const repsonse = await axios.get(url)
+                messageCount = repsonse.data.count
+            } catch (err) {
+                console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
+                return;
             }
         }
 
         if (userTier === "Free" && threadCount >= 3) {
-            alert("Free Tier Limit reached");
-            setSentFirstMessage(false);
+            alert("Free Tier Limit reached for Thread");
+            // setSentFirstMessage(false);// re
+            return;
+        }
+        if(userTier === "Free" && messageCount >= 3){
+            alert("Free Tier Limit reached for Message");
             return;
         }
         const newConversation = [
@@ -102,13 +119,11 @@ export function useChat() {
             },
         ];
         setConversation(newConversation);
-
         const stream = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: newConversation,
             stream: true,
         });
-
         let collectedData = "";
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || "";
@@ -118,11 +133,9 @@ export function useChat() {
             collectedData += content;
             setCurrentResponse((prev) => prev + content);
         }
-
         setMessage("");
         let updatedThreadID = threadID;
         let threadResponse = null;
-
         if (threadID.length === 0) {
             try {
                 // Create Thread
@@ -151,7 +164,6 @@ export function useChat() {
                 return null;
             }
         }
-
         // Save Message
         if (collectedData.length > 0 && updatedThreadID.length > 0) {
             const messageBody = {
@@ -172,9 +184,7 @@ export function useChat() {
                 console.log(`Error when trying to save Message: ${error}`);
             }
         }
-
         setSentFirstMessage(false);
-
         return threadResponse ? threadResponse.data : null;
     };
 
@@ -200,16 +210,16 @@ export function useChat() {
 
     return {
         // State management
-        setConversation,
         conversation,
+        setConversation,
         message,
         setMessage,
         sentFirstMessage,
         setSentFirstMessage,
         currentResponse,
         setCurrentResponse,
-        setThreadID,
         threadID,
+        setThreadID,
         setStreaming,
 
         // Event handlers
