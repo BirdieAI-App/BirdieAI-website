@@ -66,21 +66,3 @@ Add the following logics:
 Only create a thread ID when users enter the first question. 
 When a new thread is created, enter the new collection into two tables: Thread and Message 
 After the user enters the first question, grab the first 4 words of the prompt/question, save these words as the Title in the Thread table, and use that for displaying the previous conversation
-
-
----
-# Instruction for Running Stripe locally
-In the route directory of there project. There is Stripe.exe for testing integration with Stripe locally
-
-To run stripe locally, use command:
-```
-.\stripe.exe listen --forward-to localhost:3000/webhook
-```
-
-Note that following "--forward-to" should be the route of the webhook that we define in our project for stripe to callback once the event is triggered. In our case, it should be "localhost:3000/call/stripe/webhook"
-
-To trigger a specific event, use a separate terminal, and enter command:
-```
-.\stripe.exe trigger <event_name>
-```
-in stripe official documents, there will be a list of events name to be triggered for testing that we can put in the command.

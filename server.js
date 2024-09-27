@@ -14,7 +14,7 @@ const stripeRoute = require('./backend/routes/stripeRoute.js');
 const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
 
 const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
-console.log(corsOrigin);
+console.log("aaaaaaaa" + corsOrigin);
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(__dirname, './.env') });
@@ -25,8 +25,8 @@ const mongoURI = process.env.MONGODB_URI;
 
 
 // Body parsing middleware
-// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-// app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.json()); // Parse JSON bodies
 
 // app.use((req, res, next) => {
 // 	console.log(`Received ${req.method} request for ${req.url}`);

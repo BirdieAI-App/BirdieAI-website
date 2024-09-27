@@ -204,18 +204,6 @@ const Chat = () => {
 
   const chatStyle = `flex flex-col relative ${font.className}`;
 
-  const handleUserInput = async () => {
-    const newThread = await handleOnClick(userId);
-    if (newThread) {
-      setAllThreads((prevThreads) => {
-        const remainingThreads = prevThreads.filter(
-          (thread) => thread.threadID !== newThread.threadID
-        );
-        return [...remainingThreads, newThread];
-      });
-    }
-  }
-
   return (
     <div className={chatStyle}>
       <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
@@ -263,7 +251,17 @@ const Chat = () => {
             <button
               id="submitMessageBtn"
               disabled = {loadingLatestMessages}
-              onClick={handleUserInput}
+              onClick={async () => {
+                const newThread = await handleOnClick(userId);
+                if (newThread) {
+                  setAllThreads((prevThreads) => {
+                    const remainingThreads = prevThreads.filter(
+                      (thread) => thread.threadID !== newThread.threadID
+                    );
+                    return [...remainingThreads, newThread];
+                  });
+                }
+              }}
               className="bg-green-500 text-white py-2 px-2 rounded-lg"
             >
               Submit
