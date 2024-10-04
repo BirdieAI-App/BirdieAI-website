@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import OpenAI from "openai";
 
-const OPENAI_API_KEY = "sk-proj-8Kraawye8AQDEMZSUbZmT3BlbkFJUJbHf4zcbN3imhQL31xJ";
+const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 // ASST_ID = asst_gqwuEwTDxy0u47BhXaQjfV3B
 const OPENAI_PROMPT = `
 OBJECTIVE

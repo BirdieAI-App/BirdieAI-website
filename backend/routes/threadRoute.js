@@ -1,11 +1,7 @@
 import OpenAI from "openai";
-import OpenAIService from "../service/OpenAIService.js";
 const express = require("express");
 const Thread = require("../models/Thread.js");
 const User = require("../models/User.js");
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const threadRoute = express.Router();
 const validThreadProps = Object.keys(Thread.schema.paths).filter(
