@@ -79,7 +79,7 @@ import { useState } from "react";
       </div>
 
       <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Billing Information</h2>
+        <h2 className="text-xl font-semibold mb-4">Plan Details</h2>
         <div className="space-y-4">
           {session && session.user ? (
             <>
@@ -97,7 +97,7 @@ import { useState } from "react";
             //disabled={loading}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
-            {loading ? 'Loading...' : 'Cancel Subscription'}
+            Cancel Subscription
           </button>
             </>
           ) : (
@@ -107,13 +107,13 @@ import { useState } from "react";
       </div>
 
       <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Credit Card Information</h2>
+        <h2 className="text-xl font-semibold mb-4">Billing Info</h2>
         <button 
             onClick={() => handlePortalRedirect('payment')}
             //disabled={loading}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
-            {loading ? 'Loading...' : 'Update Payment Method'}
+            Update Payment Method
           </button>
       </div>
     </div>
