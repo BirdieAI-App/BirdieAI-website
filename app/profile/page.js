@@ -84,20 +84,14 @@ import { useState } from "react";
           {session && session.user ? (
             <>
           <div className="space-y-4">
-        <p>You are currently on a free tier account.</p>
-        <button 
-          onClick={() => router.push('/plans')}
-          className="bg-orange-500 text-white py-2 px-4 rounded-lg"
-        >
-          Upgrade for less than $10 / month
-        </button>
+        <p>Learn more about your current plan here.</p>
      </div>
           <button 
             onClick={() => handlePortalRedirect('payment')}
             //disabled={loading}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
-            Cancel Subscription
+            Manage Subscription
           </button>
             </>
           ) : (
@@ -109,7 +103,7 @@ import { useState } from "react";
       <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Billing Info</h2>
         <button 
-            onClick={() => handlePortalRedirect('payment')}
+            onClick={() => window.location.href = 'https://billing.stripe.com/p/login/test_fZeeXU1V1dbYe52fYY'}
             //disabled={loading}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
