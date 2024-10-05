@@ -105,7 +105,7 @@ messageRoute.route("/messages")
     //DELETE: Delete a thread with a given messageID
 
 messageRoute.route('/messages/t/:threadID')
-    // GET: getting all mesages belongs to a user with givenID
+    // GET: getting all mesages belongs to a user with ThreadID
     .get(async(req,res)=>{
         const threadID = req.params.threadID
         console.log("in /message/t/:threadID getting all messages belongs to threadID: "+ threadID);
@@ -117,5 +117,19 @@ messageRoute.route('/messages/t/:threadID')
         }
     })
     // DELETE: delete all mesages belongs to a user with given ID
+
+messageRoute
+    .route('/messages/t/:threadID/count')
+    // GET: counting number of messages that belong to a given threadID
+    .get(async (req, res) => {
+        const threadID = req.params.threadID;
+        try {
+            // Assuming you have a Message model and 'threadID' is a field in the Message schema
+            const messageCount = await Message.countDocuments({ threadID: threadID });
+            return res.status(200).json({ count: messageCount });
+        } catch (err) {
+            return res.status(500).send("Unexpected error occurred when getting the count of messages: " + err.message);
+        }
+    });
 
 module.exports = messageRoute;

@@ -7,13 +7,6 @@ const userSchema = new mongoose.Schema({
         email: {
             type: String,
             unique: true,
-            // validate: {
-            //     validator: function(v) {
-            //         const regex = /^(?=.{6,30}$)(?!.*\.\.)(?!^\.)[a-zA-Z0-9.]*[a-zA-Z0-9]$/;
-            //         return regex.test(v);
-            //     },
-            //     message: props => `${props.value} is not a valid email address!`
-            // }
         },
         password:String
     },

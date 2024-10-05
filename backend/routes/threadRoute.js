@@ -1,11 +1,7 @@
 import OpenAI from "openai";
-import OpenAIService from "../service/OpenAIService.js";
 const express = require("express");
 const Thread = require("../models/Thread.js");
 const User = require("../models/User.js");
-const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
-});
 
 const threadRoute = express.Router();
 const validThreadProps = Object.keys(Thread.schema.paths).filter(
@@ -33,12 +29,7 @@ threadRoute
       let threads = await Thread.find();
       return res.status(200).json(threads);
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error occured when getting the threads in database: " +
-            err
-        );
+      return res.status(500).send("Unexpected error occured when getting the threads in database: " + err);
     }
   })
   //DELETE: deleting all theads existing in database
@@ -47,20 +38,11 @@ threadRoute
     try {
       let response = await Thread.deleteMany();
       if (response.deletedCount == 0) {
-        return res
-          .status(200)
-          .send("No threads was deleted in Thread database");
+        return res.status(200).send("No threads was deleted in Thread database");
       }
-      return res
-        .status(200)
-        .send("Successfully deleted all Threads in database");
+      return res.status(200).send("Successfully deleted all Threads in database");
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error occured when deleting all threads in database: " +
-            err
-        );
+      return res.status(500).send(  "Unexpected error occured when deleting all threads in database: " +    err);
     }
   })
   //PUT: saving a new thread into database
@@ -71,51 +53,28 @@ threadRoute
       return res.status(400).send("Request body contains an invalid field!!");
     }
     if (!req.body.userID) {
-      return res
-        .status(400)
-        .send(
-          "Request body must contains a userID to associate the thread with"
-        );
+      return res.status(400).send("Request body must contains a userID to associate the thread with");
     }
     try {
       //checking the existance of the user in database
       let existingUser = await User.findById(req.body.userID);
       if (!existingUser) {
-        return res
-          .status(400)
-          .send("The given UserID does NOT exist in user table");
+        return res.status(400).send("The given UserID does NOT exist in user table");
       }
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error when validating userID for saving new thread: " +
-            err
-        );
+      return res.status(500).send("Unexpected error when validating userID for saving new thread: " + err);
     }
     if (!req.body.threadID) {
-      return res
-        .status(400)
-        .send("Request body must contains a threadID returned from OpenAI");
+      return res.status(400).send("Request body must contains a threadID returned from OpenAI");
     }
     try {
       //checking for already set threadID in thread collection
       let existingThreadID = await Thread.find({ threadID: req.body.threadID });
       if (existingThreadID.length != 0) {
-        return res
-          .status(400)
-          .send(
-            "The given threadID already associated to user with ID: " +
-              existingThreadID[0].userID.toHexString()
-          );
+        return res.status(400).send("The given threadID already associated to user with ID: " + existingThreadID[0].userID.toHexString());
       }
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error when validating threadID for saving new thread: " +
-            err
-        );
+      return res.status(500).send(  "Unexpected error when validating threadID for saving new thread: " + err);
     }
     if (!req.body.title) {
       return res.status(400).send("New thread created must contain a title");
@@ -128,86 +87,24 @@ threadRoute
       const thread = await new Thread(newThreadBody).save();
       return res.status(200).json(thread);
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error occured happened when saving new thread into database: " +
-            err
-        );
+      return res.status(500).send("Unexpected error occured happened when saving new thread into database: " + err);
     }
   });
-
-/**
- *
- */
-/** Testing : Tin Nguyen : Start */
-
-/** Create Thread */
-// threadRoute
-//   .route("/threads/openai/thread")
-//   .post(async (req, res) => {
-//     try {
-//       const newThread = await OpenAIService.createThread();
-//       res.json(newThread);
-//     } catch (error) {
-//       res
-//         .status(500)
-//         .json({ error: "An error occurred while creating thread" });
-//     }
-//   })
-//   .get(async (req, res) => {
-//     try {
-//       console.log("Backend : Thread : Running");
-//       const threadID = req.query.threadID;
-//       const assistantId = process.env.ASST_ID;
-//       const run = await OpenAIService.runThread(threadID, assistantId);
-//       res.json(run);
-//     } catch (error) {
-//       res
-//         .status(500)
-//         .json({ error: "An error occurred while creating thread" });
-//     }
-//   });
-
-threadRoute.route("/threads/openai/asst/getall").get(async (req, res) => {
-  try {
-    const myAssistants = await openai.beta.assistants.list({
-      order: "desc",
-      limit: 20, // Limit should be a number, not a string
-    });
-
-    console.log(myAssistants.data);
-    return res.json(myAssistants.data);
-  } catch (error) {
-    console.error("Error listing assistants:", error);
-  }
-});
-
-/** Testing : Tin Nguyen : End*/
 
 threadRoute
   .route("/threads/:threadID")
   //GET: getting a specific thread given threadID
   .get(async (req, res) => {
     const threadID = req.params.threadID;
-    console.log(
-      "in /threads/:threadID (GET) specific thread with a given threadID: " +
-        threadID
-    );
+    console.log( "in /threads/:threadID (GET) specific thread with a given threadID: " + threadID);
     try {
       let thread = await Thread.findById(threadID);
       if (!thread) {
-        return res
-          .status(400)
-          .send("No thread with ID: " + threadID + "exists in database");
+        return res.status(400).send("No thread with ID: " + threadID + "exists in database");
       }
       return res.status(200).json(thread);
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error occurrec when getting thread in Database: " + err
-        );
+      return res.status(500).send( "Unexpected error occurrec when getting thread in Database: " + err);
     }
   })
   //DELETE: Delete a thread with a given threadID
@@ -217,38 +114,22 @@ threadRoute
     try {
       const deletedThread = await Thread.findOneAndDelete({ _id: threadID });
       if (!deletedThread) {
-        return res
-          .status(200)
-          .send(
-            "No thread with ID" +
-              threadID +
-              " existed in Database to be deleted"
-          );
+        return res.status(200).send("No thread with ID" + threadID + " existed in Database to be deleted");
       }
-      return res
-        .status(200)
-        .send("successfully deleted thread with id: " + threadID);
+      return res.status(200).send("successfully deleted thread with id: " + threadID);
     } catch (err) {
-      return res
-        .status(500)
-        .send("Unexpected error occured while deleted thread: " + err);
+      return res.status(500).send("Unexpected error occured while deleted thread: " + err);
     }
   })
   //POST: Update a thread with a threadID
   .post(async (req, res) => {
     const threadID = req.params.threadID;
-    console.log(
-      "in /threads/:threadID (POST) update a thread with ID: " + threadID
-    );
+    console.log("in /threads/:threadID (POST) update a thread with ID: " + threadID);
     if (!isValidRequest(req)) {
       return res.status(400).send("Request body contains an invalid field!!");
     }
     if (req.body.threadID || req.body.userID) {
-      return res
-        .status(400)
-        .send(
-          "Request body contains either threadID or userID which is prohibited for updating"
-        );
+      return res.status(400).send("Request body contains either threadID or userID which is prohibited for updating");
     }
     const newThreadBody = {};
     for (const key in req.body) {
@@ -260,17 +141,11 @@ threadRoute
         { $set: newThreadBody }
       );
       if (updatedThread.modifiedCount === 0) {
-        return res
-          .status(200)
-          .send("No update has been made to thread with ID: " + threadID);
+        return res.status(200).send("No update has been made to thread with ID: " + threadID);
       }
-      return res
-        .status(200)
-        .send("Successfully update Thread with ID: " + threadID);
+      return res.status(200).send("Successfully update Thread with ID: " + threadID);
     } catch (err) {
-      return res
-        .status(500)
-        .send("Unexpected error occured when updating the thread: " + err);
+      return res.status(500).send("Unexpected error occured when updating the thread: " + err);
     }
   });
 
@@ -279,46 +154,41 @@ threadRoute
   //GET: getting all threads belongs to a user with givenID
   .get(async (req, res) => {
     const userID = req.params.userID;
-    console.log(
-      "in /threads/u/:userID (GET) all threads belongs to userID: " + userID
-    );
+    console.log("in /threads/u/:userID (GET) all threads belongs to userID: " + userID);
     try {
       const threads = await Thread.find({ userID: userID });
       return res.status(200).json(threads);
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error occurred when getting all threads of a user: " + err
-        );
+      return res.status(500).send("Unexpected error occurred when getting all threads of a user: " + err);
     }
   })
   //DELETE: delete all threads belongs to a user with given ID
   .delete(async (req, res) => {
     const userID = req.params.userID;
-    console.log(
-      "in /threads/u/:userID (DELETE) all threads belongs to userID: " + userID
-    );
+    console.log("in /threads/u/:userID (DELETE) all threads belongs to userID: " + userID);
     try {
       const deletedThread = await Thread.deleteMany({ userID: userID });
       if (deletedThread.deletedCount === 0) {
-        return res
-          .status(500)
-          .send("No thread(s) was associated with userID: " + userID);
+        return res.status(500).send("No thread(s) was associated with userID: " + userID);
       }
-      return res
-        .status(200)
-        .send(
-          "Successfully deleted all threads associated with userID: " + userID
-        );
+      return res.status(200).send("Successfully deleted all threads associated with userID: " + userID);
     } catch (err) {
-      return res
-        .status(500)
-        .send(
-          "Unexpected error occurred when deleting all threads of a user: " +
-            err
-        );
+      return res.status(500).send("Unexpected error occurred when deleting all threads of a user: " + err);
     }
   });
 
+threadRoute
+  .route("/threads/u/:userID/count/:tier")
+  //GET: counting number of threads belongs to a user with given ID based on the threadTier
+  .get(async(req,res)=>{
+    const userID = req.params.userID; 
+    const tier = req.params.tier
+    console.log("in /threads/u/:userID/count/:tier (GET) all threads belongs to userID: " + userID + " that is tier: " + tier);
+    try {
+      const ThreadCount = await Thread.countDocuments({userID: userID,status: tier});
+      return res.status(200).json({ count: ThreadCount });
+    } catch (err) {
+      return res.status(500).send("Unexpected error occurred when getting the count of threads: " + err);
+    }
+  })  
 module.exports = threadRoute;
