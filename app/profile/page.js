@@ -1,14 +1,24 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePayment } from '@/hooks/usePayment';
 
  export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [userProfile] = useState(null);
   const { handleCustomerPortal, isLoading } = usePayment();
+  const [userId, setUserId] = useState();
+
+  useEffect(() => {
+    // if (status !== "loading" && !session) {
+    //   router.push(config.auth.loginUrl);
+    //   // console.log('a');
+    // }
+    if (session && session.user.userId) {
+      setUserId(session.user.userId);
+    }
+  }, [session, status]);
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -48,7 +58,7 @@ import { usePayment } from '@/hooks/usePayment';
         <p>Learn more about your current plan here.</p>
      </div>
           <button 
-            onClick={() => handleCustomerPortal({ userId: session.user.stripeCustomerId })}
+            onClick={() => userId ? handleCustomerPortal({ userId }) : ''}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
             Manage Subscription
