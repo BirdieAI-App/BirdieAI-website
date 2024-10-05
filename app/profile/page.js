@@ -1,17 +1,86 @@
-import ButtonAccount from "@/components/ButtonAccount";
+"use client";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { usePayment } from '@/hooks/usePayment';
 
-export const dynamic = "force-dynamic";
+ export default function Profile() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const { handleCustomerPortal, isLoading } = usePayment();
+  const [userId, setUserId] = useState();
 
-// This is a private page: It's protected by the layout.js component which ensures the user is authenticated.
-// It's a server compoment which means you can fetch data (like the user profile) before the page is rendered.
-// See https://shipfa.st/docs/tutorials/private-page
-export default async function Profile() {
+  useEffect(() => {
+    // if (status !== "loading" && !session) {
+    //   router.push(config.auth.loginUrl);
+    //   // console.log('a');
+    // }
+    if (session && session.user.userId) {
+      setUserId(session.user.userId);
+    }
+  }, [session, status]);
+  if (status === "loading") {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
+  if (!session) {
+    router.push("/");
+    return null;
+  }
   return (
-    <main className="min-h-screen p-8 pb-24">
-      <section className="max-w-xl mx-auto space-y-8">
-        <ButtonAccount />
-        <h1 className="text-3xl md:text-4xl font-extrabold">Profile Page </h1>
-      </section>
-    </main>
+    <div className="container mx-auto p-4 max-w-md">
+      <h1 className="text-2xl font-bold mb-6 text-center">Your Profile</h1>
+      
+      <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Profile</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium opacity-70">Name</label>
+            <p className="text-lg font-semibold">{session.user?.name || "Not provided"}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium opacity-70">Email</label>
+            <p className="text-lg font-semibold">{session.user?.email || "Not provided"}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Plan Details</h2>
+        <div className="space-y-4">
+          {session && session.user ? (
+            <>
+          <div className="space-y-4">
+        <p>Learn more about your current plan here.</p>
+     </div>
+          <button 
+            onClick={() => userId ? handleCustomerPortal({ userId }) : ''}
+            className="bg-orange-500 text-white py-2 px-4 rounded-lg"
+          >
+            Manage Subscription
+          </button>
+            </>
+          ) : (
+            <p>Please log in to manage your subscription.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
+        <h2 className="text-xl font-semibold mb-4">Billing Info</h2>
+        <button 
+            onClick={() => userId ? handleCustomerPortal({ userId }) : ''}
+            className="bg-orange-500 text-white py-2 px-4 rounded-lg"
+          >
+            Update Payment Method
+          </button>
+      </div>
+    </div>
   );
 }
+
+  
