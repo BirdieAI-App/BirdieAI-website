@@ -21,9 +21,7 @@ const Chat = () => {
   const [allThreads, setAllThreads] = useState([]);
   const [userId, setUserId] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const [sentFirstMessage, setSentFirstMessage] = useState(false);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
-  // const [conversation, setConversation] = useState(['Conversation 0', 'Conversation 1', 'Conversation 2', 'Conversation 3', 'Conversation 4', 'Conversation 5']);
 
   const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse,
     threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage, setStreaming } = useChat();
@@ -34,7 +32,7 @@ const Chat = () => {
   const router = useRouter();
   const [userTier, setUserTier] = useState("");
   const effectRan = useRef(false); //using useRef to stop double invoke
-  const [loadedUserInfo, setLoadedUserInfo] = useState(false);
+  const [loadingUserInfo, setLoadingUserInfo] = useState(false);
 
   /*
   Read this:
@@ -58,7 +56,6 @@ const Chat = () => {
   const getThreadsPaginated = async (page, data) => {
     try {
       const threads = await getAllThreadsByUserPaginated(page, data);
-      // console.log(threads);
       setPaginatedThreads(previousResponse => {
         if (previousResponse === null) {
           return threads;
@@ -102,7 +99,7 @@ const Chat = () => {
       let res = await checkPaymentStatus(checkoutSessionID);
       if (res.paymentProcessed === 'true') {
         sessionStorage.removeItem('checkoutSessionID');
-        alert("payment is processed!!!!!!");
+        setLoadingUserInfo(true);
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return stripePaymentStatus(checkoutSessionID);
@@ -117,13 +114,14 @@ const Chat = () => {
     if (!userId || userId.length === 0) return null;
     try {
       const user = await getUserByID(userId); 
-      setLoadedUserInfo(true);
+      setLoadingUserInfo(false);
       return user;
     } catch (err) {
       console.error("Error getting user in chat:", err.message);
       return null;
     }
   };
+  
 
   useEffect(() => {
     if (status !== "loading" && !session) {
@@ -139,11 +137,6 @@ const Chat = () => {
     getThreads(userId);
     setLoadingAllThreads(false);
   }, [userId]);
-
-  // useEffect(() => {
-  //   allThreads && getThreadsPaginated(0, allThreads);
-  // }, [allThreads])
-
   //Check user Subscription Tier
   useEffect(() => {
     const checkUserSubscription = async () => {
@@ -161,11 +154,10 @@ const Chat = () => {
         setUserTier(user.profileData.subscriptionTier);
       }
     };
-
     checkUserSubscription();
   }, [userId]);
 
-  if (!loadedUserInfo || status === "loading") {
+  if (loadingUserInfo || status === "loading") {
     return (
       <div className="w-screen h-screen flex flex-col items-center justify-center">
         <LoadingSpinner />
@@ -210,13 +202,7 @@ const Chat = () => {
     }
   }
 
-  // console.log(paginatedThreads);
-  // console.log(userId);
   const chatStyle = `flex flex-col relative ${font.className}`;
-  // console.log(threadID);
-  // console.log(conversation);
-  // console.log(threadID);
-  // console.log(conversation);
 
   return (
     <div className={chatStyle}>
@@ -232,20 +218,6 @@ const Chat = () => {
         subscriptionTier={userTier}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
-        {/* {(!sentFirstMessage) ?
-          <ChatRecommendation setCurrentMessage={setMessage}/> :
-          <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
-          currentResponse = {currentResponse} />
-        }
-        {(!threadID || !sentFirstMessage) ? <ChatRecommendation setCurrentMessage={setMessage}/> : <Conversation user={session?.user} conversation={conversation} streaming={streaming} 
-          currentResponse = {currentResponse} />} 
-        {loadingLatestMessages ?
-          <>
-            <p> Loading latest messages... </p>
-          </> :
-          <Conversation user={session?.user} streaming={streaming}
-            currentResponse={currentResponse} conversation={conversation} />
-        } */}
         {loadingLatestMessages ? (
           <div>
             <p>Loading latest messages...</p>
@@ -270,8 +242,14 @@ const Chat = () => {
               onFocus={handleOnFocus}
               placeholder="Enter your text here"
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+              onKeyUp={(event)=>{
+                if(event.key === "Enter"){
+                  document.querySelector("#submitMessageBtn").click();
+                }
+              }}
             />
             <button
+              id="submitMessageBtn"
               disabled = {loadingLatestMessages}
               onClick={async () => {
                 const newThread = await handleOnClick(userId);

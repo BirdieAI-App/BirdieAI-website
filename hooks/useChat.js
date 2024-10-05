@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import OpenAI from "openai";
 
-const OPENAI_API_KEY = "sk-proj-8Kraawye8AQDEMZSUbZmT3BlbkFJUJbHf4zcbN3imhQL31xJ";
+const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 // ASST_ID = asst_gqwuEwTDxy0u47BhXaQjfV3B
 const OPENAI_PROMPT = `
 OBJECTIVE
@@ -42,8 +42,6 @@ export function useChat() {
     const [sentFirstMessage, setSentFirstMessage] = useState(false);
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
-    // console.log(process.env.OPENAI_API_KEY);
-    console.log(process.env.NEXT_PUBLIC_BASE_URL);
 
     const [conversation, setConversation] = useState([
         {
@@ -69,9 +67,50 @@ export function useChat() {
 
     const handleOnClick = async function (userID) {
         if (!sentFirstMessage) setSentFirstMessage(true);
-        console.log(threadID);
+        let userTier = null;
+        let threadCount = 0;
+        let messageCount = 0;
+        //grabbing user info for userTier
+        try {
+            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/users/${userID}`;
+            const response = await axios.get(url);
+            userTier = response.data.profileData.subscriptionTier;
+        } catch (err) {
+            console.log("error during in handleOnClick: " + err.message);
+        }
         setMessage("");
-        console.log(conversation);
+        //checking whether or not if user has reached thread limit for free tier user
+        if (userTier === "Free") {
+            try {
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
+                const repsonse = await axios.get(url)
+                threadCount = repsonse.data.count
+            } catch (err) {
+                console.log("error while counting number of threads in handleOnClick: " + err.message);
+                return;
+            }
+        }
+        //checking whether or not if free user has more than 3 messages in the current thread
+        if(userTier === 'Free'){
+            try {
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
+                const repsonse = await axios.get(url)
+                messageCount = repsonse.data.count
+            } catch (err) {
+                console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
+                return;
+            }
+        }
+
+        if (userTier === "Free" && threadCount >= 3) {
+            alert("Free Tier Limit reached for Thread");
+            // setSentFirstMessage(false);// re
+            return;
+        }
+        if(userTier === "Free" && messageCount >= 3){
+            alert("Free Tier Limit reached for Message");
+            return;
+        }
         const newConversation = [
             ...conversation,
             {
@@ -80,13 +119,11 @@ export function useChat() {
             },
         ];
         setConversation(newConversation);
-    
         const stream = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: newConversation,
             stream: true,
         });
-    
         let collectedData = "";
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || "";
@@ -96,21 +133,20 @@ export function useChat() {
             collectedData += content;
             setCurrentResponse((prev) => prev + content);
         }
-    
         setMessage("");
         let updatedThreadID = threadID;
         let threadResponse = null;
-    
         if (threadID.length === 0) {
             try {
                 // Create Thread
                 const thread = await openai.beta.threads.create();
                 updatedThreadID = thread.id;
                 setThreadID(updatedThreadID);
-    
+
                 const newThreadBody = {
                     userID: userID,
                     threadID: updatedThreadID,
+                    status: userTier,//userTier by the time of thread creation
                     title: "Summary Task Later",
                     create_at: thread.created_at,
                     file_ID: "Do not know what this is for",
@@ -118,20 +154,16 @@ export function useChat() {
                     update_at: null,
                 };
 
-                console.log(newThreadBody);
-    
                 // Save Thread
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
-                console.log(threadResponse.data);
                 console.log("Thread saved successfully!");
-    
+
             } catch (error) {
                 console.log(`Error when trying to save Thread: ${error}`);
                 return null;
             }
         }
-    
         // Save Message
         if (collectedData.length > 0 && updatedThreadID.length > 0) {
             const messageBody = {
@@ -142,23 +174,20 @@ export function useChat() {
                 response: collectedData,
                 message_total_token: 1200,
             };
-    
+
             try {
                 const messageResponse = await axios.put(
                     `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
                     messageBody
                 );
-                console.log(messageResponse);
             } catch (error) {
                 console.log(`Error when trying to save Message: ${error}`);
             }
         }
-
         setSentFirstMessage(false);
-    
         return threadResponse ? threadResponse.data : null;
     };
-    
+
 
     function handleOnChange(event) {
         setMessage(event.target.value);
@@ -179,12 +208,27 @@ export function useChat() {
         setCurrentResponse("");
     }
 
-    
-    // console.log(threadID);
-    // console.log(conversation);
-
     return {
-        streaming, setConversation, conversation, handleOnChange, handleOnClick, handleOnFocus, message, setMessage, sentFirstMessage, setSentFirstMessage,
-        currentResponse, setCurrentResponse, setThreadID, threadID, retrieveAllMessagesByThreadID, setStreaming
+        // State management
+        conversation,
+        setConversation,
+        message,
+        setMessage,
+        sentFirstMessage,
+        setSentFirstMessage,
+        currentResponse,
+        setCurrentResponse,
+        threadID,
+        setThreadID,
+        setStreaming,
+
+        // Event handlers
+        handleOnChange,
+        handleOnClick,
+        handleOnFocus,
+
+        // Functions
+        retrieveAllMessagesByThreadID,
+        streaming
     };
 }
