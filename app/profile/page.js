@@ -73,7 +73,7 @@ import { usePayment } from '@/hooks/usePayment';
       <div className="bg-base-200 rounded-xl shadow-xl p-6 mb-6">
         <h2 className="text-xl font-semibold mb-4">Billing Info</h2>
         <button 
-            onClick={() => window.location.href = 'https://billing.stripe.com/p/login/test_fZeeXU1V1dbYe52fYY'}
+            onClick={() => userId ? handleCustomerPortal({ userId }) : ''}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
             Update Payment Method
