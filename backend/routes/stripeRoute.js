@@ -86,29 +86,35 @@ stripeRoute.get('/stripe/session/:sessionID', async(req,res)=>{
 })    
 
 stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
-    console.log("in /stripe/create-customer-portal (POST) to create stripe customer portal session");
-    const { userId, returnUrl } = req.body;
+    console.log("in /stripe/create-customer-portal (POST) to create stripe customer portal session"); 
+    return res.status(200).json({ url:'https://www.google.com' })
+//     const { userId, returnUrl } = req.body;
 
-    if (!userId || !returnUrl) {
-        return res.status(400).send("User ID and return URL are required");
-    }
+//     const dbUser = await User.findById(userId);
+//     let stripeCustomerId = dbUser.profileData.stripeCustomerId;
 
-    try {
-        const dbUser = await User.findById(userId);
-        if (!dbUser || !dbUser.profileData.stripeCustomerId) {
-            return res.status(400).send("User not found");
-        }
+//     if (!stripeCustomerId) {
+//         return res.status(400).send('User does not have a Stripe customer ID');
+//     }
+//     if (!returnUrl) {
+//         return res.status(400).send("Return URL is required");
+//     }
+//     if (!stripeCustomerId) {
+//         return res.status(400).send("User does not have a Stripe customer ID.");
+//     }
+//     try {
+//         const portalSession = await stripe.billingPortal.sessions.create({
+//             userId: stripeCustomerId,
+//             return_url: returnUrl
+//         });
+//         return res.status(200).json({
+//             url: portalSession.url
+//         });
 
-        const portalSession = await stripe.billingPortal.sessions.create({
-            customer: dbUser.profileData.stripeCustomerId,
-            return_url: returnUrl,
-        });
-
-        return res.status(200).json({ url: portalSession.url });
-    } catch (err) {
-        console.log(err.message);
-        return res.status(500).send("Unexpected Error occurred while creating stripe customer portal session: " + err.message);
-    }
+//     } catch (err) {
+//         console.log("Error creating Stripe Customer Portal session:", err.message);
+//         return res.status(500).send("Unexpected error occurred while creating customer portal session: " + err.message);
+//     }
 });
 
 module.exports = stripeRoute;

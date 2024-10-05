@@ -2,52 +2,13 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { usePayment } from '@/hooks/usePayment';
 
  export default function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
   const [userProfile] = useState(null);
-
-  const handlePortalRedirect = async () => {
-    if (!session || !session.user) {
-      console.error('No active session or user');
-      alert('Please log in to manage your subscription.');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/stripe/create-customer-portal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: session.user.id,
-          returnUrl: window.location.href,
-          action: action
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('Failed to create customer portal session');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const { handleCustomerPortal, isLoading } = usePayment();
   if (status === "loading") {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -87,8 +48,7 @@ import { useState } from "react";
         <p>Learn more about your current plan here.</p>
      </div>
           <button 
-            onClick={() => handlePortalRedirect('payment')}
-            //disabled={loading}
+            onClick={() => handleCustomerPortal({ userId: session.user.stripeCustomerId })}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
             Manage Subscription
@@ -104,7 +64,6 @@ import { useState } from "react";
         <h2 className="text-xl font-semibold mb-4">Billing Info</h2>
         <button 
             onClick={() => window.location.href = 'https://billing.stripe.com/p/login/test_fZeeXU1V1dbYe52fYY'}
-            //disabled={loading}
             className="bg-orange-500 text-white py-2 px-4 rounded-lg"
           >
             Update Payment Method
