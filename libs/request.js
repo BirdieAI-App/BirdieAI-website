@@ -36,6 +36,12 @@ export const createCheckoutSession = async function (payload) {
     return response;
 }
 
+export const createCustomerPortalSession = async function (payload) {
+    const apiUrl = apiClient.createUrl('stripe/create-customer-portal');
+    const response = await apiClient.post(apiUrl, payload);
+    return response;
+}
+
 export const sendEmail = async function (payload) {
     const apiUrl = apiClient.createUrl(`/auth/send-verification-email`);
     const response = await apiClient.post(apiUrl,payload);

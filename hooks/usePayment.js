@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createCheckoutSession } from "@/libs/request";
+import { createCheckoutSession, createCustomerPortalSession } from "@/libs/request";
 
 export function usePayment() {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +25,20 @@ export function usePayment() {
 
         setIsLoading(false);
     }
+    const handleCustomerPortal = async (payload) => {
+        const { userId } = payload;
+        setIsLoading(true); 
+        try {
+            const res = await createCustomerPortalSession({
+                userId,
+                returnUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/profile`
+            });
+            window.location.href = res?.url;
+        } catch (e) {
+            console.log(e.message);
+        }
+        setIsLoading(false);
+    }
 
-    return {isLoading, handlePayment};
+    return {isLoading, handlePayment, handleCustomerPortal};
 }
