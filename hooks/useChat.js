@@ -50,6 +50,7 @@ export function useChat() {
         },
     ]);
     const [message, setMessage] = useState("");
+    const [freeThreadCount, setFreeThreadCount] = useState(0);
 
     const openai = new OpenAI({
         apiKey: OPENAI_API_KEY,
@@ -66,7 +67,8 @@ export function useChat() {
     }
 
     const handleOnClick = async function (userID) {
-        if (!sentFirstMessage) setSentFirstMessage(true);
+        //PERFORM CHECKS FIRST BEFORE ACTAULLY DO PROCESSING 
+        if (message.length === 0 || message === "") return;
         let userTier = null;
         let threadCount = 0;
         let messageCount = 0;
@@ -78,9 +80,8 @@ export function useChat() {
         } catch (err) {
             console.log("error during in handleOnClick: " + err.message);
         }
-        setMessage("");
         //checking whether or not if user has reached thread limit for free tier user
-        if (userTier === "Free") {
+        if (userTier === "Free"  && !sentFirstMessage) {
             try {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
                 const repsonse = await axios.get(url)
@@ -91,7 +92,7 @@ export function useChat() {
             }
         }
         //checking whether or not if free user has more than 3 messages in the current thread
-        if(userTier === 'Free'){
+        if(userTier === 'Free' && (threadID.length !== 0 || threadID !== null)){
             try {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
                 const repsonse = await axios.get(url)
@@ -101,16 +102,17 @@ export function useChat() {
                 return;
             }
         }
-
-        if (userTier === "Free" && threadCount >= 3) {
+        if (!sentFirstMessage) setSentFirstMessage(true);
+        setMessage("");
+        if (userTier === "Free" && threadCount >= 3 && !sentFirstMessage) {
             alert("Free Tier Limit reached for Thread");
-            // setSentFirstMessage(false);// re
             return;
         }
         if(userTier === "Free" && messageCount >= 3){
             alert("Free Tier Limit reached for Message");
             return;
         }
+        //END OF CHECKING, PROCESSING USER PROMPT BEGINS
         const newConversation = [
             ...conversation,
             {
@@ -158,6 +160,7 @@ export function useChat() {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
                 console.log("Thread saved successfully!");
+                if(userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
 
             } catch (error) {
                 console.log(`Error when trying to save Thread: ${error}`);
@@ -220,6 +223,8 @@ export function useChat() {
         setCurrentResponse,
         threadID,
         setThreadID,
+        freeThreadCount,
+        setFreeThreadCount,
         setStreaming,
 
         // Event handlers

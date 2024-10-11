@@ -23,8 +23,13 @@ const Chat = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
 
-  const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse,
-    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage, setStreaming } = useChat();
+  const { 
+    // States
+    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount,
+    // Setters
+    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount,
+    // Function handlers
+    handleOnChange, handleOnClick, handleOnFocus, retrieveAllMessagesByThreadID } = useChat();
 
   const [loadingLatestMessages, setLoadingLatestMessages] = useState(false);
   const [loadingAllThreads, setLoadingAllThreads] = useState(true);
@@ -47,6 +52,9 @@ const Chat = () => {
       try {
         const threads = await getAllThreadsByUser(userId);
         setAllThreads(threads);
+        //counting free Threads
+        const temp = threads.filter(thread => thread.status === 'Free')
+        setFreeThreadCount(temp.length)
       } catch (err) {
         console.log(err);
       }
@@ -216,6 +224,7 @@ const Chat = () => {
         setSentFirstMessage={setSentFirstMessage}
         loadingAllThreads={loadingAllThreads}
         subscriptionTier={userTier}
+        freeThreadCount={freeThreadCount}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {loadingLatestMessages ? (

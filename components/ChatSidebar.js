@@ -2,8 +2,14 @@ import ButtonAccount from "./ButtonAccount";
 import { useRouter } from "next/navigation";
 
 
-export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThreads, toggleSidebar, closeSidebar, 
-  getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage, loadingAllThreads, subscriptionTier }) {
+export default function ChatSidebar({ 
+    // Functions
+    toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage,
+    // Booleans
+    isSidebarOpen, loadingAllThreads,
+    // State Information
+    allThreads, paginatedThreads, subscriptionTier, freeThreadCount,
+  }) {
   const router = useRouter();
   // const {conversation}  = useChat();
 
@@ -23,7 +29,7 @@ export default function ChatSidebar({ isSidebarOpen, allThreads, paginatedThread
           <ButtonAccount />
           {subscriptionTier === 'Free' ? 
             <div>
-              <span className="block mt-3 mb-3">You have used 0 of 3 free chats.</span>
+              <span className="block mt-3 mb-3">You have used {freeThreadCount} of 3 free chats.</span>
               <button className="bg-orange-500 text-white py-2 px-4 rounded-lg" onClick={() => router.push('/plans')}>
                 Upgrade for less than $10 / month
               </button>

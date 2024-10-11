@@ -66,3 +66,7 @@ Add the following logics:
 Only create a thread ID when users enter the first question. 
 When a new thread is created, enter the new collection into two tables: Thread and Message 
 After the user enters the first question, grab the first 4 words of the prompt/question, save these words as the Title in the Thread table, and use that for displaying the previous conversation
+
+# Stripe Local Testing Instruction
+.\stripe.exe login
+.\stripe.exe listen --forward-to localhost:3000/call/stripe/webhook
