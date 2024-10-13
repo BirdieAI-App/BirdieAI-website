@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Remarkable } from 'remarkable';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const md = new Remarkable();
 md.renderer.rules.link_open = (tokens, idx) => {
-  const href = tokens[idx].href || tokens[idx].attrs[0][1];
-  return `<a href="${href}" class="text-blue-600">`;
+    const href = tokens[idx].href || tokens[idx].attrs[0][1];
+    return `<a href="${href}" class="text-blue-600">`;
 };
 
 export default function ChatBubble({ userImage, userName, role, content }) {
@@ -20,15 +22,36 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                 width={24}
                 height={24}
             />
-            <div className="flex flex-col w-full max-w-[560px] leading-1.5 px-8 py-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
+
+            <div className="flex flex-col w-full max-w-[600px] px-6 py-4 border-gray-200 bg-gray-100 rounded-e-xl rounded-es-xl">
                 <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                    <span className="text-sm font-semibold text-gray-900">{role === "user" ? userName : "Birdie Bot"}</span>
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400">11:46</span>
+                    <span className="text-sm font-semibold text-gray-900">{role === "user" ? userName : "Birdie Diet Coach"}</span>
                 </div>
-                <p className="text-sm font-normal py-2.5 text-gray-900 prose" dangerouslySetInnerHTML={{ __html: md.render(content) }}>
-                </p>
-                {/* <span className="text-sm font-normal text-gray-500 dark:text-gray-400">Delivered</span> */}
+
+                <div> {/* Ensures table fits in bubble */}
+                    <div className="overflow-x-auto max-w-full">
+                        <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                                table: ({ node, ...props }) => (
+                                    <table className="min-w-full table-auto border-collapse my-4" {...props} />
+                                ),
+                                th: ({ node, ...props }) => (
+                                    <th className="border border-gray-300 px-4 py-2 text-left bg-gray-100" {...props} />
+                                ),
+                                td: ({ node, ...props }) => (
+                                    <td className="border border-gray-300 px-4 py-2 text-left" {...props} />
+                                )
+                            }}
+                        >
+                            {content}
+                        </ReactMarkdown>
+                    </div>
+                    
+                </div>
+
             </div>
+
             <button id="dropdownMenuIconButton" data-dropdown-placement="bottom-start" className="inline-flex self-center items-center p-2 text-sm font-medium text-center text-gray-900 bg-white rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-50 dark:bg-gray-900 dark:hover:bg-gray-800 dark:focus:ring-gray-600" type="button"
                 onClick={() => setOpenDropdown(!openDropdown)}>
                 <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">

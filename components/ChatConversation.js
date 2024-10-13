@@ -15,7 +15,7 @@ export default function Conversation({ conversation, user, streaming, currentRes
 
   return (
     <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">
-      <div>
+      <div className="w-full">
         {conversation?.map((bubble, id) => {
           const { role, content } = bubble;
           return (
@@ -25,7 +25,7 @@ export default function Conversation({ conversation, user, streaming, currentRes
           )
         })}
       </div>
-      <div>
+      <div className="w-full">
         {streaming ? (
           <ChatBubble userImage={user?.image} userName={user?.name} role={"assistant"} content={currentResponse} />
         ) : (
