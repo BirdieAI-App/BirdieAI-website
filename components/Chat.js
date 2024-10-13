@@ -22,6 +22,7 @@ const Chat = () => {
   const [userId, setUserId] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
+  const [submitting, setSubmitting] = useState(false);
 
   const { 
     // States
@@ -259,8 +260,9 @@ const Chat = () => {
             />
             <button
               id="submitMessageBtn"
-              disabled = {loadingLatestMessages}
+              disabled = {loadingLatestMessages || submitting}
               onClick={async () => {
+                setSubmitting(true);
                 const newThread = await handleOnClick(userId);
                 if (newThread) {
                   setAllThreads((prevThreads) => {
@@ -270,10 +272,11 @@ const Chat = () => {
                     return [...remainingThreads, newThread];
                   });
                 }
+                setSubmitting(false);
               }}
               className="bg-green-500 text-white py-2 px-2 rounded-lg"
             >
-              Submit
+              {submitting ? "Submitting" : "Submit"}
             </button>
 
           </div>
