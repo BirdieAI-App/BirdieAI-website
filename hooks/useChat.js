@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import OpenAI from "openai";
+import { extractFirstFourWords } from "@/libs/util";
 
 const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 // ASST_ID = asst_gqwuEwTDxy0u47BhXaQjfV3B
@@ -149,7 +150,7 @@ export function useChat() {
                     userID: userID,
                     threadID: updatedThreadID,
                     status: userTier,//userTier by the time of thread creation
-                    title: "Summary Task Later",
+                    title: message ? extractFirstFourWords(message) : "",
                     create_at: thread.created_at,
                     file_ID: "Do not know what this is for",
                     modified_thread: false,
