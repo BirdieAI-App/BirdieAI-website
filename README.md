@@ -84,3 +84,4 @@ To trigger a specific event, use a separate terminal, and enter command:
 .\stripe.exe trigger <event_name>
 ```
 in stripe official documents, there will be a list of events name to be triggered for testing that we can put in the command.
+
