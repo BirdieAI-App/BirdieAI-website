@@ -70,3 +70,5 @@ After the user enters the first question, grab the first 4 words of the prompt/q
 # Stripe Local Testing Instruction
 .\stripe.exe login
 .\stripe.exe listen --forward-to localhost:3000/call/stripe/webhook
+
+
