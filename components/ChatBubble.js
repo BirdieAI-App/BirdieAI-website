@@ -12,6 +12,9 @@ md.renderer.rules.link_open = (tokens, idx) => {
 export default function ChatBubble({ userImage, userName, role, content }) {
     const [openDropdown, setOpenDropdown] = useState(false);
     const dropdownButton = `z-10 ${openDropdown ? "" : "hidden"} bg-white divide-y divide-gray-100 rounded-lg shadow w-40`;
+
+    console.log(content);
+
     return (
         <div className="flex items-start gap-2.5 my-4 mx-10">
             <img
@@ -33,6 +36,7 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                         <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
                             components={{
+                                // Custom table rendering
                                 table: ({ node, ...props }) => (
                                     <table className="min-w-full table-auto border-collapse my-4" {...props} />
                                 ),
@@ -41,13 +45,35 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                                 ),
                                 td: ({ node, ...props }) => (
                                     <td className="border border-gray-300 px-4 py-2 text-left" {...props} />
-                                )
+                                ),
+
+                                h3: ({ node, ...props }) => (
+                                    <h3 className="text-xl font-bold my-2" {...props} />
+                                ),
+                                h4: ({ node, ...props }) => (
+                                    <h4 className="text-lg font-semibold my-1" {...props} />
+                                ),
+                                // Custom link rendering (if there are any links in the content)
+                                a: ({ node, ...props }) => (
+                                    <a className="text-blue-600" {...props} />
+                                ),
+                                // Customize bold text
+                                strong: ({ node, ...props }) => (
+                                    <strong className="font-bold" {...props} />
+                                ),
+                                // Customize list rendering
+                                ul: ({ node, ...props }) => (
+                                    <ul className="list-disc list-inside my-2" {...props} />
+                                ),
+                                li: ({ node, ...props }) => (
+                                    <li className="my-1" {...props} />
+                                ),
                             }}
                         >
                             {content}
                         </ReactMarkdown>
                     </div>
-                    
+
                 </div>
 
             </div>
