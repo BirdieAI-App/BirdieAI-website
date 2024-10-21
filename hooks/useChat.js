@@ -82,7 +82,7 @@ export function useChat() {
             console.log("error during in handleOnClick: " + err.message);
         }
         //checking whether or not if user has reached thread limit for free tier user
-        if (userTier === "Free"  && !sentFirstMessage) {
+        if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
             try {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
                 const repsonse = await axios.get(url)
@@ -105,7 +105,7 @@ export function useChat() {
         }
         if (!sentFirstMessage) setSentFirstMessage(true);
         setMessage("");
-        if (userTier === "Free" && threadCount >= 3 && !sentFirstMessage) {
+        if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
             alert("Free Tier Limit reached for Thread");
             return;
         }
