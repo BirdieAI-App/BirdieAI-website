@@ -26,7 +26,6 @@ const generatePdfForMessage = function (content) {
 }
 
 export default function ChatBubble({ userImage, userName, role, content }) {
-
     const formatProps = {
         // Custom table rendering
         table: ({ node, ...props }) => (
