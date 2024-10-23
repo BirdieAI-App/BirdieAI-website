@@ -1,29 +1,28 @@
-import { Remarkable } from 'remarkable';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import * as pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
-import Markdown from "markdown-it";
-import htmlToPdfmake from "html-to-pdfmake";
-import { useEffect } from 'react';
+// import * as pdfMake from "pdfmake/build/pdfmake";
+// import pdfFonts from "pdfmake/build/vfs_fonts";
+// import Markdown from "markdown-it";
+// import htmlToPdfmake from "html-to-pdfmake";
+// import { useEffect } from 'react';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const md = new Markdown();
-const styles = {};
+// const md = new Markdown();
+// const styles = {};
 
-const generatePdfForMessage = function (content) {
-    // Strip images from markdown, render HTML, and convert it to PDF
-    const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
-    const pdfmakeContent = htmlToPdfmake(renderedMarkdown);
-    const mergedDefinition = {
-        content: [pdfmakeContent],
-        styles: styles,
-    };
+// const generatePdfForMessage = function (content) {
+//     // Strip images from markdown, render HTML, and convert it to PDF
+//     const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
+//     const pdfmakeContent = htmlToPdfmake(renderedMarkdown);
+//     const mergedDefinition = {
+//         content: [pdfmakeContent],
+//         styles: styles,
+//     };
 
-    const date = new Date().toDateString();
-    pdfMake.createPdf(mergedDefinition).download(`message_${date}.pdf`);
-}
+//     const date = new Date().toDateString();
+//     pdfMake.createPdf(mergedDefinition).download(`message_${date}.pdf`);
+// }
 
 export default function ChatBubble({ userImage, userName, role, content }) {
     const formatProps = {
@@ -97,9 +96,9 @@ export default function ChatBubble({ userImage, userName, role, content }) {
                             <li className="bg-white rounded-md mx-1 mt-2">
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100 rounded-md">Dislike</a>
                             </li>
-                            <li className="bg-white rounded-md mx-1 mt-2" onClick={() => generatePdfForMessage(content)}>
+                            {/* <li className="bg-white rounded-md mx-1 mt-2" onClick={() => generatePdfForMessage(content)}>
                                 <a href="#" className="block px-4 py-2 hover:bg-gray-100 rounded-md">Download</a>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                 </div>
