@@ -26,9 +26,9 @@ const Chat = () => {
 
   const { 
     // States
-    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount,
+    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount, userLimitReached,
     // Setters
-    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount,
+    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount, setUserLimitReached,
     // Function handlers
     handleOnChange, handleOnClick, handleOnFocus, retrieveAllMessagesByThreadID } = useChat();
 
@@ -195,12 +195,10 @@ const Chat = () => {
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
-        console.log(data);
         setSentFirstMessage(false);
         setConversation(() => {
           const updatedData = [];
           filterConversationData(updatedData, data, id);
-          console.log(updatedData)
           return updatedData;
         });
       }
@@ -226,6 +224,7 @@ const Chat = () => {
         loadingAllThreads={loadingAllThreads}
         subscriptionTier={userTier}
         freeThreadCount={freeThreadCount}
+        setUserLimitReached={setUserLimitReached}
       />
       <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
         {loadingLatestMessages ? (
@@ -240,11 +239,11 @@ const Chat = () => {
             conversation={conversation}
             streaming={streaming}
             currentResponse={currentResponse}
+            userLimitReached={userLimitReached}
           />
         )}
-
         <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
-          <div className="flex flex-row items-center w-3/4">
+          <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
             <input
               type="text"
               value={message}
@@ -252,6 +251,7 @@ const Chat = () => {
               onFocus={handleOnFocus}
               placeholder="Enter your text here"
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+              disabled = {loadingLatestMessages || submitting || userLimitReached}
               onKeyUp={(event)=>{
                 if(event.key === "Enter"){
                   document.querySelector("#submitMessageBtn").click();
@@ -260,7 +260,7 @@ const Chat = () => {
             />
             <button
               id="submitMessageBtn"
-              disabled = {loadingLatestMessages || submitting}
+              disabled = {loadingLatestMessages || submitting || userLimitReached}
               onClick={async () => {
                 setSubmitting(true);
                 const newThread = await handleOnClick(userId);
@@ -278,7 +278,6 @@ const Chat = () => {
             >
               {submitting ? "Submitting" : "Submit"}
             </button>
-
           </div>
           <footer className="mt-auto text-center text-gray-600 text-sm py-5">
             <span className="disclaimer-text">
@@ -290,8 +289,6 @@ const Chat = () => {
         </div>
       </main>
     </div>
-
-
   );
 };
 
