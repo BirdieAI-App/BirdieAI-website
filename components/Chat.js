@@ -195,12 +195,10 @@ const Chat = () => {
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
-        console.log(data);
         setSentFirstMessage(false);
         setConversation(() => {
           const updatedData = [];
           filterConversationData(updatedData, data, id);
-          console.log(updatedData)
           return updatedData;
         });
       }

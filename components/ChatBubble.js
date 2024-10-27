@@ -14,6 +14,14 @@ const generatePdfForMessage = async (content) => {
     const pdfFonts = await import("pdfmake/build/vfs_fonts");
 
     pdfMake.vfs = pdfFonts.pdfMake.vfs;
+    pdfMake.fonts = {
+        Roboto: {
+            normal: "Roboto-Regular.ttf",
+            bold: "Roboto-Bold.ttf",
+            italics: "Roboto-Italic.ttf",
+            bolditalics: "Roboto-BoldItalic.ttf"
+        }
+    };
 
     // Strip images from markdown, render HTML, and convert it to PDF
     const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
