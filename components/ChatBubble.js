@@ -1,18 +1,20 @@
 import { Remarkable } from 'remarkable';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import * as pdfMake from "pdfmake/build/pdfmake";
-import pdfFonts from "pdfmake/build/vfs_fonts";
 import Markdown from "markdown-it";
 import htmlToPdfmake from "html-to-pdfmake";
 import { useEffect } from 'react';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
 const md = new Markdown();
 const styles = {};
 
-const generatePdfForMessage = function (content) {
+const generatePdfForMessage = async (content) => {
+    // Dynamically import pdfMake and pdfFonts on demand
+    const pdfMake = await import("pdfmake/build/pdfmake");
+    const pdfFonts = await import("pdfmake/build/vfs_fonts");
+
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
     // Strip images from markdown, render HTML, and convert it to PDF
     const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
     const pdfmakeContent = htmlToPdfmake(renderedMarkdown);
@@ -23,7 +25,7 @@ const generatePdfForMessage = function (content) {
 
     const date = new Date().toDateString();
     pdfMake.createPdf(mergedDefinition).download(`message_${date}.pdf`);
-}
+};
 
 export default function ChatBubble({ userImage, userName, role, content, hyperlink, hyperlinkText, userLimitReached = false }) {
     const formatProps = {
@@ -59,7 +61,7 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
         li: ({ node, ...props }) => (
             <li className="my-1" {...props} />
         ),
-    }
+    };
 
     return (
         <div className="flex flex-col my-1">
@@ -76,8 +78,8 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
                 <div
                     className={`flex flex-col w-full max-w-[840px] px-6 py-4 rounded-e-xl rounded-es-xl
                         ${
-                            userLimitReached? "border border-l-10 border-l-pinkf472b6 bg-pinkfdf2f8": 
-                            role === 'user'? "border bg-gray-100 border-gray-200": ""
+                            userLimitReached ? "border border-l-10 border-l-pinkf472b6 bg-pinkfdf2f8": 
+                            role === 'user' ? "border bg-gray-100 border-gray-200": ""
                         }`}
                 >
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -93,13 +95,13 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
                                 {content}
                             </ReactMarkdown>
                         </div>
-                        {userLimitReached ?
+                        {userLimitReached ? (
                             <a className="font-bold underline text-red-400" href={hyperlink}>
                                 {hyperlinkText}
-                            </a> : <></>
-                        }
+                            </a>
+                        ) : <></>}
                     </div>
-                    {role !== 'user' && !userLimitReached ?
+                    {role !== 'user' && !userLimitReached ? (
                         <div className="w-full flex items-end justify-end">
                             <ul className="text-sm text-gray-700 flex">
                                 <li className="border border-black-500 bg-white rounded-md mx-1 mt-2">
@@ -112,13 +114,10 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
                                     <a href="#" className="block px-4 py-2 hover:bg-gray-100 rounded-md">Download</a>
                                 </li>
                             </ul>
-                        </div> : <></>
-                    }
+                        </div>
+                    ) : <></>}
                 </div>
             </div>
         </div>
     );
 }
-
-// - download feature on production
-// - save data like / dislike to database
