@@ -5,34 +5,35 @@ import Markdown from "markdown-it";
 import htmlToPdfmake from "html-to-pdfmake";
 import { useEffect } from 'react';
 
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+
 const md = new Markdown();
-const styles = {};
 
 const generatePdfForMessage = async (content) => {
-    // Dynamically import pdfMake and pdfFonts on demand
-    const pdfMake = await import("pdfmake/build/pdfmake");
-    const pdfFonts = await import("pdfmake/build/vfs_fonts");
+    alert('aaaaaaa2')
+    try {
+        // // Dynamically import pdfMake and pdfFonts on demand
+        // const pdfMake = await import("pdfmake/build/pdfmake");
+        // const pdfFonts = await import("pdfmake/build/vfs_fonts");
 
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-    pdfMake.fonts = {
-        Roboto: {
-            normal: "Roboto-Regular.ttf",
-            bold: "Roboto-Bold.ttf",
-            italics: "Roboto-Italic.ttf",
-            bolditalics: "Roboto-BoldItalic.ttf"
-        }
-    };
+        // pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-    // Strip images from markdown, render HTML, and convert it to PDF
-    const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
-    const pdfmakeContent = htmlToPdfmake(renderedMarkdown);
-    const mergedDefinition = {
-        content: [pdfmakeContent],
-        styles: styles,
-    };
+        // Strip images from markdown, render HTML, and convert it to PDF
+        const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
+        const pdfmakeContent = htmlToPdfmake(renderedMarkdown);
+        const mergedDefinition = {
+            content: [pdfmakeContent],
+            defaultStyle: { font: "Roboto" },
+        };
 
-    const date = new Date().toDateString();
-    pdfMake.createPdf(mergedDefinition).download(`message_${date}.pdf`);
+        const date = new Date().toDateString();
+        pdfMake.createPdf(mergedDefinition).download(`message_${date}.pdf`);
+    } catch (err) {
+        alert("error generating PDF: ", err.message);
+    }
 };
 
 export default function ChatBubble({ userImage, userName, role, content, hyperlink, hyperlinkText, userLimitReached = false }) {
@@ -85,9 +86,8 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
 
                 <div
                     className={`flex flex-col w-full max-w-[840px] px-6 py-4 rounded-e-xl rounded-es-xl
-                        ${
-                            userLimitReached ? "border border-l-10 border-l-pinkf472b6 bg-pinkfdf2f8": 
-                            role === 'user' ? "border bg-gray-100 border-gray-200": ""
+                        ${userLimitReached ? "border border-l-10 border-l-pinkf472b6 bg-pinkfdf2f8" :
+                            role === 'user' ? "border bg-gray-100 border-gray-200" : ""
                         }`}
                 >
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
