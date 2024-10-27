@@ -13,14 +13,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 const md = new Markdown();
 
 const generatePdfForMessage = async (content) => {
-    alert('aaaaaaa2')
     try {
-        // // Dynamically import pdfMake and pdfFonts on demand
-        // const pdfMake = await import("pdfmake/build/pdfmake");
-        // const pdfFonts = await import("pdfmake/build/vfs_fonts");
-
-        // pdfMake.vfs = pdfFonts.pdfMake.vfs;
-
         // Strip images from markdown, render HTML, and convert it to PDF
         const renderedMarkdown = md.render(content.replace(/!\[.*?\]\(.*?\)/g, ""));
         const pdfmakeContent = htmlToPdfmake(renderedMarkdown);
