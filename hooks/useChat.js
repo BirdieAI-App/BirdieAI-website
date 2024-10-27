@@ -173,7 +173,6 @@ export function useChat() {
             const messageBody = {
                 threadID: updatedThreadID,
                 messageID: Date.now().toString(),
-                create_at: Date.now(),
                 prompt: message,
                 response: collectedData,
                 message_total_token: 1200,

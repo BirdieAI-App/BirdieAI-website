@@ -20,16 +20,17 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   response: String,
-  create_at: {
-    type: Date,
-    default: Date.now,
-  },
   message_total_token: {
     //number of token returns from OpenAI
     type: Number,
     required: true,
   },
-});
+},
+  {
+    //add createdAt and updatedAt timestamps
+    timestamps: true,
+  }
+);
 
 const Message = mongoose.model("Message", messageSchema);
 module.exports = Message;
