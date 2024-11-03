@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import OpenAI from "openai";
 import { extractFirstFourWords } from "@/libs/util";
