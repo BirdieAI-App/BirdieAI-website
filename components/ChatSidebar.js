@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 
 export default function ChatSidebar({ 
     // Functions
-    toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage,
+    toggleSidebar, closeSidebar, getThreadsPaginated, openThreadByID, setThreadID, setConversation, setSentFirstMessage, setUserLimitReached,
     // Booleans
     isSidebarOpen, loadingAllThreads,
     // State Information
-    allThreads, paginatedThreads, subscriptionTier, freeThreadCount,
+    allThreads, paginatedThreads, subscriptionTier, freeThreadCount
   }) {
   const router = useRouter();
   // const {conversation}  = useChat();
@@ -23,6 +23,7 @@ export default function ChatSidebar({
             setThreadID("");
             setConversation([]);
             setSentFirstMessage(false);
+            setUserLimitReached(false);
             router.push('/chat');
           }}> New Chat </button>
         <div className="mb-5">

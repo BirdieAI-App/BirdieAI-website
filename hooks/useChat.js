@@ -4,7 +4,6 @@ import OpenAI from "openai";
 import { extractFirstFourWords } from "@/libs/util";
 
 const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-// ASST_ID = asst_gqwuEwTDxy0u47BhXaQjfV3B
 const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
 
 export function useChat() {
@@ -13,6 +12,7 @@ export function useChat() {
     const [sentFirstMessage, setSentFirstMessage] = useState(false);
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
+    const [userLimitReached, setUserLimitReached] = useState(false);
 
     const [conversation, setConversation] = useState([
         {
@@ -76,11 +76,11 @@ export function useChat() {
         if (!sentFirstMessage) setSentFirstMessage(true);
         setMessage("");
         if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
-            alert("Free Tier Limit reached for Thread");
+            setUserLimitReached(true)
             return;
         }
         if(userTier === "Free" && messageCount >= 3){
-            alert("Free Tier Limit reached for Message");
+            setUserLimitReached(true)
             return;
         }
         //END OF CHECKING, PROCESSING USER PROMPT BEGINS
@@ -198,6 +198,8 @@ export function useChat() {
         setThreadID,
         freeThreadCount,
         setFreeThreadCount,
+        userLimitReached,
+        setUserLimitReached,
         setStreaming,
 
         // Event handlers

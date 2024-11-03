@@ -24,15 +24,10 @@ const mongoURI = process.env.MONGODB_URI;
 
 
 // Body parsing middleware
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.json()); // Parse JSON bodies
-
-// app.use((req, res, next) => {
-// 	console.log(`Received ${req.method} request for ${req.url}`);
-// 	console.log('Request body:', req.body);
-// 	next();
-// })
-
+if (!process.env.NEXT_PUBLIC_BASE_URL.includes('localhost')) {
+	app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+	app.use(express.json()); // Parse JSON bodies
+}
 
 // CORS middleware
 const corsOptions = {
@@ -41,18 +36,18 @@ const corsOptions = {
 	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
 	credentials: true,
 	optionsSuccessStatus: 200 // Some legacy browsers choke on a 204 status
-  };
+};
 
 app.use(cors(corsOptions));
 
 
 //making connection to MongoDB
 mongoose.connect(mongoURI)
-	.then(() => {console.log('MongoDB connected');}
-  	).catch(err => {
-  	console.error(err.message);
-  	process.exit(1);
-});
+	.then(() => { console.log('MongoDB connected'); }
+	).catch(err => {
+		console.error(err.message);
+		process.exit(1);
+	});
 
 
 //define the routes
