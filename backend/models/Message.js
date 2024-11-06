@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Thread = require("./Thread");
 
 //
 const messageSchema = new mongoose.Schema({
@@ -31,6 +32,22 @@ const messageSchema = new mongoose.Schema({
     timestamps: true,
   }
 );
+
+// update the 'updatedAt' field in Thread collection when a new message is saved
+messageSchema.pre("save", async function (next) {
+  const message = this;
+  const timestamps = message.createdAt;
+  try {
+    await Thread.updateOne(
+      { threadID: message.threadID },
+      { $set: { updatedAt: timestamps } }
+    );
+    next();
+  } catch (err) {
+    console.log("Unexpected error occured while updating 'updatedAt' field in Thread collection: ", err);
+    return next(err);
+  }
+});
 
 const Message = mongoose.model("Message", messageSchema);
 module.exports = Message;

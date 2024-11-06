@@ -93,7 +93,7 @@ messageRoute.route("/messages")
         try{
             // adding new message into message collection and update 'update_at' field in Thread collection
             const message = await new Message(newMessageBody).save();
-            await Thread.updateOne({"ThreadID": req.body.threadID});
+            console.log("[testomg]: ", req.body.threadID);
             return res.status(200).json(message);
         }catch(err){
             return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);

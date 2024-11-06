@@ -3,14 +3,14 @@ const mongoose = require("mongoose");
 const threadSchema = new mongoose.Schema({
   userID: {
     type: mongoose.Schema.Types.ObjectId,
-    required:true,
+    required: true,
     ref: "User",
   },
-  status:{
+  status: {
     //status: userTier on Creation of Thread
     type: String,
     enum: ['Free', 'Monthly', 'Quarter', 'Annually'],
-    default: 'Free' 
+    default: 'Free'
   },
   threadID: {
     //thread ID returns from OpenAI
@@ -22,20 +22,17 @@ const threadSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  create_at: {
-    type: Date,
-    default: Date.now,
-  },
   file_ID: [String],
   modified_thread: {
     type: Boolean,
     default: false,
   },
-  update_at: {
-    type: Date,
-    default: Date.now,
-  },
-});
+},
+  {
+    //add createdAt and updatedAt timestamps
+    timestamps: true,
+  }
+);
 
 const Thread = mongoose.model("Thread", threadSchema);
 module.exports = Thread;
