@@ -28,11 +28,22 @@ const config = {
         ],
       },
       {
-        isFeatured: true,
         priceId:"price_1PcwV3AsroNx812FhEz7ZPSp",
-        name: "",
-        description: "Better Nutrition Planning",
+        description: "",
+        name: "Monthly Plan",
         price: 10,
+        features: [
+          { name: "Unlimited questions with AI Diet Coach" },
+          { name: "Personalized Meal plan" },
+          { name: "24/7 support" },
+        ],
+      },
+      {
+        isFeatured: true,
+        priceId:"price_1QHzM8AsroNx812Fecd0d68j",
+        description: "",
+        name: "Annual Plan",
+        price: 39.99,
         features: [
           { name: "Unlimited questions with AI Diet Coach" },
           { name: "Personalized Meal plan" },
