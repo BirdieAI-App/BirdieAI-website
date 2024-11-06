@@ -42,7 +42,7 @@ const config = {
         isFeatured: true,
         priceId:"price_1QHzM8AsroNx812Fecd0d68j",
         description: "",
-        name: "Better Nutrition Planning",
+        name: "Annual Plan",
         price: 39.99,
         features: [
           { name: "Unlimited questions with AI Diet Coach" },
