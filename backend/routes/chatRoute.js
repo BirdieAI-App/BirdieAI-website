@@ -26,10 +26,8 @@ chatRoute.route("/chat").put(async (req, res) => {
         userID: userID,
         threadID: newThread.id,
         title: "Hard Code - Need to improve later",
-        create_at: newThread.created_at,
         file_ID: "What is File ID ?",
         modified_thread: false,
-        update_at: null,
       };
       const thread = new Thread(newThreadBody).save();
     }
