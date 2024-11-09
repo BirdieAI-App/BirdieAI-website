@@ -1,4 +1,3 @@
-import OpenAI from "openai";
 const express = require("express");
 const Thread = require("../models/Thread.js");
 const User = require("../models/User.js");
@@ -190,5 +189,6 @@ threadRoute
     } catch (err) {
       return res.status(500).send("Unexpected error occurred when getting the count of threads: " + err);
     }
-  })  
+  }) 
+
 module.exports = threadRoute;
