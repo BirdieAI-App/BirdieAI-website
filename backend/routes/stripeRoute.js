@@ -73,18 +73,6 @@ stripeRoute.post('/stripe/create-checkout', async (req, res) => {
 }
 )
 
-stripeRoute.get('/stripe/session/:sessionID', async (req, res) => {
-    console.log("in /stripe/session/:sessionID checkin Payment Status")
-    const sessionID = req.params.sessionID;
-    try {
-        const session = await stripe.checkout.sessions.retrieve(sessionID);
-        res.status(200).json({ paymentProcessed: session.metadata.paymentProcessed });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-
-})
-
 stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
     console.log("in /stripe/create-customer-portal (POST) to create stripe customer portal session");
     // return res.status(200).json({ url: 'https://www.google.com' })
@@ -121,5 +109,39 @@ stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
         return res.status(500).send("Unexpected error occurred while creating customer portal session: " + err.message);
     }
 });
+
+stripeRoute.get('/stripe/session/:sessionID', async (req, res) => {
+    console.log("in /stripe/session/:sessionID checkin Payment Status")
+    const sessionID = req.params.sessionID;
+    try {
+        const session = await stripe.checkout.sessions.retrieve(sessionID);
+        res.status(200).json({ paymentProcessed: session.metadata.paymentProcessed });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+
+})
+
+stripeRoute.get('/stripe/product-list', async(req, res)=>{
+    console.log('in /stripe/product-list (GET) all active stripe product')
+    try{
+        const products = await stripe.products.list({active: true});
+        res.status(200).json(products);
+    }catch(err){
+        console.log(err.message)
+    }
+})
+
+stripeRoute.get('/stripe/price/:priceID', async (req, res) => {
+    const priceID = req.params.priceID;
+    console.log(`in /stripe/price/:priceID getting price with id: ${priceID}`)
+    try {
+        const price = await stripe.prices.retrieve(priceID);
+        res.status(200).json(price);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+
+})
 
 module.exports = stripeRoute;

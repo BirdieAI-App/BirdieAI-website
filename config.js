@@ -14,44 +14,6 @@ const config = {
     // Hide Crisp by default, except on route "/". Crisp is toggled with <ButtonSupport/>. If you want to show Crisp on every routes, just remove this below
     onlyShowOnRoutes: ["/"],
   },
-  stripe: {
-    // Create multiple plans in your Stripe dashboard, then add them here. You can add as many plans as you want, just make sure to add the priceId
-    plans: [
-      {
-        priceId:"",
-        name: "Try Birdie for Free",
-        description: "",
-        price: 0,
-        features: [
-          { name: "3 conversations with AI Diet Coach" },
-          { name: "Personalized Meal plan" },
-        ],
-      },
-      {
-        priceId:"price_1PcwV3AsroNx812FhEz7ZPSp",
-        description: "",
-        name: "Monthly Plan",
-        price: 10,
-        features: [
-          { name: "Unlimited questions with AI Diet Coach" },
-          { name: "Personalized Meal plan" },
-          { name: "24/7 support" },
-        ],
-      },
-      {
-        isFeatured: true,
-        priceId:"price_1QHzM8AsroNx812Fecd0d68j",
-        description: "",
-        name: "Annual Plan",
-        price: 39.99,
-        features: [
-          { name: "Unlimited questions with AI Diet Coach" },
-          { name: "Personalized Meal plan" },
-          { name: "24/7 support" },
-        ],
-      },
-    ],
-  },
   aws: {
     // If you use AWS S3/Cloudfront, put values in here
     bucket: "bucket-name",
