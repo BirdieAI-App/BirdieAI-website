@@ -26,7 +26,7 @@ const Pricing = () => {
           const cleanedObject = {};
 
           for (const field of fieldsToKeep) {
-            if (item.hasOwnProperty(field)) {
+            if (Object.prototype.hasOwnProperty.call(item, field)) {
               if (field === 'description') {
                 cleanedObject['features'] = item[field].split(', ');
               } else if (field === 'default_price') {
