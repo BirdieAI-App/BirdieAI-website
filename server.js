@@ -23,10 +23,6 @@ const port = process.env.PORT || 3000;
 const mongoURI = process.env.MONGODB_URI;
 
 
-// Body parsing middleware
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.json()); // Parse JSON bodies
-
 // CORS middleware
 const corsOptions = {
 	origin: corsOrigin, // Ensure this environment variable is set
@@ -38,6 +34,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Body parsing middleware
+// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+// app.use(express.json()); // Parse JSON bodies
 
 //making connection to MongoDB
 mongoose.connect(mongoURI)

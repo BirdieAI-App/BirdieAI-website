@@ -185,7 +185,7 @@ export const articles = [
           height={500}
           priority={true}
           className="rounded-box"
-          placeholder="blur"
+          // placeholder="blur"
         />
         <section>
           <h2 className={styles.h2}>Introduction</h2>
