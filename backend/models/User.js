@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
         DOB: Date,
         subscriptionTier:{
             type:String,
-            enum: ['Free', 'Monthly', 'Quarter', 'Annually'],
+            enum: ['Free', 'Monthly', 'Quarterly', 'Annually'],
             default: 'Free'
         },
         creationTime:{

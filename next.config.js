@@ -1,9 +1,5 @@
-const { parsed: localEnv } = require('dotenv').config({
-  path: './.env',
-});
-
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: [
       // Next.js <Image> component needs to whitelist domains for src={}
@@ -12,10 +8,6 @@ const nextConfig = {
       "images.unsplash.com",
       "logos-world.net",
     ],
-  },
-  // Load environment variables from .env file
-  env: {
-    ...localEnv,
   },
 };
 

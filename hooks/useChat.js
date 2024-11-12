@@ -121,10 +121,8 @@ export function useChat() {
                     threadID: updatedThreadID,
                     status: userTier,//userTier by the time of thread creation
                     title: message ? extractFirstFourWords(message) : "",
-                    create_at: thread.created_at,
                     file_ID: "Do not know what this is for",
                     modified_thread: false,
-                    update_at: null,
                 };
 
                 // Save Thread
@@ -143,7 +141,6 @@ export function useChat() {
             const messageBody = {
                 threadID: updatedThreadID,
                 messageID: Date.now().toString(),
-                create_at: Date.now(),
                 prompt: message,
                 response: collectedData,
                 message_total_token: 1200,
