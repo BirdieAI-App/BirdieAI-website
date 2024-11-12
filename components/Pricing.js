@@ -41,6 +41,7 @@ const Pricing = () => {
           return cleanedObject;
         }));
         setProducts(filteredData);
+        console.log(filteredData)
       } catch (err) {
         console.log(err.message)
       }
@@ -105,7 +106,7 @@ const Pricing = () => {
               </div>
             </div>
           </div>
-
+          {/* ------------------------------------------- PRODUCT DEFINED ON STRIPE FOR PAID USER -------------------------------------------------------------------  */}
           {products.map((plan) => (
             <div key={plan.id} className="relative w-full max-w-lg">
               {plan.metadata.isRecommended && (
