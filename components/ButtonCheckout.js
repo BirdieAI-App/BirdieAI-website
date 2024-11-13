@@ -21,8 +21,8 @@ const ButtonCheckout = ({ priceId }) => {
     <button
       className="btn btn-primary btn-block group"
       onClick={() => {
-          console.log(userId)
-          console.log(priceId)
+          // console.log(userId)
+          // console.log(priceId)
           userId ? priceId ? handlePayment({ priceId, userId }) : router.push('/chat') : router.push('/api/auth/signin')
         }
       }
