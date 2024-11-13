@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import OpenAI from "openai";
 import { extractFirstFourWords } from "@/libs/util";
+import { OpenAIService } from "@/libs/OpenAIService";
 
 const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
@@ -23,11 +23,7 @@ export function useChat() {
     const [message, setMessage] = useState("");
     const [freeThreadCount, setFreeThreadCount] = useState(0);
 
-    const openai = new OpenAI({
-        apiKey: OPENAI_API_KEY,
-        dangerouslyAllowBrowser: true,
-    });
-
+    const OpenAI = new OpenAIService();
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${id}`);
@@ -92,11 +88,7 @@ export function useChat() {
             },
         ];
         setConversation(newConversation);
-        const stream = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: newConversation,
-            stream: true,
-        });
+        const stream = await OpenAI.getAnswerByStream(newConversation);
         let collectedData = "";
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || "";
@@ -112,7 +104,7 @@ export function useChat() {
         if (threadID.length === 0) {
             try {
                 // Create Thread
-                const thread = await openai.beta.threads.create();
+                const thread = OpenAI.createThread();
                 updatedThreadID = thread.id;
                 setThreadID(updatedThreadID);
 
