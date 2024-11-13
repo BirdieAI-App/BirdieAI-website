@@ -199,7 +199,7 @@ const Chat = () => {
     }
   }
 
-  const chatStyle = `flex flex-col relative ${font.className}`;
+  const chatStyle = `flex flex-col ${font.className}`;
 
   return (loadingUserInfo || status === "loading") ?
     (<div className="w-screen h-screen flex flex-col items-center justify-center">
@@ -221,7 +221,7 @@ const Chat = () => {
           freeThreadCount={freeThreadCount}
           setUserLimitReached={setUserLimitReached}
         />
-        <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
+        <div className="flex flex-col items-center lg:ml-64">
           {loadingLatestMessages ? (
             <div>
               <p>Loading latest messages...</p>
@@ -237,52 +237,53 @@ const Chat = () => {
               userLimitReached={userLimitReached}
             />
           )}
-          <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
-            <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
-              <input
-                type="text"
-                value={message}
-                onChange={handleOnChange}
-                onFocus={handleOnFocus}
-                placeholder="Enter your text here"
-                className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
-                disabled={loadingLatestMessages || submitting || userLimitReached}
-                onKeyUp={(event) => {
-                  if (event.key === "Enter") {
-                    document.querySelector("#submitMessageBtn").click();
-                  }
-                }}
-              />
-              <button
-                id="submitMessageBtn"
-                disabled={loadingLatestMessages || submitting || userLimitReached}
-                onClick={async () => {
-                  setSubmitting(true);
-                  const newThread = await handleOnClick(userId);
-                  if (newThread) {
-                    setAllThreads((prevThreads) => {
-                      const remainingThreads = prevThreads.filter(
-                        (thread) => thread.threadID !== newThread.threadID
-                      );
-                      return [...remainingThreads, newThread];
-                    });
-                  }
-                  setSubmitting(false);
-                }}
-                className="bg-green-500 text-white py-2 px-2 rounded-lg"
-              >
-                {submitting ? "Submitting" : "Submit"}
-              </button>
-            </div>
-            <footer className="mt-auto text-center text-gray-600 text-sm py-5">
-              <span className="disclaimer-text">
-                Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
-                <br />
-                Please consult the healthcare providers for medical advice.
-              </span>
-            </footer>
+
+        </div>
+        <div className="flex flex-col items-center mt-5 lg:w-2/3 lg:right-0 md:w-full fixed bottom-0 bg-white">
+          <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
+            <input
+              type="text"
+              value={message}
+              onChange={handleOnChange}
+              onFocus={handleOnFocus}
+              placeholder="Enter your text here"
+              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+              disabled={loadingLatestMessages || submitting || userLimitReached}
+              onKeyUp={(event) => {
+                if (event.key === "Enter") {
+                  document.querySelector("#submitMessageBtn").click();
+                }
+              }}
+            />
+            <button
+              id="submitMessageBtn"
+              disabled={loadingLatestMessages || submitting || userLimitReached}
+              onClick={async () => {
+                setSubmitting(true);
+                const newThread = await handleOnClick(userId);
+                if (newThread) {
+                  setAllThreads((prevThreads) => {
+                    const remainingThreads = prevThreads.filter(
+                      (thread) => thread.threadID !== newThread.threadID
+                    );
+                    return [...remainingThreads, newThread];
+                  });
+                }
+                setSubmitting(false);
+              }}
+              className="bg-green-500 text-white py-2 px-2 rounded-lg"
+            >
+              {submitting ? "Submitting" : "Submit"}
+            </button>
           </div>
-        </main>
+          <footer className="mt-auto text-center text-gray-600 text-sm py-5">
+            <span className="disclaimer-text">
+              Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
+              <br />
+              Please consult the healthcare providers for medical advice.
+            </span>
+          </footer>
+        </div>
       </div>
     );
 };

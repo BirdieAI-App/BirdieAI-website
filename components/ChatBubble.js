@@ -66,7 +66,7 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
 
     return (
         <div className="flex flex-col my-1">
-            <div className="flex items-start gap-2.5 my-2 mx-10">
+            <div className="flex items-start gap-1 my-2 mx-2">
                 <img
                     src={role === "user" ? userImage : "/icon.png"}
                     alt={userName || "Account"}

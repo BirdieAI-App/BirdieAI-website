@@ -17,7 +17,7 @@ export default function ChatSidebar({
 
   return (
     <div>
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-5 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-gray-100 p-2 flex flex-col transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 overflow-scroll`}>
         <button className="bg-green-500 text-white py-2 px-4 rounded-lg mb-5"
           onClick={() => {
             setThreadID("");
@@ -55,7 +55,7 @@ export default function ChatSidebar({
       {/* Overlay for small screens */}
       {isSidebarOpen && <div className="fixed inset-0 bg-black opacity-50 z-40 lg:hidden" onClick={closeSidebar}></div>}
 
-      <div className="flex lg:hidden p-5">
+      <div className="flex lg:hidden p-2">
         <button onClick={toggleSidebar} className="text-2xl p-2 focus:outline-none">
           ☰
         </button>
