@@ -8,6 +8,10 @@ import { useEffect } from 'react';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons'
+import { faDownload } from '@fortawesome/free-solid-svg-icons'
+
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const md = new Markdown();
@@ -105,14 +109,28 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
                     {role !== 'user' && !userLimitReached ? (
                         <div className="w-full flex items-end justify-end">
                             <ul className="text-sm text-gray-700 flex">
-                                <li className="border border-black-500 bg-white rounded-md mx-1 mt-2">
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100">Like</a>
+                                <li className="border border-black-500 bg-white rounded-md mx-1 mt-2 \
+                                            hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200">
+                                    <button className="block px-4 py-2">
+                                        <FontAwesomeIcon icon={faThumbsUp} />
+                                    </button>
                                 </li>
-                                <li className="border border-black-500 bg-white rounded-md mx-1 mt-2">
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 rounded-md">Dislike</a>
+                                <li className="border border-black-500 bg-white rounded-md mx-1 mt-2 
+                                            hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200">
+                                    <button className="block px-4 py-2">
+                                        <FontAwesomeIcon icon={faThumbsDown} />
+                                    </button>
                                 </li>
-                                <li className="border border-black-500 bg-white rounded-md mx-1 mt-2" onClick={() => generatePdfForMessage(content)}>
-                                    <a href="#" className="block px-4 py-2 hover:bg-gray-100 rounded-md">Download</a>
+                                <li
+                                    className="border border-black-500 bg-white rounded-md mx-1 mt-2 
+                                            hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200"
+                                >
+                                    <button 
+                                        className="block px-4 py-2"
+                                        onClick={() => generatePdfForMessage(content)}
+                                    >
+                                        <FontAwesomeIcon icon={faDownload} />
+                                    </button>
                                 </li>
                             </ul>
                         </div>
