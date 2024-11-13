@@ -26,10 +26,17 @@ const messageSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    //true is like, false is dislike
-    feedback: Boolean,
-    //true is downloaded, false is not download
-    download: Boolean,
+    feedback: {
+        type:String,
+        enum: ['Like', 'Dislike', 'Neutral'],
+        default: 'Neutral',
+
+    },
+    //true is download, false is not download
+    download: {
+        type: Boolean,
+        default: false,
+    }
 },
     {
         //add createdAt and updatedAt timestamps

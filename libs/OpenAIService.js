@@ -22,7 +22,7 @@ export class OpenAIService {
                 stream: true,
                 temperature: 0.3,
                 top_p: 0.9,
-                max_tokens: 1500,
+                max_tokens: 2500,
             });
             console.log(response);
             return response;
@@ -46,7 +46,7 @@ export class OpenAIService {
                 messages: conversation,
                 temperature: 0.3,
                 top_p: 0.9,
-                max_tokens: 1500,
+                max_tokens: 2500,
             });
             console.log(response);
             return response;
