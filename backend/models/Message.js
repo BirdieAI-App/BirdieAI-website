@@ -10,6 +10,11 @@ const messageSchema = new mongoose.Schema({
     required: true,
     ref: "Thread",
   },
+  userID:{ //to be used later for free user rule check
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
   messageID: {
     //messageID returns from OpenAI
     type: String,

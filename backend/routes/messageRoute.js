@@ -1,6 +1,8 @@
 const express = require('express');
 const Message = require('../models/Message.js');
 const Thread = require('../models/Thread.js');
+const User = require('../models/User.js');
+const { default: mongoose } = require('mongoose');
 
 const messageRoute = express.Router();
 const validMessageProps = Object.keys(Message.schema.paths).filter((keys)=>!keys.startsWith("_"));
@@ -60,6 +62,21 @@ messageRoute.route("/messages")
             }
         }catch(err){
             return res.status(500).send("Unexpected error occured when validating threadID for (PUT) in /message: "+err);
+        }
+
+        if(!req.body.userID){
+            console.log("request body must contains userID")
+            return res.status(400).send("request body must contains userID")
+        }
+
+        try{//checking for existing userID in database
+            const user = await User.findById(req.body.userID);
+            if(!user){
+                console.log("user with ID="+req.body.userID+" does NOT exist in database")
+                return res.status(400).send("Thread with ID="+req.body.userID+" does NOT exist in database");
+            }
+        }catch(err){
+            return res.status(500).send("Unexpected error occured when validating userID for (PUT) in /message: "+err);
         }
 
         if(!req.body.messageID){
@@ -122,6 +139,7 @@ messageRoute
     // GET: counting number of messages that belong to a given threadID
     .get(async (req, res) => {
         const userID = req.params.userID;
+        console.log("in /message/t/:threadID (GET) number of messages messages from today that belongs to userID: "+ userID);
         try {
             const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
             const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
