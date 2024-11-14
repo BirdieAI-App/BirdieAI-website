@@ -126,7 +126,7 @@ messageRoute
             const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
             const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
             const messageCount = await Message.countDocuments({ 
-                threadID: threadID,
+                // threadID: threadID,
                 createdAt: {
                     $gte: todayTimestamp,
                     $lt: tomorrowTimestamp
