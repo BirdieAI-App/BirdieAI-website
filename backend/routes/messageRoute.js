@@ -118,15 +118,15 @@ messageRoute.route('/messages/t/:threadID')
     // DELETE: delete all mesages belongs to a user with given ID
 
 messageRoute
-    .route('/messages/t/:threadID/count')
+    .route('/messages/u/:userID/count')
     // GET: counting number of messages that belong to a given threadID
     .get(async (req, res) => {
-        const threadID = req.params.threadID;
+        const userID = req.params.userID;
         try {
             const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
             const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
             const messageCount = await Message.countDocuments({ 
-                // threadID: threadID,
+                userID: userID,
                 createdAt: {
                     $gte: todayTimestamp,
                     $lt: tomorrowTimestamp

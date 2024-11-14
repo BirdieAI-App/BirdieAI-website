@@ -65,7 +65,7 @@ export function useChat() {
         // //checking whether or not if free user has more than 3 messages in the current thread
         if(userTier === 'Free' && (threadID.length !== 0 || threadID !== null)){
             try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/u/${userID}/count`;
                 const repsonse = await axios.get(url)
                 messageCount = repsonse.data.count
             } catch (err) {
