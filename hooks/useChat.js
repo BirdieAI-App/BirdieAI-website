@@ -52,17 +52,17 @@ export function useChat() {
             console.log("error during in handleOnClick: " + err.message);
         }
         //checking whether or not if user has reached thread limit for free tier user
-        if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
-            try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
-                const repsonse = await axios.get(url)
-                threadCount = repsonse.data.count
-            } catch (err) {
-                console.log("error while counting number of threads in handleOnClick: " + err.message);
-                return;
-            }
-        }
-        //checking whether or not if free user has more than 3 messages in the current thread
+        // if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
+        //     try {
+        //         const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
+        //         const repsonse = await axios.get(url)
+        //         threadCount = repsonse.data.count
+        //     } catch (err) {
+        //         console.log("error while counting number of threads in handleOnClick: " + err.message);
+        //         return;
+        //     }
+        // }
+        // //checking whether or not if free user has more than 3 messages in the current thread
         if(userTier === 'Free' && (threadID.length !== 0 || threadID !== null)){
             try {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
@@ -75,11 +75,11 @@ export function useChat() {
         }
         if (!sentFirstMessage) setSentFirstMessage(true);
         setMessage("");
-        if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
-            setUserLimitReached(true)
-            return;
-        }
-        if(userTier === "Free" && messageCount >= 3){
+        // if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
+        //     setUserLimitReached(true)
+        //     return;
+        // }
+        if(userTier === "Free" && messageCount >= 5){
             setUserLimitReached(true)
             return;
         }

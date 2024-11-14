@@ -93,7 +93,6 @@ messageRoute.route("/messages")
         try{
             // adding new message into message collection and update 'update_at' field in Thread collection
             const message = await new Message(newMessageBody).save();
-            console.log("[testomg]: ", req.body.threadID);
             return res.status(200).json(message);
         }catch(err){
             return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);
@@ -124,8 +123,15 @@ messageRoute
     .get(async (req, res) => {
         const threadID = req.params.threadID;
         try {
-            // Assuming you have a Message model and 'threadID' is a field in the Message schema
-            const messageCount = await Message.countDocuments({ threadID: threadID });
+            const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
+            const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
+            const messageCount = await Message.countDocuments({ 
+                threadID: threadID,
+                createdAt: {
+                    $gte: todayTimestamp,
+                    $lt: tomorrowTimestamp
+                  }
+             });
             return res.status(200).json({ count: messageCount });
         } catch (err) {
             return res.status(500).send("Unexpected error occurred when getting the count of messages: " + err.message);

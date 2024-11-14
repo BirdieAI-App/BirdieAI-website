@@ -35,8 +35,8 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Body parsing middleware
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.json()); // Parse JSON bodies
+// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+// app.use(express.json()); // Parse JSON bodies
 
 //making connection to MongoDB
 mongoose.connect(mongoURI)
