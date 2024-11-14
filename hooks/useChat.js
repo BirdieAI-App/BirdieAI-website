@@ -68,6 +68,7 @@ export function useChat() {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/u/${userID}/count`;
                 const repsonse = await axios.get(url)
                 messageCount = repsonse.data.count
+                alert("Total messages today: ", messageCount)
             } catch (err) {
                 console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
                 return;
@@ -141,6 +142,7 @@ export function useChat() {
             const messageBody = {
                 threadID: updatedThreadID,
                 messageID: Date.now().toString(),
+                userID: userID,
                 prompt: message,
                 response: collectedData,
                 message_total_token: 1200,
