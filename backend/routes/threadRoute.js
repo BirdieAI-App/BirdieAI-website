@@ -1,4 +1,3 @@
-import OpenAI from "openai";
 const express = require("express");
 const Thread = require("../models/Thread.js");
 const User = require("../models/User.js");
@@ -185,10 +184,20 @@ threadRoute
     const tier = req.params.tier
     console.log("in /threads/u/:userID/count/:tier (GET) all threads belongs to userID: " + userID + " that is tier: " + tier);
     try {
-      const ThreadCount = await Thread.countDocuments({userID: userID,status: tier});
+      const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
+      const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
+      const ThreadCount = await Thread.countDocuments({
+        userID: userID, 
+        status: tier,
+        createdAt: {
+          $gte: todayTimestamp,
+          $lt: tomorrowTimestamp
+        }
+      });
       return res.status(200).json({ count: ThreadCount });
     } catch (err) {
       return res.status(500).send("Unexpected error occurred when getting the count of threads: " + err);
     }
-  })  
+  }) 
+
 module.exports = threadRoute;

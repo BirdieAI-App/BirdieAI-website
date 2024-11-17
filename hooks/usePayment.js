@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { createCheckoutSession, createCustomerPortalSession } from "@/libs/request";
+import { useState, useCallback } from "react";
+import { createCheckoutSession, createCustomerPortalSession, getProductList,getStripePrice } from "@/libs/request";
 
 export function usePayment() {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +25,7 @@ export function usePayment() {
 
         setIsLoading(false);
     }
+
     const handleCustomerPortal = async (payload) => {
         const { userId } = payload;
         setIsLoading(true); 
@@ -40,5 +41,23 @@ export function usePayment() {
         setIsLoading(false);
     }
 
-    return {isLoading, handlePayment, handleCustomerPortal};
+    const handleStripeProductList = useCallback( async() => {
+        try{
+            const response = await getProductList();
+            return response;
+        }catch(e){
+            console.log(e.message);
+        }
+    },[]);
+
+    const handleGetStripPRice = async(priceID) =>{
+        try{
+            const response = await getStripePrice(priceID);
+            return response;
+        }catch(e){
+            console.log(e.message)
+        }
+    }
+
+    return {isLoading, handlePayment, handleCustomerPortal, handleStripeProductList, handleGetStripPRice};
 }

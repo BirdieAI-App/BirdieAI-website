@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Thread = require("./Thread");
 
 //
 const messageSchema = new mongoose.Schema({
@@ -8,6 +9,11 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true,
     ref: "Thread",
+  },
+  userID:{ //to be used later for free user rule check
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "User",
   },
   messageID: {
     //messageID returns from OpenAI
@@ -20,15 +26,32 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   response: String,
-  create_at: {
-    type: Date,
-    default: Date.now,
-  },
   message_total_token: {
     //number of token returns from OpenAI
     type: Number,
     required: true,
   },
+},
+  {
+    //add createdAt and updatedAt timestamps
+    timestamps: true,
+  }
+);
+
+// update the 'updatedAt' field in Thread collection when a new message is saved
+messageSchema.pre("save", async function (next) {
+  const message = this;
+  const timestamps = message.createdAt;
+  try {
+    await Thread.updateOne(
+      { threadID: message.threadID },
+      { $set: { updatedAt: timestamps } }
+    );
+    next();
+  } catch (err) {
+    console.log("Unexpected error occured while updating 'updatedAt' field in Thread collection: ", err);
+    return next(err);
+  }
 });
 
 const Message = mongoose.model("Message", messageSchema);

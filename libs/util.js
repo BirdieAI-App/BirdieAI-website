@@ -42,3 +42,13 @@ export const validateData = (payload) => {
         return false;
     }
 }
+
+export const extractFirstFourWords = function (str) {
+    // Split the string by whitespace
+    const words = str.split(/\s+/);
+  
+    // Slice the first four words and join them back into a string
+    const firstFourWords = words.slice(0, 4).join(' ');
+  
+    return firstFourWords;
+}

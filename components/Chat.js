@@ -22,9 +22,15 @@ const Chat = () => {
   const [userId, setUserId] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
+  const [submitting, setSubmitting] = useState(false);
 
-  const { streaming, conversation, handleOnChange, handleOnClick, handleOnFocus, message, currentResponse,
-    threadID, setThreadID, retrieveAllMessagesByThreadID, setConversation, sentFirstMessage, setMessage, setSentFirstMessage, setStreaming } = useChat();
+  const {
+    // States
+    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount, userLimitReached,
+    // Setters
+    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount, setUserLimitReached,
+    // Function handlers
+    handleOnChange, handleOnClick, handleOnFocus, retrieveAllMessagesByThreadID } = useChat();
 
   const [loadingLatestMessages, setLoadingLatestMessages] = useState(false);
   const [loadingAllThreads, setLoadingAllThreads] = useState(true);
@@ -47,6 +53,9 @@ const Chat = () => {
       try {
         const threads = await getAllThreadsByUser(userId);
         setAllThreads(threads);
+        //counting free Threads
+        const temp = threads.filter(thread => thread.status === 'Free')
+        setFreeThreadCount(temp.length)
       } catch (err) {
         console.log(err);
       }
@@ -100,6 +109,7 @@ const Chat = () => {
       if (res.paymentProcessed === 'true') {
         sessionStorage.removeItem('checkoutSessionID');
         setLoadingUserInfo(true);
+        window.history.replaceState({}, document.title, "/chat");
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return stripePaymentStatus(checkoutSessionID);
@@ -113,7 +123,7 @@ const Chat = () => {
   const getUserInfo = async (userId) => {
     if (!userId || userId.length === 0) return null;
     try {
-      const user = await getUserByID(userId); 
+      const user = await getUserByID(userId);
       setLoadingUserInfo(false);
       return user;
     } catch (err) {
@@ -121,7 +131,7 @@ const Chat = () => {
       return null;
     }
   };
-  
+
 
   useEffect(() => {
     if (status !== "loading" && !session) {
@@ -144,10 +154,7 @@ const Chat = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const fromStripe = urlParams.get('stripeRedirect');
       if (fromStripe) {
-        const paymentProcessed = await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
-        if (paymentProcessed) {
-          window.history.replaceState({}, document.title, "/chat");
-        }
+        await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
       }
       const user = await getUserInfo(userId);
       if (user && user.profileData) {
@@ -156,14 +163,6 @@ const Chat = () => {
     };
     checkUserSubscription();
   }, [userId]);
-
-  if (loadingUserInfo || status === "loading") {
-    return (
-      <div className="w-screen h-screen flex flex-col items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    )
-  }
 
   if (!session) {
     return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
@@ -186,12 +185,10 @@ const Chat = () => {
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
-        console.log(data);
         setSentFirstMessage(false);
         setConversation(() => {
           const updatedData = [];
           filterConversationData(updatedData, data, id);
-          console.log(updatedData)
           return updatedData;
         });
       }
@@ -204,83 +201,90 @@ const Chat = () => {
 
   const chatStyle = `flex flex-col relative ${font.className}`;
 
-  return (
-    <div className={chatStyle}>
-      <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
-        allThreads={allThreads} paginatedThreads={paginatedThreads}
-        closeSidebar={closeSidebar}
-        getThreadsPaginated={getThreadsPaginated}
-        openThreadByID={openThreadByID}
-        setThreadID={setThreadID}
-        setConversation={setConversation}
-        setSentFirstMessage={setSentFirstMessage}
-        loadingAllThreads={loadingAllThreads}
-        subscriptionTier={userTier}
-      />
-      <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
-        {loadingLatestMessages ? (
-          <div>
-            <p>Loading latest messages...</p>
-          </div>
-        ) : (!threadID && !sentFirstMessage) ? (
-          <ChatRecommendation setCurrentMessage={setMessage} />
-        ) : (
-          <Conversation
-            user={session?.user}
-            conversation={conversation}
-            streaming={streaming}
-            currentResponse={currentResponse}
-          />
-        )}
-
-        <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
-          <div className="flex flex-row items-center w-3/4">
-            <input
-              type="text"
-              value={message}
-              onChange={handleOnChange}
-              onFocus={handleOnFocus}
-              placeholder="Message Birdie Diet Coach"
-              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
-              onKeyUp={(event)=>{
-                if(event.key === "Enter"){
-                  document.querySelector("#submitMessageBtn").click();
-                }
-              }}
+  return (loadingUserInfo || status === "loading") ?
+    (<div className="w-screen h-screen flex flex-col items-center justify-center">
+      <LoadingSpinner />
+    </div>)
+    :
+    (
+      <div className={chatStyle}>
+        <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
+          allThreads={allThreads} paginatedThreads={paginatedThreads}
+          closeSidebar={closeSidebar}
+          getThreadsPaginated={getThreadsPaginated}
+          openThreadByID={openThreadByID}
+          setThreadID={setThreadID}
+          setConversation={setConversation}
+          setSentFirstMessage={setSentFirstMessage}
+          loadingAllThreads={loadingAllThreads}
+          subscriptionTier={userTier}
+          freeThreadCount={freeThreadCount}
+          setUserLimitReached={setUserLimitReached}
+        />
+        <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
+          {loadingLatestMessages ? (
+            <div>
+              <p>Loading latest messages...</p>
+            </div>
+          ) : (!threadID && !sentFirstMessage) ? (
+            <ChatRecommendation setCurrentMessage={setMessage} />
+          ) : (
+            <Conversation
+              user={session?.user}
+              conversation={conversation}
+              streaming={streaming}
+              currentResponse={currentResponse}
+              userLimitReached={userLimitReached}
             />
-            <button
-              id="submitMessageBtn"
-              disabled = {loadingLatestMessages}
-              onClick={async () => {
-                const newThread = await handleOnClick(userId);
-                if (newThread) {
-                  setAllThreads((prevThreads) => {
-                    const remainingThreads = prevThreads.filter(
-                      (thread) => thread.threadID !== newThread.threadID
-                    );
-                    return [...remainingThreads, newThread];
-                  });
-                }
-              }}
-              className="bg-green-500 text-white py-2 px-2 rounded-lg"
-            >
-              Submit
-            </button>
-
+          )}
+          <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
+            <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
+              <input
+                type="text"
+                value={message}
+                onChange={handleOnChange}
+                onFocus={handleOnFocus}
+                placeholder="Enter your text here"
+                className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+                disabled={loadingLatestMessages || submitting || userLimitReached}
+                onKeyUp={(event) => {
+                  if (event.key === "Enter") {
+                    document.querySelector("#submitMessageBtn").click();
+                  }
+                }}
+              />
+              <button
+                id="submitMessageBtn"
+                disabled={loadingLatestMessages || submitting || userLimitReached}
+                onClick={async () => {
+                  setSubmitting(true);
+                  const newThread = await handleOnClick(userId);
+                  if (newThread) {
+                    setAllThreads((prevThreads) => {
+                      const remainingThreads = prevThreads.filter(
+                        (thread) => thread.threadID !== newThread.threadID
+                      );
+                      return [...remainingThreads, newThread];
+                    });
+                  }
+                  setSubmitting(false);
+                }}
+                className="bg-green-500 text-white py-2 px-2 rounded-lg"
+              >
+                {submitting ? "Submitting" : "Submit"}
+              </button>
+            </div>
+            <footer className="mt-auto text-center text-gray-600 text-sm py-5">
+              <span className="disclaimer-text">
+                Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
+                <br />
+                Please consult the healthcare providers for medical advice.
+              </span>
+            </footer>
           </div>
-          <footer className="mt-auto text-center text-gray-600 text-sm py-5">
-            <span className="disclaimer-text">
-              Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
-              <br />
-              Please consult the healthcare providers for medical advice.
-            </span>
-          </footer>
-        </div>
-      </main>
-    </div>
-
-
-  );
+        </main>
+      </div>
+    );
 };
 
 
