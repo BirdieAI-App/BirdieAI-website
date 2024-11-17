@@ -240,7 +240,7 @@ const Chat = () => {
               value={message}
               onChange={handleOnChange}
               onFocus={handleOnFocus}
-              placeholder="Enter your text here"
+              placeholder="Message Birdie Diet Coach"
               className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
               onKeyUp={(event)=>{
                 if(event.key === "Enter"){
