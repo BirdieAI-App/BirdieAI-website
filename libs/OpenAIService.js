@@ -7,60 +7,35 @@ export class OpenAIService {
             apiKey: OPENAI_API_KEY,
             dangerouslyAllowBrowser: true,
         });
-    }
-    /* 
-        GET RESPONSE BY STREAM
-            but right now it is not a stream
-        @param conversation: Array of objects
-        @return response: Object contains chunks of response
-    */
-    async getAnswerByStream(conversation) {
-        try {
-            const response = await this.openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: conversation,
-                stream: true,
-                temperature: 0.3,
-                top_p: 0.9,
-                max_tokens: 2500,
-            });
-            console.log(response);
-            return response;
-        } catch (err) {
-            console.log("In OPENAI services: ", err);
-        }finally {
-            console.log("FINISHED");
+        this.config = {
+            model: "gpt-4o",
+            temperature: 0.3,
+            top_p: 0.9,
+            max_tokens: 2500,
         }
     }
 
-    
     /*
         GET RESPONSE BY COMPLETIONS
         @param conversation: Array of objects
         @return response: Object contains only one response object
     */
-    async getAnswerByCompletions(conversation) {
+    async getResponse(conversation) {
         try {
             const response = await this.openai.chat.completions.create({
-                model: "gpt-4o",
+                ...this.config,
                 messages: conversation,
-                temperature: 0.3,
-                top_p: 0.9,
-                max_tokens: 2500,
             });
-            console.log(response);
             return response;
         } catch (err) {
             console.log(err);
-        }finally {
-            console.log("FINISHED");
         }
     }
 
     //create thread
     async createThread() {
         try {
-            const thread = await this.openai.threads.create();
+            const thread = await this.openai.beta.threads.create();
             return thread;
         } catch (err) {
             console.log(err);

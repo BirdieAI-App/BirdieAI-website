@@ -33,7 +33,7 @@ const generatePdfForMessage = async (content) => {
     }
 };
 
-export default function ChatBubble({ userImage, userName, role, content, hyperlink, hyperlinkText, userLimitReached = false }) {
+export default function ChatBubble({ userImage, userName, role, userLimitReached = false, hyperlinkData, messageData }) {
     const formatProps = {
         // Custom table rendering
         table: ({ node, ...props }) => (
@@ -68,6 +68,18 @@ export default function ChatBubble({ userImage, userName, role, content, hyperli
             <li className="my-1" {...props} />
         ),
     };
+    const hyperlink = messageData?.hyperlink;
+    const hyperlinkText = messageData?.hyperlinkText;
+    const response = messageData?.response;
+    const prompt = messageData?.prompt;
+    let content = "";
+    if(userLimitReached){
+        content = "I'm glad I'm able to help. Trial users have limited chat sessions. Upgrade to continue using Birdie AI Diet Coach";
+    }else if(role === "user"){
+        content = prompt;
+    }else if(role === "assistant"){
+        content = response;
+    }
 
     return (
         <div className="flex flex-col my-1">

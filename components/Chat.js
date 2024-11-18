@@ -26,9 +26,9 @@ const Chat = () => {
 
   const { 
     // States
-    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount, userLimitReached,
+    conversation, message, threadID, sentFirstMessage, freeThreadCount, userLimitReached, currentMessageData,
     // Setters
-    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount, setUserLimitReached,
+    setThreadID, setConversation, setMessage, setSentFirstMessage, setFreeThreadCount, setUserLimitReached, setCurrentMessageData,
     // Function handlers
     handleOnChange, handleOnClick, handleOnFocus, retrieveAllMessagesByThreadID } = useChat();
 
@@ -191,16 +191,18 @@ const Chat = () => {
       setThreadID(id);
       setLoadingLatestMessages(true);
       setConversation([]);
-      setStreaming(false);
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
         setSentFirstMessage(false);
-        setConversation(() => {
-          const updatedData = [];
-          filterConversationData(updatedData, data, id);
-          return updatedData;
-        });
+        // setConversation(() => {
+        //   const updatedData = [];
+        //   console.log("data", data);
+        //   // filterConversationData(updatedData, data, id);
+        //   return u;
+        // });
+        setConversation(data);
+        // console.log("aaaa", data);
       }
       setLoadingLatestMessages(false);
     } catch (err) {
@@ -237,9 +239,8 @@ const Chat = () => {
           <Conversation
             user={session?.user}
             conversation={conversation}
-            streaming={streaming}
-            currentResponse={currentResponse}
             userLimitReached={userLimitReached}
+            currentMessageData={currentMessageData}
           />
         )}
         <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
