@@ -39,8 +39,6 @@ const generatePdfForMessage = async (content) => {
 const updateFeedback = async function(messageData, feedback) {
     const id = messageData._id;
     try{
-        console.log("messageData: ", messageData);
-        console.log(feedback);
         const response = await axios.post(
             `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/${id}`,
             { feedback: feedback }
