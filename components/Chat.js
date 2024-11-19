@@ -24,7 +24,7 @@ const Chat = () => {
   const [paginatedThreads, setPaginatedThreads] = useState({ data: [], nextPage: null });
   const [submitting, setSubmitting] = useState(false);
 
-  const { 
+  const {
     // States
     conversation, message, threadID, sentFirstMessage, freeThreadCount, userLimitReached, currentMessageData,
     // Setters
@@ -76,32 +76,6 @@ const Chat = () => {
     }
   }
 
-  const filterConversationData = function (updatedData, data, id) {
-    // data = data.filter((msg,idx) => msg.threadID == id);
-    data?.forEach(message => {
-      // Create user prompt object
-      const userPrompt = {
-        ...message, // Copy all original properties
-        role: 'user',
-        content: message.prompt // Set content to the prompt value
-      };
-      delete userPrompt.prompt; // Remove the original prompt field
-      delete userPrompt.response; // Remove the original response field
-
-      // Create bot response object
-      const botResponse = {
-        ...message, // Copy all original properties
-        role: 'assistant',
-        content: message.response // Set content to the response value
-      };
-      delete botResponse.prompt; // Remove the original prompt field
-      delete botResponse.response; // Remove the original response field
-
-      // Push both objects into the splitMessages array
-      updatedData.push(userPrompt, botResponse);
-    });
-  }
-
   const stripePaymentStatus = async (checkoutSessionID) => {
     if (!checkoutSessionID) return false;
     try {
@@ -109,6 +83,7 @@ const Chat = () => {
       if (res.paymentProcessed === 'true') {
         sessionStorage.removeItem('checkoutSessionID');
         setLoadingUserInfo(true);
+        window.history.replaceState({}, document.title, "/chat");
       } else {
         await new Promise(resolve => setTimeout(resolve, 1000));
         return stripePaymentStatus(checkoutSessionID);
@@ -122,7 +97,7 @@ const Chat = () => {
   const getUserInfo = async (userId) => {
     if (!userId || userId.length === 0) return null;
     try {
-      const user = await getUserByID(userId); 
+      const user = await getUserByID(userId);
       setLoadingUserInfo(false);
       return user;
     } catch (err) {
@@ -130,7 +105,7 @@ const Chat = () => {
       return null;
     }
   };
-  
+
 
   useEffect(() => {
     if (status !== "loading" && !session) {
@@ -153,10 +128,7 @@ const Chat = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const fromStripe = urlParams.get('stripeRedirect');
       if (fromStripe) {
-        const paymentProcessed = await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
-        if (paymentProcessed) {
-          window.history.replaceState({}, document.title, "/chat");
-        }
+        await stripePaymentStatus(sessionStorage.getItem("checkoutSessionID"));
       }
       const user = await getUserInfo(userId);
       if (user && user.profileData) {
@@ -165,14 +137,6 @@ const Chat = () => {
     };
     checkUserSubscription();
   }, [userId]);
-
-  if (loadingUserInfo || status === "loading") {
-    return (
-      <div className="w-screen h-screen flex flex-col items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    )
-  }
 
   if (!session) {
     return null; // This return statement prevents the rest of the component from rendering until the redirect occurs.
@@ -195,14 +159,7 @@ const Chat = () => {
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
         setSentFirstMessage(false);
-        // setConversation(() => {
-        //   const updatedData = [];
-        //   console.log("data", data);
-        //   // filterConversationData(updatedData, data, id);
-        //   return u;
-        // });
         setConversation(data);
-        // console.log("aaaa", data);
       }
       setLoadingLatestMessages(false);
     } catch (err) {
@@ -213,84 +170,89 @@ const Chat = () => {
 
   const chatStyle = `flex flex-col relative ${font.className}`;
 
-  return (
-    <div className={chatStyle}>
-      <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
-        allThreads={allThreads} paginatedThreads={paginatedThreads}
-        closeSidebar={closeSidebar}
-        getThreadsPaginated={getThreadsPaginated}
-        openThreadByID={openThreadByID}
-        setThreadID={setThreadID}
-        setConversation={setConversation}
-        setSentFirstMessage={setSentFirstMessage}
-        loadingAllThreads={loadingAllThreads}
-        subscriptionTier={userTier}
-        freeThreadCount={freeThreadCount}
-        setUserLimitReached={setUserLimitReached}
-      />
-      <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
-        {loadingLatestMessages ? (
-          <div>
-            <p>Loading latest messages...</p>
-          </div>
-        ) : (!threadID && !sentFirstMessage) ? (
-          <ChatRecommendation setCurrentMessage={setMessage} />
-        ) : (
-          <Conversation
-            user={session?.user}
-            conversation={conversation}
-            userLimitReached={userLimitReached}
-            currentMessageData={currentMessageData}
-          />
-        )}
-        <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
-          <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
-            <input
-              type="text"
-              value={message}
-              onChange={handleOnChange}
-              onFocus={handleOnFocus}
-              placeholder="Enter your text here"
-              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
-              disabled = {loadingLatestMessages || submitting || userLimitReached}
-              onKeyUp={(event)=>{
-                if(event.key === "Enter"){
-                  document.querySelector("#submitMessageBtn").click();
-                }
-              }}
+  return (loadingUserInfo || status === "loading") ?
+    (<div className="w-screen h-screen flex flex-col items-center justify-center">
+      <LoadingSpinner />
+    </div>)
+    :
+    (
+      <div className={chatStyle}>
+        <ChatSidebar toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen}
+          allThreads={allThreads} paginatedThreads={paginatedThreads}
+          closeSidebar={closeSidebar}
+          getThreadsPaginated={getThreadsPaginated}
+          openThreadByID={openThreadByID}
+          setThreadID={setThreadID}
+          setConversation={setConversation}
+          setSentFirstMessage={setSentFirstMessage}
+          loadingAllThreads={loadingAllThreads}
+          subscriptionTier={userTier}
+          freeThreadCount={freeThreadCount}
+          setUserLimitReached={setUserLimitReached}
+        />
+        <main className="flex-1 flex flex-col p-5 items-center lg:ml-64">
+          {loadingLatestMessages ? (
+            <div>
+              <p>Loading latest messages...</p>
+            </div>
+          ) : (!threadID && !sentFirstMessage) ? (
+            <ChatRecommendation setCurrentMessage={setMessage} />
+          ) : (
+            <Conversation
+              user={session?.user}
+              conversation={conversation}
+              userLimitReached={userLimitReached}
+              currentMessageData={currentMessageData}
             />
-            <button
-              id="submitMessageBtn"
-              disabled = {loadingLatestMessages || submitting || userLimitReached}
-              onClick={async () => {
-                setSubmitting(true);
-                const newThread = await handleOnClick(userId);
-                if (newThread) {
-                  setAllThreads((prevThreads) => {
-                    const remainingThreads = prevThreads.filter(
-                      (thread) => thread.threadID !== newThread.threadID
-                    );
-                    return [...remainingThreads, newThread];
-                  });
-                }
-                setSubmitting(false);
-              }}
-              className="bg-green-500 text-white py-2 px-2 rounded-lg"
-            >
-              {submitting ? "Submitting" : "Submit"}
-            </button>
+          )}
+          <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
+            <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
+              <input
+                type="text"
+                value={message}
+                onChange={handleOnChange}
+                onFocus={handleOnFocus}
+                placeholder="Enter your text here"
+                className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+                disabled={loadingLatestMessages || submitting || userLimitReached}
+                onKeyUp={(event) => {
+                  if (event.key === "Enter") {
+                    document.querySelector("#submitMessageBtn").click();
+                  }
+                }}
+              />
+              <button
+                id="submitMessageBtn"
+                disabled={loadingLatestMessages || submitting || userLimitReached}
+                onClick={async () => {
+                  setSubmitting(true);
+                  const newThread = await handleOnClick(userId);
+                  if (newThread) {
+                    setAllThreads((prevThreads) => {
+                      const remainingThreads = prevThreads.filter(
+                        (thread) => thread.threadID !== newThread.threadID
+                      );
+                      return [...remainingThreads, newThread];
+                    });
+                  }
+                  setSubmitting(false);
+                }}
+                className="bg-green-500 text-white py-2 px-2 rounded-lg"
+              >
+                {submitting ? "Submitting" : "Submit"}
+              </button>
+            </div>
+            <footer className="mt-auto text-center text-gray-600 text-sm py-5">
+              <span className="disclaimer-text">
+                Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
+                <br />
+                Please consult the healthcare providers for medical advice.
+              </span>
+            </footer>
           </div>
-          <footer className="mt-auto text-center text-gray-600 text-sm py-5">
-            <span className="disclaimer-text">
-              Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
-              <br />
-              Please consult the healthcare providers for medical advice.
-            </span>
-          </footer>
-        </div>
-      </main>
-    </div>
-  );
+        </main>
+      </div>
+    );
 };
 
 

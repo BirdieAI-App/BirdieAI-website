@@ -48,22 +48,23 @@ export function useChat() {
             console.log("error during in handleOnClick: " + err.message);
         }
         //checking whether or not if user has reached thread limit for free tier user
-        if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
-            try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
-                const repsonse = await axios.get(url)
-                threadCount = repsonse.data.count
-            } catch (err) {
-                console.log("error while counting number of threads in handleOnClick: " + err.message);
-                return;
-            }
-        }
-        //checking whether or not if free user has more than 3 messages in the current thread
+        // if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
+        //     try {
+        //         const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
+        //         const repsonse = await axios.get(url)
+        //         threadCount = repsonse.data.count
+        //     } catch (err) {
+        //         console.log("error while counting number of threads in handleOnClick: " + err.message);
+        //         return;
+        //     }
+        // }
+        // //checking whether or not if free user has more than 3 messages in the current thread
         if(userTier === 'Free' && (threadID.length !== 0 || threadID !== null)){
             try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/u/${userID}/count`;
                 const repsonse = await axios.get(url)
                 messageCount = repsonse.data.count
+                alert("Total messages today: ", messageCount)
             } catch (err) {
                 console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
                 return;
@@ -71,11 +72,11 @@ export function useChat() {
         }
         if (!sentFirstMessage) setSentFirstMessage(true);
         setMessage("");
-        if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
-            setUserLimitReached(true)
-            return;
-        }
-        if(userTier === "Free" && messageCount >= 3){
+        // if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
+        //     setUserLimitReached(true)
+        //     return;
+        // }
+        if(userTier === "Free" && messageCount >= 5){
             setUserLimitReached(true)
             return;
         }
@@ -102,7 +103,7 @@ export function useChat() {
             return updatedData;
           }
         const cur = filterConversationData(conversation);
-        const openAIConversationss = [
+        const newOpenAIConversation = [
             {
                 role: "system",
                 content: OPENAI_PROMPT,
@@ -114,9 +115,8 @@ export function useChat() {
             },
         ];
 
-        setOpenAIConversation(openAIConversationss);
-        // setConversation(openAIConversation);
-        const OpenAIResponse = await OpenAI.getResponse(openAIConversation);
+        setOpenAIConversation(newOpenAIConversation);
+        const OpenAIResponse = await OpenAI.getResponse(newOpenAIConversation);
         const OpenAIMessage = OpenAIResponse.choices[0]?.message?.content || "";
 
         setMessage("");
@@ -155,6 +155,7 @@ export function useChat() {
             const messageBody = {
                 threadID: updatedThreadID,
                 messageID: Date.now().toString(),
+                userID: userID,
                 prompt: message,
                 response: OpenAIMessage,
                 message_total_token: OpenAIResponse.usage?.total_tokens || 0,
@@ -181,12 +182,9 @@ export function useChat() {
     }
 
     function handleOnFocus() {
-        console.log('FOCUS');
-        console.log(conversation);
         if (Object.keys(currentMessageData).length > 0) {
             conversation.push(currentMessageData);
             setConversation(conversation);
-            console.log("IN focus", conversation);
         }
         setCurrentMessageData({});
     }

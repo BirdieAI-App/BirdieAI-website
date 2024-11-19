@@ -42,10 +42,10 @@ async function handleAccessGrant(invoice) {
     try {
         const filter = { "profileData.stripeCustomerId": invoice.customer };
         let update;
-        const productId = invoice.lines.data[0].price.id;
-        if (productId === "price_1PcwV3AsroNx812FhEz7ZPSp") {
+        const type = invoice.lines.data[0].plan.interval;
+        if (type === 'month') {
             update = { "profileData.subscriptionTier": "Monthly" };
-        } else if (productId === "price_1QHzM8AsroNx812Fecd0d68j") {
+        } else if (type === 'year') {
             update = { "profileData.subscriptionTier": "Annually" };
         }
         const option = { "new": true };
@@ -53,7 +53,7 @@ async function handleAccessGrant(invoice) {
         if (!user) {
             console.log("No user was found with Stripe Customer ID:", invoice.customer);
         } else {
-            console.log("Granted access to chatBot for userID:", user._id);
+            console.log(`Granted access ${type} to chatBot for userID: ${user._id}`);
         }
     } catch (err) {
         console.error("Error in handleAccessGrant:", err.message);
