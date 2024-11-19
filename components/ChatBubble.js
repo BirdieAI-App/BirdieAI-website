@@ -3,13 +3,16 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Markdown from "markdown-it";
 import htmlToPdfmake from "html-to-pdfmake";
-import { useEffect } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons'
+import {    faThumbsUp as faThumbsUpSolid, 
+            faThumbsDown as faThumbsDownSolid   } from '@fortawesome/free-solid-svg-icons'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -33,7 +36,35 @@ const generatePdfForMessage = async (content) => {
     }
 };
 
+const updateFeedback = async function(messageData, feedback) {
+    const id = messageData._id;
+    try{
+        console.log("messageData: ", messageData);
+        console.log(feedback);
+        const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/${id}`,
+            { feedback: feedback }
+        );
+    }catch(err){
+        console.log("Error updating feedback: ", err);
+    }
+}
+
 export default function ChatBubble({ userImage, userName, role, userLimitReached = false, hyperlinkData, messageData }) {
+    const [feedback, setFeedback] = useState(messageData?.feedback || "none");
+
+    const handleLikeClick = () => {
+        const newFeedback = feedback === "like" ? "none" : "like";
+        setFeedback(newFeedback);
+        updateFeedback(messageData, newFeedback);
+    };
+
+    const handleDislikeClick = () => {
+        const newFeedback = feedback === "dislike" ? "none" : "dislike";
+        setFeedback(newFeedback);
+        updateFeedback(messageData, newFeedback);
+    };
+
     const formatProps = {
         // Custom table rendering
         table: ({ node, ...props }) => (
@@ -68,19 +99,18 @@ export default function ChatBubble({ userImage, userName, role, userLimitReached
             <li className="my-1" {...props} />
         ),
     };
-    const hyperlink = messageData?.hyperlink;
-    const hyperlinkText = messageData?.hyperlinkText;
+    const hyperlink = hyperlinkData?.hyperlink;
+    const hyperlinkText = hyperlinkData?.hyperlinkText;
     const response = messageData?.response;
     const prompt = messageData?.prompt;
     let content = "";
-    if(userLimitReached){
+    if (userLimitReached) {
         content = "I'm glad I'm able to help. Trial users have limited chat sessions. Upgrade to continue using Birdie AI Diet Coach";
-    }else if(role === "user"){
+    } else if (role === "user") {
         content = prompt;
-    }else if(role === "assistant"){
+    } else if (role === "assistant") {
         content = response;
     }
-
     return (
         <div className="flex flex-col my-1">
             <div className="flex items-start gap-2.5 my-2 mx-10">
@@ -122,22 +152,31 @@ export default function ChatBubble({ userImage, userName, role, userLimitReached
                         <div className="w-full flex items-end justify-end">
                             <ul className="text-sm text-gray-700 flex">
                                 <li className="border border-black-500 bg-white rounded-md mx-1 mt-2 \
-                                            hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200">
-                                    <button className="block px-4 py-2">
-                                        <FontAwesomeIcon icon={faThumbsUp} />
+                                             hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200">
+                                    <button
+                                        className={`block px-4 py-2 transform transition-all duration-200 active:scale-9`}
+                                        onClick={handleLikeClick}
+                                    >
+                                        <FontAwesomeIcon icon={feedback === 'like' ? faThumbsUpSolid : faThumbsUp} />
                                     </button>
                                 </li>
                                 <li className="border border-black-500 bg-white rounded-md mx-1 mt-2 
-                                            hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200">
-                                    <button className="block px-4 py-2">
-                                        <FontAwesomeIcon icon={faThumbsDown} />
+                                             hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200">
+                                    <button
+                                        className={`block px-4 py-2 transform transition-all duration-200 active:scale-9`}
+                                        onClick={handleDislikeClick}
+                                    >
+                                        <FontAwesomeIcon 
+                                            icon={feedback === 'dislike' ? faThumbsDownSolid : faThumbsDown}
+                                            className={`${feedback === 'dislike' ? 'animate-popup' : ''}`} 
+                                        />
                                     </button>
                                 </li>
                                 <li
-                                    className="border border-black-500 bg-white rounded-md mx-1 mt-2 
-                                            hover:bg-gray-100 hover:scale-105 transition ease-linear duration-200"
+                                    className="border border-black-500 bg-white rounded-md mx-1 mt-2
+                                             hover:bg-gray-100 hover:scale-105 hover:text-black transition ease-linear duration-200"
                                 >
-                                    <button 
+                                    <button
                                         className="block px-4 py-2"
                                         onClick={() => generatePdfForMessage(content)}
                                     >
