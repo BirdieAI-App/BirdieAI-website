@@ -26,9 +26,9 @@ const Chat = () => {
 
   const {
     // States
-    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount, userLimitReached,
+    conversation, message, threadID, sentFirstMessage, freeThreadCount, userLimitReached, currentMessageData,
     // Setters
-    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount, setUserLimitReached,
+    setThreadID, setConversation, setMessage, setSentFirstMessage, setFreeThreadCount, setUserLimitReached, setCurrentMessageData,
     // Function handlers
     handleOnChange, handleOnClick, handleOnFocus, retrieveAllMessagesByThreadID } = useChat();
 
@@ -74,32 +74,6 @@ const Chat = () => {
     } catch (err) {
       console.log(err);
     }
-  }
-
-  const filterConversationData = function (updatedData, data, id) {
-    // data = data.filter((msg,idx) => msg.threadID == id);
-    data?.forEach(message => {
-      // Create user prompt object
-      const userPrompt = {
-        ...message, // Copy all original properties
-        role: 'user',
-        content: message.prompt // Set content to the prompt value
-      };
-      delete userPrompt.prompt; // Remove the original prompt field
-      delete userPrompt.response; // Remove the original response field
-
-      // Create bot response object
-      const botResponse = {
-        ...message, // Copy all original properties
-        role: 'assistant',
-        content: message.response // Set content to the response value
-      };
-      delete botResponse.prompt; // Remove the original prompt field
-      delete botResponse.response; // Remove the original response field
-
-      // Push both objects into the splitMessages array
-      updatedData.push(userPrompt, botResponse);
-    });
   }
 
   const stripePaymentStatus = async (checkoutSessionID) => {
@@ -181,16 +155,11 @@ const Chat = () => {
       setThreadID(id);
       setLoadingLatestMessages(true);
       setConversation([]);
-      setStreaming(false);
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
         setSentFirstMessage(false);
-        setConversation(() => {
-          const updatedData = [];
-          filterConversationData(updatedData, data, id);
-          return updatedData;
-        });
+        setConversation(data);
       }
       setLoadingLatestMessages(false);
     } catch (err) {
@@ -232,9 +201,8 @@ const Chat = () => {
             <Conversation
               user={session?.user}
               conversation={conversation}
-              streaming={streaming}
-              currentResponse={currentResponse}
               userLimitReached={userLimitReached}
+              currentMessageData={currentMessageData}
             />
           )}
           <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">

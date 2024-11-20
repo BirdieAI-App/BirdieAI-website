@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import OpenAI from "openai";
 import { extractFirstFourWords } from "@/libs/util";
+import { OpenAIService } from "@/libs/OpenAIService";
 
-const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
 
 export function useChat() {
-    const [currentResponse, setCurrentResponse] = useState("");
-    const [streaming, setStreaming] = useState(false);
+    const [currentMessageData, setCurrentMessageData] = useState({});
     const [sentFirstMessage, setSentFirstMessage] = useState(false);
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
     const [userLimitReached, setUserLimitReached] = useState(false);
 
-    const [conversation, setConversation] = useState([
+    const [conversation, setConversation] = useState([]);
+
+    const [openAIConversation, setOpenAIConversation] = useState([
         {
             role: "system",
             content: OPENAI_PROMPT,
@@ -23,11 +23,7 @@ export function useChat() {
     const [message, setMessage] = useState("");
     const [freeThreadCount, setFreeThreadCount] = useState(0);
 
-    const openai = new OpenAI({
-        apiKey: OPENAI_API_KEY,
-        dangerouslyAllowBrowser: true,
-    });
-
+    const OpenAI = new OpenAIService();
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${id}`);
@@ -85,36 +81,53 @@ export function useChat() {
             return;
         }
         //END OF CHECKING, PROCESSING USER PROMPT BEGINS
-        const newConversation = [
-            ...conversation,
+        const filterConversationData = function (data) {
+            // data = data.filter((msg,idx) => msg.threadID == id);
+            const updatedData = [];
+            data?.forEach(message => {
+              // Create user prompt object
+              const userPrompt = {
+                role: 'user',
+                content: message.prompt // Set content to the prompt value
+              };
+        
+              // Create bot response object
+              const botResponse = {
+                role: 'assistant',
+                content: message.response // Set content to the response value
+              };
+        
+              // Push both objects into the splitMessages array
+              updatedData.push(userPrompt, botResponse);
+            });
+            return updatedData;
+          }
+        const cur = filterConversationData(conversation);
+        const newOpenAIConversation = [
+            {
+                role: "system",
+                content: OPENAI_PROMPT,
+            },
+            ...cur,
             {
                 role: "user",
                 content: message,
             },
         ];
-        setConversation(newConversation);
-        const stream = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: newConversation,
-            stream: true,
-        });
-        let collectedData = "";
-        for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || "";
-            if (content.length > 0) {
-                setStreaming(true);
-            }
-            collectedData += content;
-            setCurrentResponse((prev) => prev + content);
-        }
+
+        setOpenAIConversation(newOpenAIConversation);
+        const OpenAIResponse = await OpenAI.getResponse(newOpenAIConversation);
+        const OpenAIMessage = OpenAIResponse.choices[0]?.message?.content || "";
+
         setMessage("");
         let updatedThreadID = threadID;
         let threadResponse = null;
         if (threadID.length === 0) {
             try {
                 // Create Thread
-                const thread = await openai.beta.threads.create();
+                const thread = await OpenAI.createThread();
                 updatedThreadID = thread.id;
+                console.log(updatedThreadID);
                 setThreadID(updatedThreadID);
 
                 const newThreadBody = {
@@ -138,14 +151,14 @@ export function useChat() {
             }
         }
         // Save Message
-        if (collectedData.length > 0 && updatedThreadID.length > 0) {
+        if (OpenAIMessage.length > 0 && updatedThreadID.length > 0) {
             const messageBody = {
                 threadID: updatedThreadID,
                 messageID: Date.now().toString(),
                 userID: userID,
                 prompt: message,
-                response: collectedData,
-                message_total_token: 1200,
+                response: OpenAIMessage,
+                message_total_token: OpenAIResponse.usage?.total_tokens || 0,
             };
 
             try {
@@ -153,6 +166,8 @@ export function useChat() {
                     `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
                     messageBody
                 );
+                console.log(messageResponse);
+                setCurrentMessageData(messageResponse.data);
             } catch (error) {
                 console.log(`Error when trying to save Message: ${error}`);
             }
@@ -167,18 +182,11 @@ export function useChat() {
     }
 
     function handleOnFocus() {
-        setStreaming(false);
-        if (conversation.length > 1 && currentResponse.length > 0) {
-            const newConversation = [
-                ...conversation,
-                {
-                    role: "assistant",
-                    content: currentResponse,
-                },
-            ];
-            setConversation(newConversation);
+        if (Object.keys(currentMessageData).length > 0) {
+            conversation.push(currentMessageData);
+            setConversation(conversation);
         }
-        setCurrentResponse("");
+        setCurrentMessageData({});
     }
 
     return {
@@ -189,15 +197,15 @@ export function useChat() {
         setMessage,
         sentFirstMessage,
         setSentFirstMessage,
-        currentResponse,
-        setCurrentResponse,
         threadID,
         setThreadID,
         freeThreadCount,
         setFreeThreadCount,
         userLimitReached,
         setUserLimitReached,
-        setStreaming,
+
+        setCurrentMessageData,
+        currentMessageData,
 
         // Event handlers
         handleOnChange,
@@ -206,6 +214,5 @@ export function useChat() {
 
         // Functions
         retrieveAllMessagesByThreadID,
-        streaming
     };
 }

@@ -116,9 +116,46 @@ messageRoute.route("/messages")
         }
     })
     
-// messageRoute.route('/mesages/:messageID')
-    //GET: getting a specific thread given messageID
+messageRoute.route('/messages/:messageID')
+    //POST: update a message with a given messageID
+    .post(async(req,res)=>{
+        const messageID = req.params.messageID;
+        console.log("in /messages/:messageID (POST) updating message with messageID: "+ messageID);
+        if(!isValidRequest(req)){
+            return res.status(400).send("Request body contains an invalid field")
+        }
+        try{
+            const message = await Message.findOne({"_id": messageID});
+            if(!message){
+                console.log("Message with messageID=" + messageID + " does NOT exist in database")
+                return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
+            }
+            for(const key in req.body){
+                message[key] = req.body[key];
+            }
+            await message.save();
+            return res.status(200).json(message);
+        }catch(err){
+            return res.status(500).send("Unexpected error occured while updating message with messageID: "+ messageID + ": "+ err);
+        }
+    })
+    //GET: getting a specific message given messageID
+    .get(async(req,res)=>{
+        const messageID = req.params.messageID;
+        console.log("in /messages/:messageID (GET) getting message with messageID: "+ messageID);
+        try{
+            const message = await Message.findOne({"_id": messageID});
+            if(!message){
+                console.log("Message with messageID=" + messageID + " does NOT exist in database")
+                return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
+            }
+            return res.status(200).json(message);
+        }catch(err){
+            return res.status(500).send("Unexpected error occured while getting message with messageID: "+ messageID + ": "+ err);
+        }
+    })
     //DELETE: Delete a thread with a given messageID
+
 
 messageRoute.route('/messages/t/:threadID')
     // GET: getting all mesages belongs to a user with ThreadID
