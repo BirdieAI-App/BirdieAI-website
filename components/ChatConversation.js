@@ -43,7 +43,7 @@ export default function Conversation({conversation, user, userLimitReached, curr
       }, 2);
       return () => clearInterval(interval);
     }
-  }, [fullCurrentResponse]);
+  }, [fullCurrentResponse]); 
 
   return (
     <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">
