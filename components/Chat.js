@@ -199,7 +199,6 @@ const Chat = () => {
             <ChatRecommendation setCurrentMessage={setMessage} />
           ) : (
             <Conversation
-              user={session?.user}
               conversation={conversation}
               userLimitReached={userLimitReached}
               currentMessageData={currentMessageData}
