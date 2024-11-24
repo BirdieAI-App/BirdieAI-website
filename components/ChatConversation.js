@@ -9,7 +9,7 @@ md.renderer.rules.link_open = (tokens, idx) => {
   return `<a href="${href}" class="text-blue-600">`;
 };
 
-export default function Conversation({conversation, user, userLimitReached, currentMessageData }) {
+export default function Conversation({conversation, userLimitReached, currentMessageData }) {
   // const {conversation} = useChat();
   // console.log(conversation);
   
@@ -22,28 +22,7 @@ export default function Conversation({conversation, user, userLimitReached, curr
   }
 
   const currentResponse = currentMessageData.response;
-
   const currentPrompt = currentMessageData?.prompt;
-  const fullCurrentResponse = currentMessageData?.response;
-
-  const [typedResponse, setTypedResponse] = useState(""); // For typing effect
-
-  // Typing effect logic
-  useEffect(() => {
-    if (fullCurrentResponse) {
-      let charIndex = 0;
-      setTypedResponse("");
-      const interval = setInterval(() => {
-        if (charIndex < fullCurrentResponse.length) {
-          setTypedResponse((prev) => prev + fullCurrentResponse[charIndex]);
-          charIndex++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 2);
-      return () => clearInterval(interval);
-    }
-  }, [fullCurrentResponse]);
 
   return (
     <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">
@@ -51,16 +30,16 @@ export default function Conversation({conversation, user, userLimitReached, curr
         {conversation?.map( (messageDataPoint, index) => {
           return (
             <div key={index}>
-              {<ChatBubble userImage={user?.image} userName={user?.name} key={`${index}-user`} role={"user"} messageData={messageDataPoint} />}
-              {<ChatBubble userImage={user?.image} userName={user?.name} key={`${index}-assistant`} role={"assistant"} messageData={messageDataPoint} />}
+              {<ChatBubble current={ false } key={`${index}-user`} role={"user"} messageData={messageDataPoint} />}
+              {<ChatBubble current={ false } key={`${index}-assistant`} role={"assistant"} messageData={messageDataPoint} />}
             </div>
           )
         })}
       </div>
       {currentPrompt && currentResponse ? (
         <div className="w-full">
-          <ChatBubble userImage={user?.image} userName={user?.name} role={"user"} messageData={currentMessageData} />
-          <ChatBubble userImage={user?.image} userName={user?.name} role={"assistant"} messageData={{...currentMessageData, response: typedResponse}}/>
+          <ChatBubble current={ true } role={"user"} messageData={currentMessageData} />
+          <ChatBubble current={ true } role={"assistant"} messageData={currentMessageData}/>
         </div>
       ) : (
         <></>

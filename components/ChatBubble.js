@@ -4,15 +4,20 @@ import remarkGfm from 'remark-gfm';
 import Markdown from "markdown-it";
 import htmlToPdfmake from "html-to-pdfmake";
 import { useState } from 'react';
+import { useSession } from "next-auth/react";
 import axios from 'axios';
+import { ReactTyped } from 'react-typed';
+import ReactDOMServer from 'react-dom/server'
 
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faThumbsUp, faThumbsDown } from '@fortawesome/free-regular-svg-icons'
-import {    faThumbsUp as faThumbsUpSolid, 
-            faThumbsDown as faThumbsDownSolid   } from '@fortawesome/free-solid-svg-icons'
+import {
+    faThumbsUp as faThumbsUpSolid,
+    faThumbsDown as faThumbsDownSolid
+} from '@fortawesome/free-solid-svg-icons'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -36,20 +41,25 @@ const generatePdfForMessage = async (content) => {
     }
 };
 
-const updateFeedback = async function(messageData, feedback) {
+const updateFeedback = async function (messageData, feedback) {
     const id = messageData._id;
-    try{
+    try {
         const response = await axios.post(
             `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/${id}`,
             { feedback: feedback }
         );
-    }catch(err){
+    } catch (err) {
         console.log("Error updating feedback: ", err);
     }
 }
 
-export default function ChatBubble({ userImage, userName, role, userLimitReached = false, hyperlinkData, messageData }) {
+export default function ChatBubble({ role, userLimitReached = false, hyperlinkData, messageData, current }) {
     const [feedback, setFeedback] = useState(messageData?.feedback || "none");
+    const [typingEffect, setTypingEffect] = useState(false);
+    const { data: session, status } = useSession();
+    const user = session?.user;
+    const userImage = user?.image;
+    const userName = user?.name;
 
     const handleLikeClick = () => {
         const newFeedback = feedback === "like" ? "none" : "like";
@@ -133,12 +143,31 @@ export default function ChatBubble({ userImage, userName, role, userLimitReached
 
                     <div> {/* Ensures table fits in bubble */}
                         <div className="overflow-x-auto max-w-full">
-                            <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                components={formatProps}
-                            >
-                                {content}
-                            </ReactMarkdown>
+                            {(current ?
+                                <ReactTyped
+                                    strings={[
+                                        ReactDOMServer.renderToString(
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm]}
+                                                components={formatProps}
+                                            >
+                                                {content}
+                                            </ReactMarkdown>
+                                        )
+                                    ]}
+                                    typeSpeed={2}
+                                    showCursor={false}
+                                    onBegin={() => setTypingEffect(true)}
+                                    onComplete={() => setTypingEffect(false)}
+                                />
+                                :
+                                <ReactMarkdown
+                                    remarkPlugins={[remarkGfm]}
+                                    components={formatProps}
+                                >
+                                    {content}
+                                </ReactMarkdown>
+                            )}
                         </div>
                         {userLimitReached ? (
                             <a className="font-bold underline text-red-400" href={hyperlink}>
@@ -146,7 +175,7 @@ export default function ChatBubble({ userImage, userName, role, userLimitReached
                             </a>
                         ) : <></>}
                     </div>
-                    {role !== 'user' && !userLimitReached ? (
+                    {role !== 'user' && !userLimitReached && !typingEffect ? (
                         <div className="w-full flex items-end justify-end">
                             <ul className="text-sm text-gray-700 flex">
                                 <li className="border border-black-500 bg-white rounded-md mx-1 mt-2 \
@@ -164,9 +193,9 @@ export default function ChatBubble({ userImage, userName, role, userLimitReached
                                         className={`block px-4 py-2 transform transition-all duration-200 active:scale-9`}
                                         onClick={handleDislikeClick}
                                     >
-                                        <FontAwesomeIcon 
+                                        <FontAwesomeIcon
                                             icon={feedback === 'dislike' ? faThumbsDownSolid : faThumbsDown}
-                                            className={`${feedback === 'dislike' ? 'animate-popup' : ''}`} 
+                                            className={`${feedback === 'dislike' ? 'animate-popup' : ''}`}
                                         />
                                     </button>
                                 </li>
