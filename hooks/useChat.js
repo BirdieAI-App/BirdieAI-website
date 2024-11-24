@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import { extractFirstFourWords } from "@/libs/util";
 import { OpenAIService } from "@/libs/OpenAIService";
 
-const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
+// const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
 
 export function useChat() {
     const [currentMessageData, setCurrentMessageData] = useState({});
@@ -14,6 +14,18 @@ export function useChat() {
 
     const [conversation, setConversation] = useState([]);
 
+    const [OPENAI_PROMPT, setOPENAI_PROMPT] = useState("");
+
+    useEffect(() => {
+        const x = axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/openai/lastest`)
+        .then((response) => {
+            setOPENAI_PROMPT(response.data.prompt);
+            console.log(response.data); // Access the data from the response
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    }, []);
     const [openAIConversation, setOpenAIConversation] = useState([
         {
             role: "system",
@@ -59,7 +71,7 @@ export function useChat() {
         //     }
         // }
         // //checking whether or not if free user has more than 3 messages in the current thread
-        if(userTier === 'Free' && (threadID.length !== 0 || threadID !== null)){
+        if (userTier === 'Free' && (threadID.length !== 0 || threadID !== null)) {
             try {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/u/${userID}/count`;
                 const repsonse = await axios.get(url)
@@ -76,7 +88,7 @@ export function useChat() {
         //     setUserLimitReached(true)
         //     return;
         // }
-        if(userTier === "Free" && messageCount >= 5){
+        if (userTier === "Free" && messageCount >= 5) {
             setUserLimitReached(true)
             return;
         }
@@ -85,23 +97,23 @@ export function useChat() {
             // data = data.filter((msg,idx) => msg.threadID == id);
             const updatedData = [];
             data?.forEach(message => {
-              // Create user prompt object
-              const userPrompt = {
-                role: 'user',
-                content: message.prompt // Set content to the prompt value
-              };
-        
-              // Create bot response object
-              const botResponse = {
-                role: 'assistant',
-                content: message.response // Set content to the response value
-              };
-        
-              // Push both objects into the splitMessages array
-              updatedData.push(userPrompt, botResponse);
+                // Create user prompt object
+                const userPrompt = {
+                    role: 'user',
+                    content: message.prompt // Set content to the prompt value
+                };
+
+                // Create bot response object
+                const botResponse = {
+                    role: 'assistant',
+                    content: message.response // Set content to the response value
+                };
+
+                // Push both objects into the splitMessages array
+                updatedData.push(userPrompt, botResponse);
             });
             return updatedData;
-          }
+        }
         const cur = filterConversationData(conversation);
         const newOpenAIConversation = [
             {
@@ -143,7 +155,7 @@ export function useChat() {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
                 console.log("Thread saved successfully!");
-                if(userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
+                if (userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
 
             } catch (error) {
                 console.log(`Error when trying to save Thread: ${error}`);

@@ -143,7 +143,7 @@ export default function ChatBubble({ role, userLimitReached = false, hyperlinkDa
 
                     <div> {/* Ensures table fits in bubble */}
                         <div className="overflow-x-auto max-w-full">
-                            {(!current ?
+                            {(current ?
                                 <ReactTyped
                                     strings={[
                                         ReactDOMServer.renderToString(
