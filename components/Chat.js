@@ -26,9 +26,9 @@ const Chat = () => {
 
   const {
     // States
-    streaming, conversation, message, currentResponse, threadID, sentFirstMessage, freeThreadCount, userLimitReached,
+    conversation, message, threadID, sentFirstMessage, freeThreadCount, userLimitReached, currentMessageData,
     // Setters
-    setThreadID, setConversation, setMessage, setSentFirstMessage, setStreaming, setFreeThreadCount, setUserLimitReached,
+    setThreadID, setConversation, setMessage, setSentFirstMessage, setFreeThreadCount, setUserLimitReached, setCurrentMessageData,
     // Function handlers
     handleOnChange, handleOnClick, handleOnFocus, retrieveAllMessagesByThreadID } = useChat();
 
@@ -74,32 +74,6 @@ const Chat = () => {
     } catch (err) {
       console.log(err);
     }
-  }
-
-  const filterConversationData = function (updatedData, data, id) {
-    // data = data.filter((msg,idx) => msg.threadID == id);
-    data?.forEach(message => {
-      // Create user prompt object
-      const userPrompt = {
-        ...message, // Copy all original properties
-        role: 'user',
-        content: message.prompt // Set content to the prompt value
-      };
-      delete userPrompt.prompt; // Remove the original prompt field
-      delete userPrompt.response; // Remove the original response field
-
-      // Create bot response object
-      const botResponse = {
-        ...message, // Copy all original properties
-        role: 'assistant',
-        content: message.response // Set content to the response value
-      };
-      delete botResponse.prompt; // Remove the original prompt field
-      delete botResponse.response; // Remove the original response field
-
-      // Push both objects into the splitMessages array
-      updatedData.push(userPrompt, botResponse);
-    });
   }
 
   const stripePaymentStatus = async (checkoutSessionID) => {
@@ -181,16 +155,11 @@ const Chat = () => {
       setThreadID(id);
       setLoadingLatestMessages(true);
       setConversation([]);
-      setStreaming(false);
       const data = await retrieveAllMessagesByThreadID(id);
       // Update the conversation state with the retrieved data
       if (data && data.length > 0) {
         setSentFirstMessage(false);
-        setConversation(() => {
-          const updatedData = [];
-          filterConversationData(updatedData, data, id);
-          return updatedData;
-        });
+        setConversation(data);
       }
       setLoadingLatestMessages(false);
     } catch (err) {
@@ -221,7 +190,7 @@ const Chat = () => {
           freeThreadCount={freeThreadCount}
           setUserLimitReached={setUserLimitReached}
         />
-        <div className="flex flex-col items-center lg:ml-64">
+        <main className="flex flex-col items-center lg:ml-64">
           {loadingLatestMessages ? (
             <div>
               <p>Loading latest messages...</p>
@@ -230,60 +199,57 @@ const Chat = () => {
             <ChatRecommendation setCurrentMessage={setMessage} />
           ) : (
             <Conversation
-              user={session?.user}
               conversation={conversation}
-              streaming={streaming}
-              currentResponse={currentResponse}
               userLimitReached={userLimitReached}
+              currentMessageData={currentMessageData}
             />
           )}
-
-        </div>
-        <div className="flex flex-col items-center mt-5 lg:w-2/3 lg:right-0 md:w-full fixed bottom-0 bg-white">
-          <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
-            <input
-              type="text"
-              value={message}
-              onChange={handleOnChange}
-              onFocus={handleOnFocus}
-              placeholder="Enter your text here"
-              className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
-              disabled={loadingLatestMessages || submitting || userLimitReached}
-              onKeyUp={(event) => {
-                if (event.key === "Enter") {
-                  document.querySelector("#submitMessageBtn").click();
-                }
-              }}
-            />
-            <button
-              id="submitMessageBtn"
-              disabled={loadingLatestMessages || submitting || userLimitReached}
-              onClick={async () => {
-                setSubmitting(true);
-                const newThread = await handleOnClick(userId);
-                if (newThread) {
-                  setAllThreads((prevThreads) => {
-                    const remainingThreads = prevThreads.filter(
-                      (thread) => thread.threadID !== newThread.threadID
-                    );
-                    return [...remainingThreads, newThread];
-                  });
-                }
-                setSubmitting(false);
-              }}
-              className="bg-green-500 text-white py-2 px-2 rounded-lg"
-            >
-              {submitting ? "Submitting" : "Submit"}
-            </button>
+          <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
+            <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
+              <input
+                type="text"
+                value={message}
+                onChange={handleOnChange}
+                onFocus={handleOnFocus}
+                placeholder="Chat with Birdie Coach"
+                className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+                disabled={loadingLatestMessages || submitting || userLimitReached}
+                onKeyUp={(event) => {
+                  if (event.key === "Enter") {
+                    document.querySelector("#submitMessageBtn").click();
+                  }
+                }}
+              />
+              <button
+                id="submitMessageBtn"
+                disabled={loadingLatestMessages || submitting || userLimitReached}
+                onClick={async () => {
+                  setSubmitting(true);
+                  const newThread = await handleOnClick(userId);
+                  if (newThread) {
+                    setAllThreads((prevThreads) => {
+                      const remainingThreads = prevThreads.filter(
+                        (thread) => thread.threadID !== newThread.threadID
+                      );
+                      return [...remainingThreads, newThread];
+                    });
+                  }
+                  setSubmitting(false);
+                }}
+                className="bg-green-500 text-white py-2 px-2 rounded-lg"
+              >
+                {submitting ? "Submitting" : "Submit"}
+              </button>
+            </div>
+            <footer className="mt-auto text-center text-gray-600 text-sm py-5">
+              <span className="disclaimer-text">
+                Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
+                <br />
+                Please consult the healthcare providers for medical advice.
+              </span>
+            </footer>
           </div>
-          <footer className="mt-auto text-center text-gray-600 text-sm py-5">
-            <span className="disclaimer-text">
-              Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
-              <br />
-              Please consult the healthcare providers for medical advice.
-            </span>
-          </footer>
-        </div>
+        </main>
       </div>
     );
 };

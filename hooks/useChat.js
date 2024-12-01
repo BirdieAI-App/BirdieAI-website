@@ -1,20 +1,36 @@
+<<<<<<< HEAD
 import { useState } from "react";
+=======
+import React, { useState, useEffect, use } from "react";
+>>>>>>> 73f191a6d5e7bb9ce95944eb43a585a613c8dfaf
 import axios from "axios";
-import OpenAI from "openai";
 import { extractFirstFourWords } from "@/libs/util";
+import { OpenAIService } from "@/libs/OpenAIService";
 
-const OPENAI_API_KEY = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
+// const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
 
 export function useChat() {
-    const [currentResponse, setCurrentResponse] = useState("");
-    const [streaming, setStreaming] = useState(false);
+    const [currentMessageData, setCurrentMessageData] = useState({});
     const [sentFirstMessage, setSentFirstMessage] = useState(false);
     const [threadID, setThreadID] = useState("");
     const [allMessagesByThreadID, setAllMessagesByThreadID] = useState([]);
     const [userLimitReached, setUserLimitReached] = useState(false);
 
-    const [conversation, setConversation] = useState([
+    const [conversation, setConversation] = useState([]);
+
+    const [OPENAI_PROMPT, setOPENAI_PROMPT] = useState("");
+
+    useEffect(() => {
+        const x = axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/openai/lastest`)
+        .then((response) => {
+            setOPENAI_PROMPT(response.data.prompt);
+            console.log(response.data); // Access the data from the response
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    }, []);
+    const [openAIConversation, setOpenAIConversation] = useState([
         {
             role: "system",
             content: OPENAI_PROMPT,
@@ -23,11 +39,7 @@ export function useChat() {
     const [message, setMessage] = useState("");
     const [freeThreadCount, setFreeThreadCount] = useState(0);
 
-    const openai = new OpenAI({
-        apiKey: OPENAI_API_KEY,
-        dangerouslyAllowBrowser: true,
-    });
-
+    const OpenAI = new OpenAIService();
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${id}`);
@@ -52,22 +64,23 @@ export function useChat() {
             console.log("error during in handleOnClick: " + err.message);
         }
         //checking whether or not if user has reached thread limit for free tier user
-        if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
+        // if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
+        //     try {
+        //         const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
+        //         const repsonse = await axios.get(url)
+        //         threadCount = repsonse.data.count
+        //     } catch (err) {
+        //         console.log("error while counting number of threads in handleOnClick: " + err.message);
+        //         return;
+        //     }
+        // }
+        // //checking whether or not if free user has more than 3 messages in the current thread
+        if (userTier === 'Free' && (threadID.length !== 0 || threadID !== null)) {
             try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads/u/${userID}/count/${userTier}`;
-                const repsonse = await axios.get(url)
-                threadCount = repsonse.data.count
-            } catch (err) {
-                console.log("error while counting number of threads in handleOnClick: " + err.message);
-                return;
-            }
-        }
-        //checking whether or not if free user has more than 3 messages in the current thread
-        if(userTier === 'Free' && (threadID.length !== 0 || threadID !== null)){
-            try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${threadID}/count`;
+                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/u/${userID}/count`;
                 const repsonse = await axios.get(url)
                 messageCount = repsonse.data.count
+                alert("Total messages today: ", messageCount)
             } catch (err) {
                 console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
                 return;
@@ -75,45 +88,62 @@ export function useChat() {
         }
         if (!sentFirstMessage) setSentFirstMessage(true);
         setMessage("");
-        if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
-            setUserLimitReached(true)
-            return;
-        }
-        if(userTier === "Free" && messageCount >= 3){
+        // if (userTier === "Free" && threadCount >= 3 && (threadID.length === 0 || threadID === null)) {
+        //     setUserLimitReached(true)
+        //     return;
+        // }
+        if (userTier === "Free" && messageCount >= 5) {
             setUserLimitReached(true)
             return;
         }
         //END OF CHECKING, PROCESSING USER PROMPT BEGINS
-        const newConversation = [
-            ...conversation,
+        const filterConversationData = function (data) {
+            // data = data.filter((msg,idx) => msg.threadID == id);
+            const updatedData = [];
+            data?.forEach(message => {
+                // Create user prompt object
+                const userPrompt = {
+                    role: 'user',
+                    content: message.prompt // Set content to the prompt value
+                };
+
+                // Create bot response object
+                const botResponse = {
+                    role: 'assistant',
+                    content: message.response // Set content to the response value
+                };
+
+                // Push both objects into the splitMessages array
+                updatedData.push(userPrompt, botResponse);
+            });
+            return updatedData;
+        }
+        const cur = filterConversationData(conversation);
+        const newOpenAIConversation = [
+            {
+                role: "system",
+                content: OPENAI_PROMPT,
+            },
+            ...cur,
             {
                 role: "user",
                 content: message,
             },
         ];
-        setConversation(newConversation);
-        const stream = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
-            messages: newConversation,
-            stream: true,
-        });
-        let collectedData = "";
-        for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content || "";
-            if (content.length > 0) {
-                setStreaming(true);
-            }
-            collectedData += content;
-            setCurrentResponse((prev) => prev + content);
-        }
+
+        setOpenAIConversation(newOpenAIConversation);
+        const OpenAIResponse = await OpenAI.getResponse(newOpenAIConversation);
+        const OpenAIMessage = OpenAIResponse.choices[0]?.message?.content || "";
+
         setMessage("");
         let updatedThreadID = threadID;
         let threadResponse = null;
         if (threadID.length === 0) {
             try {
                 // Create Thread
-                const thread = await openai.beta.threads.create();
+                const thread = await OpenAI.createThread();
                 updatedThreadID = thread.id;
+                console.log(updatedThreadID);
                 setThreadID(updatedThreadID);
 
                 const newThreadBody = {
@@ -129,7 +159,7 @@ export function useChat() {
                 const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
                 threadResponse = await axios.put(url, newThreadBody);
                 console.log("Thread saved successfully!");
-                if(userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
+                if (userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
 
             } catch (error) {
                 console.log(`Error when trying to save Thread: ${error}`);
@@ -137,13 +167,14 @@ export function useChat() {
             }
         }
         // Save Message
-        if (collectedData.length > 0 && updatedThreadID.length > 0) {
+        if (OpenAIMessage.length > 0 && updatedThreadID.length > 0) {
             const messageBody = {
                 threadID: updatedThreadID,
                 messageID: Date.now().toString(),
+                userID: userID,
                 prompt: message,
-                response: collectedData,
-                message_total_token: 1200,
+                response: OpenAIMessage,
+                message_total_token: OpenAIResponse.usage?.total_tokens || 0,
             };
 
             try {
@@ -151,6 +182,8 @@ export function useChat() {
                     `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
                     messageBody
                 );
+                console.log(messageResponse);
+                setCurrentMessageData(messageResponse.data);
             } catch (error) {
                 console.log(`Error when trying to save Message: ${error}`);
             }
@@ -165,18 +198,11 @@ export function useChat() {
     }
 
     function handleOnFocus() {
-        setStreaming(false);
-        if (conversation.length > 1 && currentResponse.length > 0) {
-            const newConversation = [
-                ...conversation,
-                {
-                    role: "assistant",
-                    content: currentResponse,
-                },
-            ];
-            setConversation(newConversation);
+        if (Object.keys(currentMessageData).length > 0) {
+            conversation.push(currentMessageData);
+            setConversation(conversation);
         }
-        setCurrentResponse("");
+        setCurrentMessageData({});
     }
 
     // console.log(OPENAI_PROMPT);
@@ -189,15 +215,15 @@ export function useChat() {
         setMessage,
         sentFirstMessage,
         setSentFirstMessage,
-        currentResponse,
-        setCurrentResponse,
         threadID,
         setThreadID,
         freeThreadCount,
         setFreeThreadCount,
         userLimitReached,
         setUserLimitReached,
-        setStreaming,
+
+        setCurrentMessageData,
+        currentMessageData,
 
         // Event handlers
         handleOnChange,
@@ -206,6 +232,5 @@ export function useChat() {
 
         // Functions
         retrieveAllMessagesByThreadID,
-        streaming
     };
 }

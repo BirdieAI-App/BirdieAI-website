@@ -79,8 +79,13 @@ import { usePayment } from '@/hooks/usePayment';
             Update Payment Method
           </button>
       </div>
+      <button
+        onClick={() => router.push('/chat')}
+        className="flex items-center justify-center w-full gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg transition-colors"
+      >
+        ← Back to Chat
+      </button>
     </div>
   );
 }
-
   

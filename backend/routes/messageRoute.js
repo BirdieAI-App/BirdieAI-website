@@ -1,6 +1,8 @@
 const express = require('express');
 const Message = require('../models/Message.js');
 const Thread = require('../models/Thread.js');
+const User = require('../models/User.js');
+const { default: mongoose } = require('mongoose');
 
 const messageRoute = express.Router();
 const validMessageProps = Object.keys(Message.schema.paths).filter((keys)=>!keys.startsWith("_"));
@@ -62,6 +64,21 @@ messageRoute.route("/messages")
             return res.status(500).send("Unexpected error occured when validating threadID for (PUT) in /message: "+err);
         }
 
+        if(!req.body.userID){
+            console.log("request body must contains userID")
+            return res.status(400).send("request body must contains userID")
+        }
+
+        try{//checking for existing userID in database
+            const user = await User.findById(req.body.userID);
+            if(!user){
+                console.log("user with ID="+req.body.userID+" does NOT exist in database")
+                return res.status(400).send("Thread with ID="+req.body.userID+" does NOT exist in database");
+            }
+        }catch(err){
+            return res.status(500).send("Unexpected error occured when validating userID for (PUT) in /message: "+err);
+        }
+
         if(!req.body.messageID){
             console.log("Request body must contains messageID returns from OpenAI")
             return res.status(400).send("Request body must contains messageID returns from OpenAI");
@@ -93,16 +110,52 @@ messageRoute.route("/messages")
         try{
             // adding new message into message collection and update 'update_at' field in Thread collection
             const message = await new Message(newMessageBody).save();
-            console.log("[testomg]: ", req.body.threadID);
             return res.status(200).json(message);
         }catch(err){
             return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);
         }
     })
     
-// messageRoute.route('/mesages/:messageID')
-    //GET: getting a specific thread given messageID
+messageRoute.route('/messages/:messageID')
+    //POST: update a message with a given messageID
+    .post(async(req,res)=>{
+        const messageID = req.params.messageID;
+        console.log("in /messages/:messageID (POST) updating message with messageID: "+ messageID);
+        if(!isValidRequest(req)){
+            return res.status(400).send("Request body contains an invalid field")
+        }
+        try{
+            const message = await Message.findOne({"_id": messageID});
+            if(!message){
+                console.log("Message with messageID=" + messageID + " does NOT exist in database")
+                return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
+            }
+            for(const key in req.body){
+                message[key] = req.body[key];
+            }
+            await message.save();
+            return res.status(200).json(message);
+        }catch(err){
+            return res.status(500).send("Unexpected error occured while updating message with messageID: "+ messageID + ": "+ err);
+        }
+    })
+    //GET: getting a specific message given messageID
+    .get(async(req,res)=>{
+        const messageID = req.params.messageID;
+        console.log("in /messages/:messageID (GET) getting message with messageID: "+ messageID);
+        try{
+            const message = await Message.findOne({"_id": messageID});
+            if(!message){
+                console.log("Message with messageID=" + messageID + " does NOT exist in database")
+                return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
+            }
+            return res.status(200).json(message);
+        }catch(err){
+            return res.status(500).send("Unexpected error occured while getting message with messageID: "+ messageID + ": "+ err);
+        }
+    })
     //DELETE: Delete a thread with a given messageID
+
 
 messageRoute.route('/messages/t/:threadID')
     // GET: getting all mesages belongs to a user with ThreadID
@@ -119,13 +172,21 @@ messageRoute.route('/messages/t/:threadID')
     // DELETE: delete all mesages belongs to a user with given ID
 
 messageRoute
-    .route('/messages/t/:threadID/count')
+    .route('/messages/u/:userID/count')
     // GET: counting number of messages that belong to a given threadID
     .get(async (req, res) => {
-        const threadID = req.params.threadID;
+        const userID = req.params.userID;
+        console.log("in /message/t/:threadID (GET) number of messages messages from today that belongs to userID: "+ userID);
         try {
-            // Assuming you have a Message model and 'threadID' is a field in the Message schema
-            const messageCount = await Message.countDocuments({ threadID: threadID });
+            const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
+            const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
+            const messageCount = await Message.countDocuments({ 
+                userID: userID,
+                createdAt: {
+                    $gte: todayTimestamp,
+                    $lt: tomorrowTimestamp
+                  }
+             });
             return res.status(200).json({ count: messageCount });
         } catch (err) {
             return res.status(500).send("Unexpected error occurred when getting the count of messages: " + err.message);

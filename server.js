@@ -12,6 +12,7 @@ const threadRoute = require('./backend/routes/threadRoute.js');
 const messageRoute = require('./backend/routes/messageRoute.js');
 const stripeRoute = require('./backend/routes/stripeRoute.js');
 const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
+const openAIPromptRoute = require('./backend/routes/OpenAIPromptRoute.js');
 
 const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
 
@@ -54,5 +55,6 @@ app.use('/call', threadRoute)
 app.use('/call', messageRoute)
 app.use('/call', stripeRoute)
 app.use('/call', stripeWebhookRoute)
+app.use('/call', openAIPromptRoute)
 
 export default app;

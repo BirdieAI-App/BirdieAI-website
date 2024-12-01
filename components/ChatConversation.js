@@ -1,7 +1,7 @@
 import { useChat } from "@/hooks/useChat";
 import ChatBubble from "./ChatBubble";
 import { Remarkable } from 'remarkable';
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const md = new Remarkable();
 md.renderer.rules.link_open = (tokens, idx) => {
@@ -9,23 +9,37 @@ md.renderer.rules.link_open = (tokens, idx) => {
   return `<a href="${href}" class="text-blue-600">`;
 };
 
-export default function Conversation({ conversation, user, streaming, currentResponse, userLimitReached }) {
+export default function Conversation({conversation, userLimitReached, currentMessageData }) {
   // const {conversation} = useChat();
   // console.log(conversation);
+  
+  let hyperlinkData;
+  if(userLimitReached) {
+    hyperlinkData = {
+      hyperlink: `${process.env.NEXT_PUBLIC_BASE_URL}/plans`,
+      hyperlinkText: "Subscribe now to get unlimited access."
+    }
+  }
+
+  const currentResponse = currentMessageData.response;
+  const currentPrompt = currentMessageData?.prompt;
 
   return (
     <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">
-      {conversation?.map((bubble, id) => {
-          const { role, content } = bubble;
+      <div className="w-full">
+        {conversation?.map( (messageDataPoint, index) => {
           return (
-            <div key={id}>
-              {role !== "system" && <ChatBubble userImage={user?.image} userName={user?.name} key={id % 2} role={role} content={content} />}
+            <div key={index}>
+              {<ChatBubble current={ false } key={`${index}-user`} role={"user"} messageData={messageDataPoint} />}
+              {<ChatBubble current={ false } key={`${index}-assistant`} role={"assistant"} messageData={messageDataPoint} />}
             </div>
           )
         })}
-      {streaming ? (
+      </div>
+      {currentPrompt && currentResponse ? (
         <div className="w-full">
-          <ChatBubble userImage={user?.image} userName={user?.name} role={"assistant"} content={currentResponse} />
+          <ChatBubble current={ true } role={"user"} messageData={currentMessageData} />
+          <ChatBubble current={ true } role={"assistant"} messageData={currentMessageData}/>
         </div>
       ) : (
         <></>
@@ -34,9 +48,7 @@ export default function Conversation({ conversation, user, streaming, currentRes
         <div className="w-full" >
           <ChatBubble
             role={"assistant"}
-            content={"I'm glad I'm able to help. Trial users have limited chat sessions. Upgrade to continue using Birdie AI Diet Coach"}
-            hyperlink={`${process.env.NEXT_PUBLIC_BASE_URL}/plans`}
-            hyperlinkText="Subscribe now to get unlimited access."
+            hyperlinkData={hyperlinkData}
             userLimitReached={userLimitReached}
           />
         </div> : <></>
