@@ -5,9 +5,8 @@ export default function ChatRecommendation({ setCurrentMessage }) {
         "Foods to eat and avoid while lactating",
     ];
     return (
-        <div className="h-screen">
-            <div className="flex flex-col items-center justify-center px-2 h-full overflow-y-auto">
-                <div className="flex justify-center mt-12">
+        <div className="flex flex-col items-center justify-center px-2 h-full overflow-y-auto max-h-[calc(100vh-250px)]">
+                <div className="flex justify-center mt-6">
                     <img className="h-20 w-20" src="/icon.png" alt="" />
                 </div>
                 <header className="mb-2">
@@ -21,7 +20,5 @@ export default function ChatRecommendation({ setCurrentMessage }) {
                     ))}
                 </div>
             </div>
-        </div>
-
     )
 }

@@ -25,9 +25,9 @@ export default function Conversation({conversation, userLimitReached, currentMes
   const currentPrompt = currentMessageData?.prompt;
 
   return (
-    <div className="flex flex-col items-start w-full overflow-y-auto max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-150px)]">
-      <div className="w-full">
-        {conversation?.map( (messageDataPoint, index) => {
+    <div className="flex flex-col items-start w-full overflow-y-auto lg:max-h-[calc(100vh-300px)] md:max-h-[calc(100vh-120px)]">
+      <div className="ml-10">
+        {conversation?.map((messageDataPoint, index) => {
           return (
             <div key={index}>
               {<ChatBubble current={ false } key={`${index}-user`} role={"user"} messageData={messageDataPoint} />}

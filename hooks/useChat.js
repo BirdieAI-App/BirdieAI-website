@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { useState } from "react";
-=======
 import React, { useState, useEffect, use } from "react";
->>>>>>> 73f191a6d5e7bb9ce95944eb43a585a613c8dfaf
 import axios from "axios";
 import { extractFirstFourWords } from "@/libs/util";
 import { OpenAIService } from "@/libs/OpenAIService";

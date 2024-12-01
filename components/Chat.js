@@ -12,7 +12,9 @@ import { useChat } from "@/hooks/useChat";
 import { Inter } from "next/font/google";
 import ChatRecommendation from "./ChatRecommendation";
 import LoadingSpinner from "./LoadingSpinner";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHouse, faHeart, faClockRotateLeft, faUser } from '@fortawesome/free-solid-svg-icons';
+import ChatHistory from "./ChatHistory";
 
 const font = Inter({ subsets: ["latin"] });
 
@@ -39,7 +41,8 @@ const Chat = () => {
   const [userTier, setUserTier] = useState("");
   const effectRan = useRef(false); //using useRef to stop double invoke
   const [loadingUserInfo, setLoadingUserInfo] = useState(false);
-
+  const [viewMode, setViewMode] = useState("Chat");
+  const [openHistory, setOpenHistory] = useState(false);
   /*
   Read this:
   In development mode, React intentionally double-invokes certain lifecycle methods, 
@@ -152,6 +155,8 @@ const Chat = () => {
 
   const openThreadByID = async function (id) {
     try {
+      setOpenHistory(false);
+      setViewMode("Chat");
       setThreadID(id);
       setLoadingLatestMessages(true);
       setConversation([]);
@@ -169,6 +174,7 @@ const Chat = () => {
   }
 
   const chatStyle = `flex flex-col ${font.className}`;
+  console.log(viewMode);
 
   return (loadingUserInfo || status === "loading") ?
     (<div className="w-screen h-screen flex flex-col items-center justify-center">
@@ -190,12 +196,29 @@ const Chat = () => {
           freeThreadCount={freeThreadCount}
           setUserLimitReached={setUserLimitReached}
         />
-        <main className="flex flex-col items-center lg:ml-64">
-          {loadingLatestMessages ? (
+        <main className="flex flex-col items-center">
+          {/* {loadingLatestMessages ? (
             <div>
               <p>Loading latest messages...</p>
             </div>
-          ) : (!threadID && !sentFirstMessage) ? (
+          ) : !threadID && !sentFirstMessage ? (
+            <ChatRecommendation setCurrentMessage={setMessage} />
+          ) : openHistory ? (
+            <Conversation
+              conversation={conversation}
+              userLimitReached={userLimitReached}
+              currentMessageData={currentMessageData}
+            />
+          ) : (
+            <ChatHistory />
+          )} */}
+          {openHistory ? (
+            <ChatHistory loadingAllThreads={loadingAllThreads} allThreads={allThreads} openThreadByID={openThreadByID} />
+          ) : loadingLatestMessages ? (
+            <div>
+              <p>Loading latest messages...</p>
+            </div>
+          ) : !threadID && !sentFirstMessage ? (
             <ChatRecommendation setCurrentMessage={setMessage} />
           ) : (
             <Conversation
@@ -204,43 +227,46 @@ const Chat = () => {
               currentMessageData={currentMessageData}
             />
           )}
-          <div className="flex flex-col items-center mt-5 w-full md:w-full lg:w-3/2 fixed bottom-0 bg-white">
-            <div className="flex flex-row items-center w-3/4 justify-center h-full mx-auto">
-              <input
-                type="text"
-                value={message}
-                onChange={handleOnChange}
-                onFocus={handleOnFocus}
-                placeholder="Chat with Birdie Coach"
-                className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
-                disabled={loadingLatestMessages || submitting || userLimitReached}
-                onKeyUp={(event) => {
-                  if (event.key === "Enter") {
-                    document.querySelector("#submitMessageBtn").click();
-                  }
-                }}
-              />
-              <button
-                id="submitMessageBtn"
-                disabled={loadingLatestMessages || submitting || userLimitReached}
-                onClick={async () => {
-                  setSubmitting(true);
-                  const newThread = await handleOnClick(userId);
-                  if (newThread) {
-                    setAllThreads((prevThreads) => {
-                      const remainingThreads = prevThreads.filter(
-                        (thread) => thread.threadID !== newThread.threadID
-                      );
-                      return [...remainingThreads, newThread];
-                    });
-                  }
-                  setSubmitting(false);
-                }}
-                className="bg-green-500 text-white py-2 px-2 rounded-lg"
-              >
-                {submitting ? "Submitting" : "Submit"}
-              </button>
-            </div>
+
+          <div className="flex flex-col items-center fixed bottom-0 w-full">
+            {(viewMode === "Chat") && (
+              <div className="flex flex-row items-center w-3/4 justify-center h-3/4 mx-auto">
+                <input
+                  type="text"
+                  value={message}
+                  onChange={handleOnChange}
+                  onFocus={handleOnFocus}
+                  placeholder="Chat with Birdie Coach"
+                  className="flex-1 py-2 px-3 border border-gray-300 rounded-lg mr-3 mt-2"
+                  disabled={loadingLatestMessages || submitting || userLimitReached}
+                  onKeyUp={(event) => {
+                    if (event.key === "Enter") {
+                      document.querySelector("#submitMessageBtn").click();
+                    }
+                  }}
+                />
+                <button
+                  id="submitMessageBtn"
+                  disabled={loadingLatestMessages || submitting || userLimitReached}
+                  onClick={async () => {
+                    setSubmitting(true);
+                    const newThread = await handleOnClick(userId);
+                    if (newThread) {
+                      setAllThreads((prevThreads) => {
+                        const remainingThreads = prevThreads.filter(
+                          (thread) => thread.threadID !== newThread.threadID
+                        );
+                        return [...remainingThreads, newThread];
+                      });
+                    }
+                    setSubmitting(false);
+                  }}
+                  className="bg-green-500 text-white py-2 px-2 rounded-lg"
+                >
+                  {submitting ? "Submitting" : "Submit"}
+                </button>
+              </div>
+            )}
             <footer className="mt-auto text-center text-gray-600 text-sm py-5">
               <span className="disclaimer-text">
                 Birdie retrieved information from Library National of Medicine research papers, USDA Nutrition Guideline.
@@ -248,8 +274,36 @@ const Chat = () => {
                 Please consult the healthcare providers for medical advice.
               </span>
             </footer>
+            <div className="flex flex-row py-3 w-full">
+              <div
+                className="basis-1/3 items-center justify-center flex cursor-pointer"
+                onClick={() => {
+                  setViewMode("Chat");
+                  setOpenHistory(false);
+                  setLoadingLatestMessages(false);
+                  setThreadID("");
+                  setSentFirstMessage(false);
+                }}
+              >
+                Chat
+              </div>
+              <div
+                className="basis-1/3 items-center justify-center flex cursor-pointer"
+                onClick={() => {
+                  setViewMode("Library");
+                  setOpenHistory(true);
+                }}
+              >
+                Library
+              </div>
+              <div className="basis-1/3 items-center justify-center flex">
+                Discover
+              </div>
+            </div>
           </div>
+
         </main>
+
       </div>
     );
 };
