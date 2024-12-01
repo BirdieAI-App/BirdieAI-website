@@ -228,7 +228,7 @@ const Chat = () => {
             />
           )}
 
-          <div className="flex flex-col items-center fixed bottom-0 w-full">
+          <div className="flex flex-col items-center fixed bottom-0 w-full bg-white">
             {(viewMode === "Chat") && (
               <div className="flex flex-row items-center w-3/4 justify-center h-3/4 mx-auto">
                 <input
