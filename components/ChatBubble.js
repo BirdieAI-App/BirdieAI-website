@@ -1,4 +1,3 @@
-import { Remarkable } from 'remarkable';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Markdown from "markdown-it";
@@ -20,7 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const md = new Markdown();
 
@@ -121,7 +120,7 @@ export default function ChatBubble({ role, userLimitReached = false, hyperlinkDa
     }
     return (
         <div className="flex flex-col my-1">
-            <div className="flex items-start gap-2.5 my-2 mx-10">
+            <div className="flex items-start gap-1 my-2 mx-2">
                 <img
                     src={role === "user" ? userImage : "/icon.png"}
                     alt={userName || "Account"}

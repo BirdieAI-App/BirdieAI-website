@@ -201,6 +201,8 @@ export function useChat() {
         setCurrentMessageData({});
     }
 
+    // console.log(OPENAI_PROMPT);
+
     return {
         // State management
         conversation,
