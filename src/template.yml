@@ -5,7 +5,7 @@ Resources:
   ExpressApiFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: app.handler
+      Handler: index.handler
       Runtime: nodejs18.x
       CodeUri: ./
       Timeout: 30
