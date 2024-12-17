@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Express Application running on AWS Lambda
+
+Resources:
+  ExpressApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.handler
+      Runtime: nodejs18.x
+      Timeout: 30
+      MemorySize: 512
+      Events:
+        RootRoute:               # Explicit mapping for base route
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+        ProxyRoute:              # Catch-all for other routes
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+      Environment:
+        Variables:
+          NODE_ENV: development
