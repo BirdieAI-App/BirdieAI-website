@@ -11,11 +11,6 @@ Resources:
       Timeout: 30
       MemorySize: 512
       Events:
-        RootRoute:               # Explicit mapping for base route
-          Type: Api
-          Properties:
-            Path: /
-            Method: ANY
         ProxyRoute:              # Catch-all for other routes
           Type: Api
           Properties:
@@ -24,3 +19,4 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: development
+          MONGODB_URI: !Ref MongodbUri

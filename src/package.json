@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "sam local start-api"
+    "start": "sam local start-api --env-vars env.json"
   },
   "keywords": [],
   "author": "",

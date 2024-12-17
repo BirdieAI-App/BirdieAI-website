@@ -1,6 +1,3 @@
-// const mongoose = require('mongoose');
-// const express = require('express');
-// const app = express();
 // const bodyParser = require('body-parser');
 // const cors = require('cors');
 // // const cookieParser = require('cookie-parser');
@@ -19,7 +16,6 @@
 
 // // Access environment variables
 // const port = process.env.PORT || 3000;
-// const mongoURI = process.env.MONGODB_URI;
 
 
 // // CORS middleware
@@ -59,8 +55,10 @@
 
 import express from 'express';
 import serverless from 'serverless-http';
+import mongoose from 'mongoose';
 
 const app = express();
+const mongoURI = process.env.MONGODB_URI;
 
 // Middleware
 app.use(express.json());
@@ -70,19 +68,10 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Hello from AWS Lambda!',
-    timestamp: new Date().toISOString()
-  });
-});
-
 app.get('/users', (req, res) => {
   res.json({ 
-    users: [
-      { id: 1, name: 'John Doe' },
-      { id: 2, name: 'Jane Smith' }
-    ]
+    message: `HAHAHAHAHAHHA ${mongoURI}`,
+    timestamp: new Date().toISOString()
   });
 });
 
