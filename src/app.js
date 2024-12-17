@@ -86,5 +86,6 @@ app.get('/users', (req, res) => {
   });
 });
 
+
 // Export for Lambda
 export const handler = serverless(app);
