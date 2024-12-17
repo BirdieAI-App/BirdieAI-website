@@ -20,9 +20,7 @@ jobs:
       - name: AWS CLI v2
         uses: imehedi/actions-awscli-v2@latest
         with:
-          args: "lambda update-function-code \
-            --function-name: arn:aws:lambda:us-east-2:905418150893:function:BirdieAI_backendServer \
-            --zip-file fileb://src/code.zip"
+          args: "lambda update-function-code --function-name: arn:aws:lambda:us-east-2:905418150893:function:BirdieAI_backendServer --zip-file fileb://src/code.zip"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
