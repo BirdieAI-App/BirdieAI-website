@@ -1,6 +1,6 @@
-const express = require("express");
-const Thread = require("../models/Thread.js");
-const User = require("../models/User.js");
+import express from 'express';
+import Thread from '../models/Thread.js';
+import User from '../models/User.js';
 
 const threadRoute = express.Router();
 const validThreadProps = Object.keys(Thread.schema.paths).filter(
@@ -200,4 +200,4 @@ threadRoute
     }
   }) 
 
-module.exports = threadRoute;
+export default threadRoute;

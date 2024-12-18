@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
-const Thread = require("./Thread");
+import mongoose from "mongoose";
+import Thread from "./Thread.js";
 
-//
 const messageSchema = new mongoose.Schema({
   threadID: {
     // the id associated from Thread collections
@@ -60,4 +59,4 @@ messageSchema.pre("save", async function (next) {
 });
 
 const Message = mongoose.model("Message", messageSchema);
-module.exports = Message;
+export default Message;

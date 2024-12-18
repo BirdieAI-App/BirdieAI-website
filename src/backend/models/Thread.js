@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from 'mongoose'
 
 const threadSchema = new mongoose.Schema({
   userID: {
@@ -35,4 +35,4 @@ const threadSchema = new mongoose.Schema({
 );
 
 const Thread = mongoose.model("Thread", threadSchema);
-module.exports = Thread;
+export default Thread;

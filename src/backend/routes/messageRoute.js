@@ -1,8 +1,7 @@
-const express = require('express');
-const Message = require('../models/Message.js');
-const Thread = require('../models/Thread.js');
-const User = require('../models/User.js');
-const { default: mongoose } = require('mongoose');
+import express from 'express';
+import User from '../models/User.js';
+import Thread from '../models/Thread.js';
+import Message from '../models/Message.js';
 
 const messageRoute = express.Router();
 const validMessageProps = Object.keys(Message.schema.paths).filter((keys)=>!keys.startsWith("_"));
@@ -193,4 +192,4 @@ messageRoute
         }
     });
 
-module.exports = messageRoute;
+export default messageRoute;
