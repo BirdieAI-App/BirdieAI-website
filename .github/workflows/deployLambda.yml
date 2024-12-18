@@ -5,7 +5,8 @@ on:
   push:
     paths:
       - "./src/**"
-    branches: [backend]
+    branches: 
+      - 'backend'
 
 jobs:
   deploy:
