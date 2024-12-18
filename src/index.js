@@ -49,7 +49,6 @@ app.use(async (req, res, next) => {
   next();
 });
 
-
 // Routes defines
 app.use('/', userRoute)
 
