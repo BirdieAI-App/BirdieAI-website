@@ -1,5 +1,5 @@
-const express = require('express');
-const User = require('../models/User.js');
+import express from 'express';
+import User from '../models/User.js';
 
 const userRoute = express.Router();
 const validAccountDataProps=['email', "password", "securityQuestion", "securityAnswer"]
@@ -153,4 +153,4 @@ userRoute.route('/users')
         }
     })
 
-module.exports = userRoute;
+export default userRoute;

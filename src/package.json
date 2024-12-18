@@ -12,11 +12,13 @@
   "license": "ISC",
   "dependencies": {
     "aws-serverless-express": "^3.4.0",
+    "cors": "^2.8.5",
     "express": "^4.21.2",
     "mongoose": "^8.9.1",
     "serverless-http": "^3.2.0"
   },
   "devDependencies": {
+    "bcryptjs": "^2.4.3",
     "serverless": "^4.4.16",
     "serverless-offline": "^14.4.0"
   }

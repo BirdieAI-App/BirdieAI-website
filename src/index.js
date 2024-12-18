@@ -1,6 +1,3 @@
-// const bodyParser = require('body-parser');
-// const cors = require('cors');
-// // const cookieParser = require('cookie-parser');
 // const userRoute = require('./backend/routes/UserRoute.js');
 // const authRoute = require('./backend/routes/authRoute.js');
 // const threadRoute = require('./backend/routes/threadRoute.js');
@@ -9,41 +6,7 @@
 // const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
 // const openAIPromptRoute = require('./backend/routes/OpenAIPromptRoute.js');
 
-// const corsOrigin = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN : "*";
-
-// // Load environment variables from .env file
-// dotenv.config({ path: path.resolve(__dirname, './.env') });
-
-// // Access environment variables
-// const port = process.env.PORT || 3000;
-
-
-// // CORS middleware
-// const corsOptions = {
-// 	origin: corsOrigin, // Ensure this environment variable is set
-// 	methods: ['GET', 'POST', 'PUT', 'DELETE'],
-// 	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
-// 	credentials: true,
-// 	optionsSuccessStatus: 200 // Some legacy browsers choke on a 204 status
-// };
-
-// app.use(cors(corsOptions));
-
-// // Body parsing middleware
-// app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-// app.use(express.json()); // Parse JSON bodies
-
-// //making connection to MongoDB
-// mongoose.connect(mongoURI)
-// 	.then(() => { console.log('MongoDB connected'); }
-// 	).catch(err => {
-// 		console.error(err.message);
-// 		process.exit(1);
-// 	});
-
-
 // //define the routes
-// app.use('/call', userRoute)
 // app.use('/call', authRoute)
 // app.use('/call', threadRoute)
 // app.use('/call', messageRoute)
@@ -53,27 +16,41 @@
 
 // export default app;
 
+
+//import libraries
 import express from 'express';
 import serverless from 'serverless-http';
-import mongoose from 'mongoose';
+import cors from 'cors';
+import { connectDB } from './backend/lib/db.js';
+
+// import routes
+import userRoute from './backend/routes/UserRoute.js'
 
 const app = express();
 const mongoURI = process.env.MONGODB_URI;
 
-// Middleware
-app.use(express.json());
-app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.path}`);
+// Body parsing
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.json()); // Parse JSON bodies
+
+// CORS middleware
+const corsOptions = {
+	origin: "*", // Ensure this environment variable is set
+	methods: ['GET', 'POST', 'PUT', 'DELETE'],
+	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
+	credentials: true,
+	optionsSuccessStatus: 200 // Some legacy browsers choke on a 204 status
+};
+app.use(cors(corsOptions));
+
+app.use(async (req, res, next) => {
+  //check for db connection already exist
+  await connectDB();
   next();
 });
 
-// Routes
-app.get('/users', (req, res) => {
-  res.json({ 
-    message: `HAHAHAHAHAHHA ${mongoURI}`,
-    timestamp: new Date().toISOString()
-  });
-});
+// Routes defines
+app.use('/', userRoute)
 
 
 // Export for Lambda
