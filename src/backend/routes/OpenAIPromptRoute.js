@@ -1,5 +1,5 @@
-const express = require('express');
-const OpenAIPrompt = require('../models/OpenAIPrompt');
+import express from 'express';
+import OpenAIPrompt from '../models/OpenAIPrompt';
 
 const openAIPromptRoute = express.Router();
 
@@ -32,4 +32,4 @@ openAIPromptRoute.route('/openai/lastest')
         }
     });
 
-module.exports = openAIPromptRoute;
+export default openAIPromptRoute;
