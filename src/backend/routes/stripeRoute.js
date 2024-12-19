@@ -1,6 +1,7 @@
-const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const User = require('../models/User.js')
+import express from 'express';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeRoute = express.Router();
 
@@ -14,7 +15,6 @@ stripeRoute.post('/stripe/create-checkout', async (req, res) => {
         return res.status(400).send("Success and cancel URLs are required");
     }
 
-    // const session = await getServerSession(req,res,authOptions);
     const dbUser = await User.findById(userId);
     let stripeCustomerId = dbUser.profileData.stripeCustomerId;
     //CREATING A NEW CUSTOMER IN STRIPE IF USER HAS NOT MADE ANY PREVIOUSE SUBSCRIPTION
@@ -75,7 +75,6 @@ stripeRoute.post('/stripe/create-checkout', async (req, res) => {
 
 stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
     console.log("in /stripe/create-customer-portal (POST) to create stripe customer portal session");
-    // return res.status(200).json({ url: 'https://www.google.com' })
     const { userId, returnUrl } = req.body;
     if (!returnUrl) {
         return res.status(400).send("Return URL is required");
@@ -144,4 +143,4 @@ stripeRoute.get('/stripe/price/:priceID', async (req, res) => {
 
 })
 
-module.exports = stripeRoute;
+export default stripeRoute;

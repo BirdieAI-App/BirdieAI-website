@@ -1,12 +1,10 @@
 
 // const authRoute = require('./backend/routes/authRoute.js');
-// const stripeRoute = require('./backend/routes/stripeRoute.js');
 // const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
 // const openAIPromptRoute = require('./backend/routes/OpenAIPromptRoute.js');
 
 // //define the routes
 // app.use('/call', authRoute)
-// app.use('/call', stripeRoute)
 // app.use('/call', stripeWebhookRoute)
 // app.use('/call', openAIPromptRoute)
 
@@ -21,6 +19,8 @@ import { connectDB } from './backend/lib/db.js';
 import userRoute from './backend/routes/UserRoute.js'
 import threadRoute from './backend/routes/threadRoute.js';
 import messageRoute from './backend/routes/messageRoute.js';
+import stripeRoute from './backend/routes/stripeRoute.js';
+import stripeWebhookRoute from './backend/routes/stripeWebhookRoute.js';
 
 const app = express();
 
@@ -38,17 +38,24 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use(async (req, res, next) => {
-  //check for db connection already exist
-  await connectDB();
-  next();
-});
+try {
+  if (mongoose.connection.readyState !== 1) {
+    await mongoose.connect('mongodb://your-connection-string', {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('Database connected successfully');
+  }
+} catch (error) {
+  console.error('Database connection failed', error);
+}
 
 // Routes defines
 app.use('/', userRoute)
 app.use('/', threadRoute)
 app.use('/', messageRoute)
-
+app.use('/', stripeRoute)
+app.use('/', stripeWebhookRoute)
 
 // Export for Lambda
 export const handler = serverless(app);

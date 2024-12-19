@@ -1,6 +1,8 @@
-const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const User = require('../models/User.js');
+import express from 'express';
+import Stripe from 'stripe';
+import User from '../models/User.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const stripeWebhookRoute = express.Router();
 
@@ -88,6 +90,4 @@ async function updateSessionMetadata(subscriptionId) {
     }
 }
 
-
-
-module.exports = stripeWebhookRoute;
+export default stripeWebhookRoute;
