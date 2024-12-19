@@ -1,5 +1,4 @@
 name: Deploy Lambda Function
-
 on:
   workflow_dispatch:
   push:
@@ -7,17 +6,26 @@ on:
       - './src/**'
     branches: 
       - 'backend'
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22.12.0'
+          
+      - name: Install dependencies
+        run: cd src && npm install
+        
       - name: Install zip tool
         uses: montudor/action-zip@v1
+        
       - name: Create Zip file for Lambda function
         run: cd src && zip -r code.zip .
+        
       - name: AWS CLI v2
         uses: imehedi/actions-awscli-v2@latest
         with:
