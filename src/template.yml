@@ -20,3 +20,4 @@ Resources:
         Variables:
           NODE_ENV: development
           MONGODB_URI: !Ref MongodbUri
+          STRIPE_SECRET_KEY: !Ref StripeSecretKey
