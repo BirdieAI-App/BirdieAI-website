@@ -13,7 +13,7 @@
 import express from 'express';
 import serverless from 'serverless-http';
 import cors from 'cors';
-import { connectDB } from './backend/lib/db.js';
+import mongoose from 'mongoose';
 
 // import routes
 import userRoute from './backend/routes/UserRoute.js'
@@ -40,10 +40,7 @@ app.use(cors(corsOptions));
 
 try {
   if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect('mongodb://your-connection-string', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    await mongoose.connect( process.env.MONGODB_URI);
     console.log('Database connected successfully');
   }
 } catch (error) {
