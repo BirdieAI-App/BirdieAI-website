@@ -128,7 +128,6 @@ userRoute.route('/users')
             }
         }
         try{
-            console.log("in /users route (POST) new user to database")
             let user = await User.findOne({"accountData.email": req.body.accountData.email});
             if(user){//checking for user availability ---- user existed
                 return res.status(400).send("email: "+ req.body.accountData.email + " already existed in databsae");
