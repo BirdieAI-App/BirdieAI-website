@@ -33,7 +33,7 @@ jobs:
       - name: Publish layer
         run: |
           LAYER_VERSION=$(aws lambda publish-layer-version \
-            --layer-name BirdieAI_dependencies \
+            --layer-name BirdieAI-layer-prod \
             --zip-file fileb://layer.zip \
             --compatible-runtimes nodejs22.x \
             --output text --query Version)
@@ -41,7 +41,7 @@ jobs:
           # Update function to use new layer
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:us-east-2:905418150893:function:birdieAI-backend-prod \
-            --layers "arn:aws:lambda:us-east-2:905418150893:layer:BirdieAI_dependencies:$LAYER_VERSION"
+            --layers "arn:aws:lambda:us-east-2:905418150893:layer:BirdieAI-layer-prod:$LAYER_VERSION"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}

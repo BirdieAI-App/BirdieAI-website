@@ -47,6 +47,5 @@ app.use('/', stripeWebhookRoute)
 app.use('/', authRoute);
 app.use('/', openAIPromptRoute);
 
-
 // Export for Lambda
 export const handler = serverless(app);
