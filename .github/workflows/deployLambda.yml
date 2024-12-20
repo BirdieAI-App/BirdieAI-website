@@ -1,9 +1,6 @@
 name: Deploy Lambda Function
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - './src/**'
     branches: 
       - 'backend'
 jobs:
