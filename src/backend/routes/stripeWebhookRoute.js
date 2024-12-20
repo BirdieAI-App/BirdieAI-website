@@ -2,8 +2,6 @@ import express from 'express';
 import Stripe from 'stripe';
 import User from '../models/User.js';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 const stripeWebhookRoute = express.Router();
 
 stripeWebhookRoute.post('/stripe/webhook', async (req, res) => {
@@ -80,6 +78,7 @@ async function handleAccessRevoke(invoice) {
 
 async function updateSessionMetadata(subscriptionId) {
     try {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         const subscription = await stripe.subscriptions.retrieve(subscriptionId);
         const session = await stripe.checkout.sessions.retrieve(subscription.metadata.sessionId);
         const updated = await stripe.checkout.sessions.update(session.id, {
