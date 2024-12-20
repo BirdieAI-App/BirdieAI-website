@@ -1,5 +1,5 @@
 import express from 'express';
-import OpenAIPrompt from '../models/OpenAIPrompt';
+import OpenAIPrompt from '../models/OpenAIPrompt.js';
 
 const openAIPromptRoute = express.Router();
 

@@ -1,14 +1,3 @@
-
-// const authRoute = require('./backend/routes/authRoute.js');
-// const stripeWebhookRoute = require('./backend/routes/stripeWebhookRoute.js');
-// const openAIPromptRoute = require('./backend/routes/OpenAIPromptRoute.js');
-
-// //define the routes
-// app.use('/call', authRoute)
-// app.use('/call', stripeWebhookRoute)
-// app.use('/call', openAIPromptRoute)
-
-
 //import libraries
 import express from 'express';
 import serverless from 'serverless-http';
@@ -21,6 +10,8 @@ import threadRoute from './backend/routes/threadRoute.js';
 import messageRoute from './backend/routes/messageRoute.js';
 import stripeRoute from './backend/routes/stripeRoute.js';
 import stripeWebhookRoute from './backend/routes/stripeWebhookRoute.js';
+import authRoute from './backend/routes/authRoute.js';
+import openAIPromptRoute from './backend/routes/OpenAIPromptRoute.js';
 
 const app = express();
 
@@ -53,6 +44,8 @@ app.use('/', threadRoute)
 app.use('/', messageRoute)
 app.use('/', stripeRoute)
 app.use('/', stripeWebhookRoute)
+app.use('/', authRoute);
+app.use('/', openAIPromptRoute);
 
 // Export for Lambda
 export const handler = serverless(app);
