@@ -37,7 +37,7 @@ try {
   });
 
   const response = await secretsManager.getSecretValue({
-    SecretId: 'dev/birdieAI/backend'
+    SecretId: `${process.env.STAGE}/birdieAI/backend`
   }).promise();
 
   const secrets = JSON.parse(response.SecretString);
