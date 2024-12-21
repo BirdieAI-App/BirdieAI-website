@@ -1,5 +1,7 @@
 # Ensure this script has execute permissions. If not, run the following command first:
 #     chmod +x ./deployToProduction
+# After execute the command above, simply do: ./deployToProduction to execute all the defined script below
+
 
 # Step 1: Switch to the production branch
 git checkout prod
