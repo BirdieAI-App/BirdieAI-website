@@ -19,6 +19,4 @@ Resources:
       Environment:
         Variables:
           NODE_ENV: development
-          MONGODB_URI: !Ref MongodbUri
-          STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          GOOGLE_ID: !Ref GoogleId
+          STAGE: !Ref Stage
