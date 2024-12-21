@@ -1,0 +1,12 @@
+#if has not run chmod. Then run the following command first:
+#     chmod +x ./deployToProduction
+
+git checkout prod
+git checkout -b temp
+git checkout backend-dev src/
+git add src/
+git commit -m "deploying changes to production"
+git checkout backend-prod
+git merge temp
+git branch -D temp
+git push
