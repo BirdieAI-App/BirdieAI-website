@@ -30,7 +30,7 @@ jobs:
         run: zip -r layer.zip nodejs/
 
       # Create and publish layer
-      - name: Publish layer
+      - name: Publish layer and update function configuration
         run: |
           LAYER_VERSION=$(aws lambda publish-layer-version \
             --layer-name BirdieAI-layer-prod \
