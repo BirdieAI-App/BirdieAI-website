@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import config from "../config.js";
 
-const baseURL = process.env.BACKEND_URL
+const baseURL = `${process.env.NEXT_PUBLIC_BASE_URL}/call`;
 
 const apiClient = axios.create({
   baseURL: baseURL,
