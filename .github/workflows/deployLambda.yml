@@ -42,6 +42,10 @@ jobs:
           aws lambda update-function-configuration \
             --function-name arn:aws:lambda:us-east-2:905418150893:function:birdieAI-backend-prod \
             --layers "arn:aws:lambda:us-east-2:905418150893:layer:BirdieAI-layer-prod:$LAYER_VERSION"
+
+          # Wait for the update to complete
+          aws lambda wait function-updated \
+            --function-name arn:aws:lambda:us-east-2:905418150893:function:birdieAI-backend-prod
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PROD }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}
