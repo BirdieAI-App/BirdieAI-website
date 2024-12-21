@@ -1,12 +1,27 @@
-#if has not run chmod. Then run the following command first:
+# Ensure this script has execute permissions. If not, run the following command first:
 #     chmod +x ./deployToProduction
 
+# Step 1: Switch to the production branch
 git checkout prod
+
+# Step 2: Create a temporary branch from prod
 git checkout -b temp
-git checkout backend-dev src/
+
+# Step 3: Checkout changes from the backend-dev branch into the src/ directory
+git checkout backend-dev -- src/
+
+# Step 4: Stage and commit the changes
 git add src/
-git commit -m "deploying changes to production"
+git commit -m "Deploying changes to production"
+
+# Step 5: Switch to the backend-prod branch (the production branch for backend)
 git checkout backend-prod
+
+# Step 6: Merge the temporary branch with the production branch
 git merge temp
+
+# Step 7: Delete the temporary branch after the merge
 git branch -D temp
+
+# Step 8: Push the changes to the remote repository
 git push
