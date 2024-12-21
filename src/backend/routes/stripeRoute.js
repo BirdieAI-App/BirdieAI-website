@@ -1,8 +1,6 @@
 import express from 'express';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 const stripeRoute = express.Router();
 
 stripeRoute.post('/stripe/create-checkout', async (req, res) => {
@@ -14,7 +12,7 @@ stripeRoute.post('/stripe/create-checkout', async (req, res) => {
     if (!successUrl || !cancelUrl) {
         return res.status(400).send("Success and cancel URLs are required");
     }
-
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const dbUser = await User.findById(userId);
     let stripeCustomerId = dbUser.profileData.stripeCustomerId;
     //CREATING A NEW CUSTOMER IN STRIPE IF USER HAS NOT MADE ANY PREVIOUSE SUBSCRIPTION
@@ -79,6 +77,7 @@ stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
     if (!returnUrl) {
         return res.status(400).send("Return URL is required");
     }
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const dbUser = await User.findById(userId);
     let stripeCustomerId = dbUser.profileData.stripeCustomerId;
     //CREATING A NEW CUSTOMER IN STRIPE IF USER HAS NOT MADE ANY PREVIOUSE SUBSCRIPTION
@@ -112,6 +111,7 @@ stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
 stripeRoute.get('/stripe/session/:sessionID', async (req, res) => {
     console.log("in /stripe/session/:sessionID checkin Payment Status")
     const sessionID = req.params.sessionID;
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     try {
         const session = await stripe.checkout.sessions.retrieve(sessionID);
         res.status(200).json({ paymentProcessed: session.metadata.paymentProcessed });
@@ -123,6 +123,7 @@ stripeRoute.get('/stripe/session/:sessionID', async (req, res) => {
 
 stripeRoute.get('/stripe/product-list', async(req, res)=>{
     console.log('in /stripe/product-list (GET) all active stripe product')
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     try{
         const products = await stripe.products.list({active: true});
         res.status(200).json(products);
@@ -133,6 +134,7 @@ stripeRoute.get('/stripe/product-list', async(req, res)=>{
 
 stripeRoute.get('/stripe/price/:priceID', async (req, res) => {
     const priceID = req.params.priceID;
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     console.log(`in /stripe/price/:priceID getting price with id: ${priceID}`)
     try {
         const price = await stripe.prices.retrieve(priceID);
