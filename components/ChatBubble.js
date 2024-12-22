@@ -17,6 +17,7 @@ import {
     faThumbsDown as faThumbsDownSolid
 } from '@fortawesome/free-solid-svg-icons'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { updateMessageByID } from '@/libs/request';
 
 // pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -42,7 +43,7 @@ const generatePdfForMessage = async (content) => {
 const updateFeedback = async function (messageData, feedback) {
     const id = messageData._id;
     try {
-        const response = await updateMessageByID(id, { feedback: feedback });
+        const response = updateMessageByID(id, { feedback: feedback });
     } catch (err) {
         console.log("Error updating feedback: ", err);
     }
