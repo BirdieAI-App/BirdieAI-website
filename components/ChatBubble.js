@@ -4,7 +4,6 @@ import Markdown from "markdown-it";
 import htmlToPdfmake from "html-to-pdfmake";
 import { useState } from 'react';
 import { useSession } from "next-auth/react";
-import axios from 'axios';
 import { ReactTyped } from 'react-typed';
 import ReactDOMServer from 'react-dom/server'
 
@@ -18,6 +17,7 @@ import {
     faThumbsDown as faThumbsDownSolid
 } from '@fortawesome/free-solid-svg-icons'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { updateMessageByID } from '@/libs/request';
 
 // pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -43,10 +43,7 @@ const generatePdfForMessage = async (content) => {
 const updateFeedback = async function (messageData, feedback) {
     const id = messageData._id;
     try {
-        const response = await axios.post(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/${id}`,
-            { feedback: feedback }
-        );
+        const response = updateMessageByID(id, { feedback: feedback });
     } catch (err) {
         console.log("Error updating feedback: ", err);
     }

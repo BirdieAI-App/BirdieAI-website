@@ -1,8 +1,7 @@
 import React, { useState, useEffect, use } from "react";
-import axios from "axios";
 import { extractFirstFourWords } from "@/libs/util";
 import { OpenAIService } from "@/libs/OpenAIService";
-import { getAllMessagesByThreadId, getOpenAIPrompt } from "@/libs/request";
+import { getAllMessagesByThreadId, getDailyMessageCount, getOpenAIPrompt, getUserByID, saveNewMessage, saveNewThread } from "@/libs/request";
 
 export function useChat() {
     const [currentMessageData, setCurrentMessageData] = useState({});
@@ -50,8 +49,7 @@ export function useChat() {
         let messageCount = 0;
         //grabbing user info for userTier
         try {
-            const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/users/${userID}`;
-            const response = await axios.get(url);
+            const response = getUserByID(userID);
             userTier = response.data.profileData.subscriptionTier;
         } catch (err) {
             console.log("error during in handleOnClick: " + err.message);
@@ -70,8 +68,7 @@ export function useChat() {
         // //checking whether or not if free user has more than 3 messages in the current thread
         if (userTier === 'Free' && (threadID.length !== 0 || threadID !== null)) {
             try {
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/u/${userID}/count`;
-                const repsonse = await axios.get(url)
+                const repsonse = getDailyMessageCount(userID)
                 messageCount = repsonse.data.count
             } catch (err) {
                 console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
@@ -148,11 +145,9 @@ export function useChat() {
                 };
 
                 // Save Thread
-                const url = `${process.env.NEXT_PUBLIC_BASE_URL}/call/threads`;
-                threadResponse = await axios.put(url, newThreadBody);
+                threadResponse = saveNewThread(newThreadBody);
                 console.log("Thread saved successfully!");
                 if (userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
-
             } catch (error) {
                 console.log(`Error when trying to save Thread: ${error}`);
                 return null;
@@ -170,10 +165,7 @@ export function useChat() {
             };
 
             try {
-                const messageResponse = await axios.put(
-                    `${process.env.NEXT_PUBLIC_BASE_URL}/call/messages`,
-                    messageBody
-                );
+                const messageResponse = saveNewMessage(messageBody);
                 console.log(messageResponse);
                 setCurrentMessageData(messageResponse.data);
             } catch (error) {
