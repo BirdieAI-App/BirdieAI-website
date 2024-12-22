@@ -2,8 +2,7 @@ import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import { extractFirstFourWords } from "@/libs/util";
 import { OpenAIService } from "@/libs/OpenAIService";
-
-// const OPENAI_PROMPT = process.env.NEXT_PUBLIC_OPENAI_API_PROMPT;
+import { getAllMessagesByThreadId, getOpenAIPrompt } from "@/libs/request";
 
 export function useChat() {
     const [currentMessageData, setCurrentMessageData] = useState({});
@@ -17,14 +16,12 @@ export function useChat() {
     const [OPENAI_PROMPT, setOPENAI_PROMPT] = useState("");
 
     useEffect(() => {
-        const x = axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/openai/lastest`)
-        .then((response) => {
-            setOPENAI_PROMPT(response.data.prompt);
-            console.log(response.data); // Access the data from the response
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-        });
+        try{
+            const response = getOpenAIPrompt();
+            setOPENAI_PROMPT(response.data);
+        }catch(err){
+            console.log("Error while fetching for latest prompt:", err.message)
+        }
     }, []);
     const [openAIConversation, setOpenAIConversation] = useState([
         {
@@ -38,7 +35,7 @@ export function useChat() {
     const OpenAI = new OpenAIService();
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/call/messages/t/${id}`);
+            const response = getAllMessagesByThreadId();
             return response.data;
         } catch (err) {
             console.log(err);

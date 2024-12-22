@@ -79,3 +79,17 @@ export const getStripePrice = async function(priceID){
     return response;
 }
 //-------------------------------------- MESSAGE -------------------------------------------------
+
+export const getAllMessagesByThreadId = async function(threadID){
+    const apiUrl = apiClient.createUrl(`messages/t/${threadID}`);
+    const response = await apiClient.get(apiUrl);
+    return response;
+}
+
+//-------------------------------------- OPENAIPROMPT -------------------------------------------------
+
+export const getOpenAIPrompt = async function(){
+    const apiUrl = apiClient.createUrl('openai/lastest');
+    const response = await apiClient.get(apiUrl);
+    return response;
+}
