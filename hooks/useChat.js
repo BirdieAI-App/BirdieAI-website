@@ -14,10 +14,10 @@ export function useChat() {
 
     const [OPENAI_PROMPT, setOPENAI_PROMPT] = useState("");
 
-    useEffect(() => {
+    useEffect(async () => {
         try{
-            const response = getOpenAIPrompt();
-            setOPENAI_PROMPT(response.data);
+            const response = await getOpenAIPrompt();
+            setOPENAI_PROMPT(response.prompt);
         }catch(err){
             console.log("Error while fetching for latest prompt:", err.message)
         }
@@ -35,7 +35,7 @@ export function useChat() {
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
             const response = getAllMessagesByThreadId();
-            return response.data;
+            return response;
         } catch (err) {
             console.log(err);
         }
@@ -49,10 +49,11 @@ export function useChat() {
         let messageCount = 0;
         //grabbing user info for userTier
         try {
-            const response = getUserByID(userID);
-            userTier = response.data.profileData.subscriptionTier;
+            const response = await getUserByID(userID);
+            userTier = response.profileData.subscriptionTier;
         } catch (err) {
             console.log("error during in handleOnClick: " + err.message);
+            return;
         }
         //checking whether or not if user has reached thread limit for free tier user
         // if (userTier === "Free"  && (threadID.length === 0 || threadID === null)) {
@@ -69,7 +70,7 @@ export function useChat() {
         if (userTier === 'Free' && (threadID.length !== 0 || threadID !== null)) {
             try {
                 const repsonse = getDailyMessageCount(userID)
-                messageCount = repsonse.data.count
+                messageCount = repsonse.count
             } catch (err) {
                 console.log("error while counting number of message in the current thread in handleOnClick: " + err.message);
                 return;
@@ -132,7 +133,6 @@ export function useChat() {
                 // Create Thread
                 const thread = await OpenAI.createThread();
                 updatedThreadID = thread.id;
-                console.log(updatedThreadID);
                 setThreadID(updatedThreadID);
 
                 const newThreadBody = {
@@ -165,15 +165,14 @@ export function useChat() {
             };
 
             try {
-                const messageResponse = saveNewMessage(messageBody);
-                console.log(messageResponse);
-                setCurrentMessageData(messageResponse.data);
+                const messageResponse = await saveNewMessage(messageBody);
+                setCurrentMessageData(messageResponse);
             } catch (error) {
                 console.log(`Error when trying to save Message: ${error}`);
             }
         }
         setSentFirstMessage(false);
-        return threadResponse ? threadResponse.data : null;
+        return threadResponse ? threadResponse : null;
     };
 
 

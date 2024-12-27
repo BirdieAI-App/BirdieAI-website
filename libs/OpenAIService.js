@@ -20,6 +20,7 @@ export class OpenAIService {
         @return response: Object contains only one response object
     */
     async getResponse(conversation) {
+        console.log(conversation)
         try {
             const response = await this.openai.chat.completions.create({
                 ...this.config,
@@ -27,7 +28,7 @@ export class OpenAIService {
             });
             return response;
         } catch (err) {
-            console.log(err);
+            console.log(err.message);
         }
     }
 

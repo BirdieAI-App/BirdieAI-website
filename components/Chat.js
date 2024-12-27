@@ -124,6 +124,7 @@ const Chat = () => {
     getThreads(userId);
     setLoadingAllThreads(false);
   }, [userId]);
+  
   //Check user Subscription Tier
   useEffect(() => {
     const checkUserSubscription = async () => {
@@ -174,7 +175,6 @@ const Chat = () => {
   }
 
   const chatStyle = `flex flex-col ${font.className}`;
-  console.log(viewMode);
 
   return (loadingUserInfo || status === "loading") ?
     (<div className="w-screen h-screen flex flex-col items-center justify-center">
