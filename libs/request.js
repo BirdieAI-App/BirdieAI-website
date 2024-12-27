@@ -113,6 +113,6 @@ export const updateMessageByID = async function(messageID, payload){
 
 export const getOpenAIPrompt = async function(){
     const apiUrl = apiClient.createUrl('openai/lastest');
-    const response = await apiClient.get(apiUrl);
+    const response = await apiClient.get('https://8osoy1l04c.execute-api.us-east-2.amazonaws.com/dev/openai/lastest');
     return response;
 }

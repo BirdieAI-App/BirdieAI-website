@@ -16,7 +16,6 @@ export default function ChatSidebar({
   // const {conversation}  = useChat();
 
   // console.log(conversation);
-  console.log(isSidebarOpen);
 
   return (
     <div>
