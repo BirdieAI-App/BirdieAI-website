@@ -13,7 +13,7 @@ import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons"
 
 const ChatPage = () => {
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
+    <div className="h-screen flex flex-col">
       <Tab.Group as="div" className="flex flex-grow flex-col">
         {/* Panels */}
         <Tab.Panels className="flex-grow flex h-full">
@@ -43,7 +43,7 @@ const ChatPage = () => {
               }`
             }>
             <FontAwesomeIcon icon={faComment} className="fa-xl mb-1" />
-            <p className="text-sm">Chat</p>
+            <p className="text-xs">Chat</p>
           </Tab>
           <Tab className={({ selected }) =>
             `px-4 py-2 flex flex-col flex-grow items-center focus:outline-none 
@@ -53,7 +53,7 @@ const ChatPage = () => {
             }`
           }>
             <FontAwesomeIcon icon={faHouse} className="fa-xl mb-1" />
-            <p className="text-sm">Discover</p>
+            <p className="text-xs">Discover</p>
           </Tab>
           <Tab className={({ selected }) =>
             `px-4 py-2 flex flex-col flex-grow items-center focus:outline-none 
@@ -63,7 +63,7 @@ const ChatPage = () => {
             }`
           }>
             <FontAwesomeIcon icon={faBook} className="fa-xl mb-1" />
-            <p className="text-sm">Library</p>
+            <p className="text-xs">Library</p>
           </Tab>
           <Tab className={({ selected }) =>
             `px-4 py-2 flex flex-col flex-grow items-center focus:outline-none 
@@ -73,7 +73,7 @@ const ChatPage = () => {
             }`
           }>
             <FontAwesomeIcon icon={faListCheck} className="fa-xl mb-1" />
-            <p className="text-sm">To-do list</p>
+            <p className="text-xs">To-do list</p>
           </Tab>
         </Tab.List>
       </Tab.Group>

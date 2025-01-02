@@ -1,23 +1,144 @@
 "use client";
 
-import React from 'react';
-
+import React, { useState } from 'react';
+import logo from '@/app/icon.png';
+import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-regular-svg-icons";
-import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
-
+import { faUser, faSquarePlus } from "@fortawesome/free-regular-svg-icons"
+import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
+import { Menu, Transition } from '@headlessui/react';
 
 const ChatTab = () => {
+  const [chatMessage, setChatMessage] = useState('');
+
+  const handleSubmitChatMessage = () => {
+    console.log('Submit chat message');
+    console.log(chatMessage);
+  }
+  
+  const handleAddNewChatButton = () => {
+    console.log('Add new chat');
+  }
+
+  const handleProfileButton = () => {
+    console.log('My Profile');
+  }
+
+  const handleLogOutButton = () => {
+    console.log('Log out');
+  }
+
+  const handleUserPlanButton = () => {
+    console.log('Your plan: Free');
+  }
   return (
-    <div className="flex flex-col w-full ">
-      <nav className="bg-gray-800 text-white border-2 border-red-500">
-        <ul className="flex flex-row">
-          <li className="p-4 hover:bg-gray-700">1</li>
-          <li className="p-4 hover:bg-gray-700">2</li>
-          <li className="p-4 hover:bg-gray-700">3</li>
+    <div className="flex flex-col w-full relative">
+      {/* ____________________________Navigation bar___________________________________ */}
+      <nav className="border-b-2 border-gray-200">
+        <ul className="px-4 flex flex-row items-center justify-between">
+          <li className="hover:bg-gray-700">
+            <Image
+              src={logo}
+              alt={`logo`}
+              priority={true}
+              className="w-20 h-20"
+            />
+          </li>
+          <li className='text-3xl flex flex-row items-center gap-4'>
+            <p className=''>Ask Birdie</p>
+            <button
+              className='text-2xl'
+              onClick={handleAddNewChatButton}
+            >
+              <FontAwesomeIcon icon={faSquarePlus} />
+            </button>
+          </li>
+          <li className='text-2xl flex flex-row'>
+            <Menu as="div" className="relative inline-block text-left">
+              <div>
+                <Menu.Button className="inline-flex justify-center">
+                  <FontAwesomeIcon icon={faUser} className="text-2xl" />
+                </Menu.Button>
+              </div>
+
+              <Transition
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items
+                  className="absolute right-0 mt-2 w-40 origin-top-right border border-black 
+                    bg-white divide-y divide-gray-200 rounded-md shadow-lg focus:outline-none">
+                  <div className="px-1 py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          className={`${active ? "bg-green-500 text-white" : "text-gray-900"
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          onClick={handleProfileButton}
+                        >
+                          My Profile
+                        </button>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          className={`${active ? "bg-green-500 text-white" : "text-gray-900"
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          onClick={handleUserPlanButton}
+                        >
+                          Your plan: Free
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </div>
+                  <div className="px-1 py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <button
+                          className={`${active ? "bg-red-500 text-white" : "text-gray-900"
+                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                          onClick={handleLogOutButton}
+                        >
+                          Log out
+                        </button>
+                      )}
+                    </Menu.Item>
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </Menu>
+          </li>
         </ul>
       </nav>
-      <h2 className="text-6xl">Chat</h2>
+      {/* _____________________________________________________________________________ 
+
+          ____________________________Chat display_____________________________________ */}
+      <div className="flex flex-col w-full h-full ">
+        <div className='flex flex-grow'> chat message here </div>
+        <div className="flex flex-col items-center justify-between">
+          <div className="relative flex flex-row w-full px-4 pt-4 border-t-2 border-gray-200">
+            <input 
+              className='w-full p-2 border-2 border-gray-200 rounded-md outline-none'
+              type="text" 
+              placeholder="Ask Birdie Coach"
+              value={chatMessage}
+              onChange={(e) => setChatMessage(e.target.value)}
+            />
+            <button 
+              className='absolute bg-green-500 text-white rounded-r-md right-4 py-2'
+              onClick={handleSubmitChatMessage}
+            >
+              <FontAwesomeIcon icon={faLocationArrow} className='px-3 text-2xl'/>
+            </button>
+          </div>
+          <p className='pb-4 pt-2 text-xs text-gray-500'>Please consult healthcare providers for medical advice.</p>
+        </div>
+      </div>
     </div>
   );
 }
