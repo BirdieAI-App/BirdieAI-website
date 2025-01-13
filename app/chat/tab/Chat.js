@@ -1,21 +1,40 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import logo from '@/app/icon.png';
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faSquarePlus } from "@fortawesome/free-regular-svg-icons"
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import { Menu, Transition } from '@headlessui/react';
+import ChatMessage from '@/components/ChatMessage';
+import { getAllMessagesByThreadId } from '@/libs/request';
+import { get } from 'mongoose';
 
 const ChatTab = () => {
   const [chatMessage, setChatMessage] = useState('');
+
+  // const threadID = "thread_nay_la_fake";
+  // useEffect(() => {
+  //   console.log('Chat tab mounted');
+  //   console.log(threadID);
+  //   // Fetch chat messages for the threadID here
+  //   const fetchMessages = async () => {
+  //     try {
+  //       const messages = await getAllMessagesByThreadId(threadID);
+  //       console.log(messages);
+  //     } catch (error) {
+  //       console.error('Error fetching messages:', error);
+  //     }
+  //   };
+  //   fetchMessages();
+  // })
 
   const handleSubmitChatMessage = () => {
     console.log('Submit chat message');
     console.log(chatMessage);
   }
-  
+
   const handleAddNewChatButton = () => {
     console.log('Add new chat');
   }
@@ -115,25 +134,29 @@ const ChatTab = () => {
           </li>
         </ul>
       </nav>
-      {/* _____________________________________________________________________________ 
-
-          ____________________________Chat display_____________________________________ */}
+      {/*____________________________Chat display_____________________________________ */}
       <div className="flex flex-col w-full h-full ">
-        <div className='flex flex-grow'> chat message here </div>
+        <div className='flex flex-grow flex-col'>
+          <ChatMessage message='Hello, how can I help you today?' />
+          <ChatMessage message='I am feeling good.' />
+          <ChatMessage message='That is great to hear!' />
+        </div>
+
+        {/*____________________________Chat input______________________________________ */}
         <div className="flex flex-col items-center justify-between">
           <div className="relative flex flex-row w-full px-4 pt-4 border-t-2 border-gray-200">
-            <input 
+            <input
               className='w-full p-2 border-2 border-gray-200 rounded-md outline-none'
-              type="text" 
+              type="text"
               placeholder="Ask Birdie Coach"
               value={chatMessage}
               onChange={(e) => setChatMessage(e.target.value)}
             />
-            <button 
-              className='absolute bg-green-500 text-white rounded-r-md right-4 py-2'
+            <button
+              className='absolute bg-green-500 text-white rounded-r-md right-4 p-2'
               onClick={handleSubmitChatMessage}
             >
-              <FontAwesomeIcon icon={faLocationArrow} className='px-3 text-2xl'/>
+              <FontAwesomeIcon icon={faLocationArrow} className='text-2xl' />
             </button>
           </div>
           <p className='pb-4 pt-2 text-xs text-gray-500'>Please consult healthcare providers for medical advice.</p>

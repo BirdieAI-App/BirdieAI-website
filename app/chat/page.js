@@ -20,10 +20,10 @@ const ChatPage = () => {
           <Tab.Panel className="flex h-full w-full">
             <ChatTab />
           </Tab.Panel>
-          <Tab.Panel className="flex h-full">
+          <Tab.Panel className="flex h-full w-full">
             <DiscoverTab />
           </Tab.Panel>
-          <Tab.Panel className="flex h-full">
+          <Tab.Panel className="flex h-full w-full">
             <LibraryTab />
           </Tab.Panel>
           <Tab.Panel className="flex h-full">
