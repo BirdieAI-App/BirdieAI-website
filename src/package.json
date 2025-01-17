@@ -5,7 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "sam local start-api"
+    "start": "sam local start-api --env-vars env.json"
   },
   "keywords": [],
   "author": "",
@@ -16,9 +16,14 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "google-auth-library": "^9.15.0",
+    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.1",
     "nodemailer": "^6.9.16",
+    "passport": "^0.7.0",
+    "passport-google-oauth2": "^0.2.0",
+    "passport-local": "^1.0.0",
     "serverless-http": "^3.2.0",
     "stripe": "^17.5.0"
   },

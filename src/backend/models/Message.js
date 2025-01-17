@@ -9,16 +9,10 @@ const messageSchema = new mongoose.Schema({
     required: true,
     ref: "Thread",
   },
-  userID:{ //to be used later for free user rule check
+  userID: { //to be used later for free user rule check
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "User",
-  },
-  messageID: {
-    //messageID returns from OpenAI
-    type: String,
-    required: true,
-    unique: true,
   },
   prompt: {
     type: String,
@@ -34,28 +28,28 @@ const messageSchema = new mongoose.Schema({
     type: String,
     enum: ["like", "dislike", "none"],
     default: "none",
+  },
 },
-},
-    {
-        //add createdAt and updatedAt timestamps
-        timestamps: true,
-    }
+  {
+    //add createdAt and updatedAt timestamps
+    timestamps: true,
+  }
 );
 
 // update the 'updatedAt' field in Thread collection when a new message is saved
 messageSchema.pre("save", async function (next) {
-    const message = this;
-    const timestamps = message.createdAt;
-    try {
-        await Thread.updateOne(
-            { threadID: message.threadID },
-            { $set: { updatedAt: timestamps } }
-        );
-        next();
-    } catch (err) {
-        console.log("Unexpected error occured while updating 'updatedAt' field in Thread collection: ", err);
-        return next(err);
-    }
+  const message = this;
+  const timestamps = message.createdAt;
+  try {
+    await Thread.updateOne(
+      { threadID: message.threadID },
+      { $set: { updatedAt: timestamps } }
+    );
+    next();
+  } catch (err) {
+    console.log("Unexpected error occured while updating 'updatedAt' field in Thread collection: ", err);
+    return next(err);
+  }
 });
 
 const Message = mongoose.model("Message", messageSchema);
