@@ -76,7 +76,7 @@ userRoute.route('/users/:userId')
 
 userRoute.route('/users')
     //GET request: getting all users in the database
-    .get(async(req,res)=>{
+    .get(authenticateJWT, async(req,res)=>{
         console.log("in /users route (GET) all user in database.");
         try{
             let users = await User.find();
