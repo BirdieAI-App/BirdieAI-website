@@ -12,8 +12,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // CORS configuration
+
+const allowedOrigins = [
+  'http://localhost:3000', // Local development
+  'https://birdieapp.co', // Deployed frontend
+];
 const corsOptions = {
-  origin: '*',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
   credentials: true,
@@ -44,7 +55,7 @@ async function appInitiallization() {
       STRIPE_SECRET_KEY: secrets.STRIPE_SECRET_KEY,
       GOOGLE_ID: secrets.GOOGLE_ID,
       GOOGLE_SECRET: secrets.GOOGLE_SECRET,
-      CALLBACK_URL: process.env.CALLBACK_URL|| secrets.CALLBACK_URL,
+      CALLBACK_URL: process.env.CALLBACK_URL || secrets.CALLBACK_URL,
       MONGODB_URI: secrets.MONGODB_URI,
     };
     console.log('AWS Secrets loaded successfully');
@@ -56,15 +67,15 @@ async function appInitiallization() {
     }
 
     // Dynamically import passportConfig and routes after secrets are loaded
-    const passportConfig =     (await import('./backend/passport/config.js')).default;
-    const userRoute =          (await import('./backend/routes/UserRoute.js')).default;
-    const threadRoute =        (await import('./backend/routes/threadRoute.js')).default;
-    const messageRoute =       (await import('./backend/routes/messageRoute.js')).default;
-    const stripeRoute =        (await import('./backend/routes/stripeRoute.js')).default;
+    const passportConfig = (await import('./backend/passport/config.js')).default;
+    const userRoute = (await import('./backend/routes/UserRoute.js')).default;
+    const threadRoute = (await import('./backend/routes/threadRoute.js')).default;
+    const messageRoute = (await import('./backend/routes/messageRoute.js')).default;
+    const stripeRoute = (await import('./backend/routes/stripeRoute.js')).default;
     const stripeWebhookRoute = (await import('./backend/routes/stripeWebhookRoute.js')).default;
-    const authRoute =          (await import('./backend/routes/authRoute.js')).default;
-    const openAIPromptRoute =  (await import('./backend/routes/OpenAIPromptRoute.js')).default;
-    const authenticateJWT =    (await import('./backend/passport/authenticateJWT.js')).default;
+    const authRoute = (await import('./backend/routes/authRoute.js')).default;
+    const openAIPromptRoute = (await import('./backend/routes/OpenAIPromptRoute.js')).default;
+    const authenticateJWT = (await import('./backend/passport/authenticateJWT.js')).default;
 
     // Initialize Passport
     passportConfig(app);
