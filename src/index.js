@@ -11,27 +11,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// CORS configuration
-
-const allowedOrigins = [
-  'http://localhost:3000', // Local development
-  'https://birdieapp.co', // Deployed frontend
-];
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
-
 app.use((req, res, next) => {
   console.log(`Request URL: ${req.url}`);
   console.log(`Request Method: ${req.method}`);
@@ -66,6 +45,25 @@ async function appInitiallization() {
       await mongoose.connect(process.env.MONGODB_URI);
       console.log('Database connected successfully');
     }
+
+    // CORS configuration
+    const allowedOrigins = [
+        `${process.env.FRONTEND_URL}`
+    ];
+    const corsOptions = {
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
+      credentials: true,
+      optionsSuccessStatus: 200,
+    };
+    app.use(cors(corsOptions));
 
     // Dynamically import passportConfig and routes after secrets are loaded
     const passportConfig = (await import('./backend/passport/config.js')).default;
