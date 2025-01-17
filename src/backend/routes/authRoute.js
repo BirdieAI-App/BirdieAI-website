@@ -1,7 +1,7 @@
 // libraries import
 import express from 'express';
 import passport from 'passport';
-import authenticateJWT from '../passport/authenticateJWT';
+import authenticateJWT from '../passport/authenticateJWT.js';
 
 const authRoute = express.Router();
 
