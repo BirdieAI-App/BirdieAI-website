@@ -41,5 +41,4 @@ public/sitemap-0.xml
 .env*.local
 
 #src
-src/env.json
 .vercel
