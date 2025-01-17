@@ -50,4 +50,18 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
   }
 );
 
+authRoute.get('/auth/test', (req, res)=>{
+  console.log("/auth/test reached.");
+  const isAuth = req.isAuthenticated();
+  if (isAuth) {
+      console.log("User is authenticated");
+      console.log("User record tied to session: " + JSON.stringify(req.user));
+  } else {
+      //User is not authenticated
+      console.log("User is not authenticated");
+  }
+  //Return JSON object to client with results.
+  res.json({isAuthenticated: isAuth, user: req.user});
+});
+
 export default authRoute;
