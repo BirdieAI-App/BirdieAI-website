@@ -2,9 +2,11 @@ import express from 'express';
 import User from '../models/User.js';
 import Thread from '../models/Thread.js';
 import Message from '../models/Message.js';
+import OpenAIPrompt from '../models/OpenAIPrompt.js';
 
 const messageRoute = express.Router();
 const validMessageProps = Object.keys(Message.schema.paths).filter((keys)=>!keys.startsWith("_"));
+const freeTierMessageLimit = 5
 
 const isValidRequest = (req) => {
     // true if request is good formated
@@ -17,6 +19,15 @@ const isValidRequest = (req) => {
     }
     return true;
 }
+
+const validateRequestBody = (field, res, errorMessage) => {
+    if (!field) {
+        console.log(errorMessage);
+        res.status(400).send(errorMessage);
+        return false;
+    }
+    return true;
+};
 
 messageRoute.route("/messages")
     //GET: getting all mesages existing in database
@@ -45,74 +56,79 @@ messageRoute.route("/messages")
     //PUT: saving a new message into database ---- auto update "update_at"
     .put(async(req,res)=>{
         console.log('in /messages (PUT) saving new message into database');
+        //-------------------------------------------- VALIDATING REQUEST ---------------------------------------------------------
         if(!isValidRequest(req)){
             return res.status(400).send("Request body contains an invalid field")
         }
-        if(!req.body.threadID){
-            console.log("Request body must contains threadID to associate the message with")
-            return res.status(400).send("Request body must contains threadID to associate the message with");
-        }
-
-        try{//checking for existing thread in database
-            const thread = await Thread.find({threadID : req.body.threadID});
-            if(!thread){
-                console.log("Thread with ID="+req.body.threadID+" does NOT exist in database")
-                return res.status(400).send("Thread with ID="+req.body.threadID+" does NOT exist in database");
-            }
-        }catch(err){
-            return res.status(500).send("Unexpected error occured when validating threadID for (PUT) in /message: "+err);
-        }
-
-        if(!req.body.userID){
-            console.log("request body must contains userID")
-            return res.status(400).send("request body must contains userID")
-        }
-
-        try{//checking for existing userID in database
-            const user = await User.findById(req.body.userID);
-            if(!user){
-                console.log("user with ID="+req.body.userID+" does NOT exist in database")
-                return res.status(400).send("Thread with ID="+req.body.userID+" does NOT exist in database");
-            }
-        }catch(err){
-            return res.status(500).send("Unexpected error occured when validating userID for (PUT) in /message: "+err);
-        }
-
-        if(!req.body.messageID){
-            console.log("Request body must contains messageID returns from OpenAI")
-            return res.status(400).send("Request body must contains messageID returns from OpenAI");
-        }
+        let user;
+        const {threadID, userID, prompt} = req.body;
         try {
-            // checking to see if messageID already been set
-            const existingMessage = await Message.find({"messageID": req.body.messageID})
-            if(existingMessage.length != 0){
-                console.log("The given messageID is already been set")
-                return res.status(400).send("The given messageID is already been set");
+            // Validate required fields
+            if (
+                !validateRequestBody(req.body.userID, res, "Request body must contain userID") ||
+                !validateRequestBody(req.body.prompt, res, "Request body must contain the user's prompt")
+            ) {
+                return;
             }
-        } catch(err) {
-            return res.status(500).send("Unexpected error occurred while validating messageID: "+ err);
+        
+            // Check if thread exists
+            const thread = await Thread.findOne({ threadID: threadID });
+            if (!thread) {
+                const message = `Thread with ID=${threadID} does NOT exist in the database.`;
+                console.log(message);
+                return res.status(400).send(message);
+            }
+            // Check if user exists
+            user = await User.findById(userID);
+            if (!user) {
+                const message = `User with ID=${userID} does NOT exist in the database.`;
+                console.log(message);
+                return res.status(400).send(message);
+            }
+        } catch (err) {
+            console.error(`Unexpected error: ${err}`);
+            return res.status(500).send(`Unexpected error occurred: ${err.message}`);
         }
-
-        if(!req.body.prompt){
-            console.log("request body must contains user's prompt")
-            return res.status(400).send("request body must contains user's prompt")
-        }
-
-        if(!req.body.message_total_token){
-            return res.status(400).send("request body must contains total number of token returns from OpenAI")
-        }
-
-        const newMessageBody = {}
-        for(const key in req.body){
-            newMessageBody[key] = req.body[key]
+        //-------------------------------------------- PROCESSING REQUEST ---------------------------------------------------------
+        // 1. counting to see if the total number of message exceed user limit withing 1 day (ONLY APPLY FOR Free tier user)
+        // 2. getting the latest prompt from openAI prompt collection
+        // 3. construct the conversation based on threadID
+        // 4. save the prompt + answer 
+        // 5. returns the response
+        if(user.profileData.subscriptionTier === 'Free'){
+            const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
+            const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
+            const dailyMessageCount = await Message.countDocuments({ 
+                userID: userID,
+                createdAt: {
+                    $gte: todayTimestamp,
+                    $lt: tomorrowTimestamp
+                }
+            });
+            if(dailyMessageCount >= 5){
+                return res.status(201).send("user reached daily message")
+            }
         }
         try{
-            // adding new message into message collection and update 'update_at' field in Thread collection
-            const message = await new Message(newMessageBody).save();
-            return res.status(200).json(message);
+            const openAIPrompt = await OpenAIPrompt.findOne().sort({ createdAt: -1 });
+            console.log(openAIPrompt)
         }catch(err){
-            return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);
+            const msg = `error while retrive lastest prompt for OPENAI: ${err.message}`
+            console.log(msg);
         }
+
+
+        // const newMessageBody = {}
+        // for(const key in req.body){
+        //     newMessageBody[key] = req.body[key]
+        // }
+        // try{
+        //     // adding new message into message collection and update 'update_at' field in Thread collection
+        //     const message = await new Message(newMessageBody).save();
+        //     return res.status(200).json(message);
+        // }catch(err){
+        //     return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);
+        // }
     })
     
 messageRoute.route('/messages/:messageID')
@@ -191,5 +207,4 @@ messageRoute
             return res.status(500).send("Unexpected error occurred when getting the count of messages: " + err.message);
         }
     });
-
 export default messageRoute;

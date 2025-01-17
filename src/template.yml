@@ -20,3 +20,4 @@ Resources:
         Variables:
           NODE_ENV: development
           STAGE: !Ref Stage
+          CALLBACK_URL: !Ref Callback_Url

@@ -17,19 +17,4 @@ openAIPromptRoute.route('/openai')
         }
     });
 
-openAIPromptRoute.route('/openai/lastest')
-    //GET request: get lastest OpenAIPrompt
-    .get(async (req, res) => {
-        console.log("in /openai/lastest route (GET) getting lastest OpenAIPrompt from database.");
-        try {
-            const prompt = await OpenAIPrompt.findOne().sort({ createdAt: -1 });
-            if (!prompt) {
-                return res.status(404).send("No prompt found in the database");
-            }
-            return res.status(201).json(prompt);
-        } catch (err) {
-            return res.status(500).send("Unexpected error occured when getting lastest OpenAIPrompt: " + err);
-        }
-    });
-
 export default openAIPromptRoute;

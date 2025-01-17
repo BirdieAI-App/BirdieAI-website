@@ -1,78 +1,91 @@
-//import libraries
 import express from 'express';
 import serverless from 'serverless-http';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import AWS from 'aws-sdk';
-// import routes
-import userRoute from './backend/routes/UserRoute.js'
-import threadRoute from './backend/routes/threadRoute.js';
-import messageRoute from './backend/routes/messageRoute.js';
-import stripeRoute from './backend/routes/stripeRoute.js';
-import stripeWebhookRoute from './backend/routes/stripeWebhookRoute.js';
-import authRoute from './backend/routes/authRoute.js';
-import openAIPromptRoute from './backend/routes/OpenAIPromptRoute.js';
 
+// Initialize Express
 const app = express();
 
-// Body parsing
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
-app.use(express.json()); // Parse JSON bodies
+// Middleware for body parsing
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-// CORS middleware
+// CORS configuration
 const corsOptions = {
-  origin: "*", // Ensure this environment variable is set
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
   credentials: true,
-  optionsSuccessStatus: 200 // Some legacy browsers choke on a 204 status
+  optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
+app.use((req, res, next) => {
+  console.log(`Request URL: ${req.url}`);
+  console.log(`Request Method: ${req.method}`);
+  next(); // Pass control to the next middleware or route handler
+});
 
-try {
-  // In Lambda, no need to configure credentials - uses Lambda role automatically
-  const secretsManager = new AWS.SecretsManager({
-    region: 'us-east-2'
-  });
+// Function to load secrets and initialize the app
+async function appInitiallization() {
+  try {
+    // Load secrets from AWS Secrets Manager
+    const secretsManager = new AWS.SecretsManager({ region: 'us-east-2' });
+    const response = await secretsManager.getSecretValue({
+      SecretId: `${process.env.STAGE}/birdieAI/backend`,
+    }).promise();
 
-  const response = await secretsManager.getSecretValue({
-    SecretId: `${process.env.STAGE}/birdieAI/backend`
-  }).promise();
+    const secrets = JSON.parse(response.SecretString);
 
-  const secrets = JSON.parse(response.SecretString);
+    // Merge secrets into process.env
+    process.env = {
+      ...process.env,
+      STRIPE_SECRET_KEY: secrets.STRIPE_SECRET_KEY,
+      GOOGLE_ID: secrets.GOOGLE_ID,
+      GOOGLE_SECRET: secrets.GOOGLE_SECRET,
+      CALLBACK_URL: process.env.CALLBACK_URL|| secrets.CALLBACK_URL,
+      MONGODB_URI: secrets.MONGODB_URI,
+    };
+    console.log('AWS Secrets loaded successfully');
 
-  // Merge secrets with process.env
-  process.env = {
-    ...process.env,
-    STRIPE_SECRET_KEY: secrets.STRIPE_SECRET_KEY,
-    GOOGLE_ID: secrets.GOOGLE_ID,
-    MONGODB_URI: secrets.MONGODB_URI
-  };
-  console.log('AWS Secrets loaded successfully');
-} catch (err) {
-  const message = `"Error while retriving credentials from secret manager: ${err.message}`;
-  console.error(message);
-  throw new Error(message);
-}
+    // Connect to MongoDB
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI);
+      console.log('Database connected successfully');
+    }
 
-try {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Database connected successfully');
+    // Dynamically import passportConfig and routes after secrets are loaded
+    const passportConfig =     (await import('./backend/passport/config.js')).default;
+    const userRoute =          (await import('./backend/routes/UserRoute.js')).default;
+    const threadRoute =        (await import('./backend/routes/threadRoute.js')).default;
+    const messageRoute =       (await import('./backend/routes/messageRoute.js')).default;
+    const stripeRoute =        (await import('./backend/routes/stripeRoute.js')).default;
+    const stripeWebhookRoute = (await import('./backend/routes/stripeWebhookRoute.js')).default;
+    const authRoute =          (await import('./backend/routes/authRoute.js')).default;
+    const openAIPromptRoute =  (await import('./backend/routes/OpenAIPromptRoute.js')).default;
+    const authenticateJWT =    (await import('./backend/passport/authenticateJWT.js')).default;
+
+    // Initialize Passport
+    passportConfig(app);
+
+    // Define routes
+    app.use('/', authRoute);
+    app.use('/', stripeRoute);
+    app.use('/', stripeWebhookRoute);
+    app.use('/', userRoute);
+    app.use('/', authenticateJWT, openAIPromptRoute);
+    app.use('/', authenticateJWT, threadRoute);
+    app.use('/', authenticateJWT, messageRoute);
+
+    console.log('App initialized successfully');
+  } catch (error) {
+    console.error('Error during initialization:', error.message);
+    process.exit(1); // Exit process if initialization fails
   }
-} catch (error) {
-  console.error('Database connection failed', error);
 }
 
-// Routes defines
-app.use('/', userRoute)
-app.use('/', threadRoute)
-app.use('/', messageRoute)
-app.use('/', stripeRoute)
-app.use('/', stripeWebhookRoute)
-app.use('/', authRoute);
-app.use('/', openAIPromptRoute);
+// Call the initialization function and export the handler
+await appInitiallization();
 
-// Export for Lambda
 export const handler = serverless(app);
