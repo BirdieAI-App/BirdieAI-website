@@ -12,8 +12,7 @@ authRoute.get('/auth/logout', (req, res) => {
       secure: true,    // Ensure cookies set over HTTPS are cleared
       sameSite: 'Strict', // Match the sameSite setting
     });
-  
-    res.status(200).json({ message: 'Logged out successfully' });
+    return res.redirect(`${process.env.FRONTEND_URL}/api/auth/signin`)
 });
 
 //Log in user using local strategy

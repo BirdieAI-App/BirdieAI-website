@@ -5,12 +5,12 @@ const authenticateJWT = (req, res, next) =>{
     if(token){
         jwt.verify(token, "BirdieAI",(err, user)=>{
             if(err){
-                return res.status(403).send('Invalid Authentication Token!!!')
+                return res.redirect(`${process.env.FRONTEND_URL}/api/auth/signin`)
             }
             next();
         });
     }else{
-        return res.status(401).send("Missing authentication token!!!!")
+        return res.redirect(`${process.env.FRONTEND_URL}/api/auth/signin`)
     }
 };
 
