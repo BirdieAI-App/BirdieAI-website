@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import Chat from "@/components/Chat";
 import ChatTab from "@/app/chat/tab/Chat";
 import DiscoverTab from "@/app/chat/tab/Discover";
@@ -10,8 +10,18 @@ import { Tab } from '@headlessui/react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
+import { useRouter } from "next/router";
 
 const ChatPage = () => {
+  const router = useRouter();
+  const {id} = router.query;
+
+  useEffect(()=>{
+    if(!id){//if 
+    
+    }
+
+  },[id])
   return (
     <div className="h-screen flex flex-col">
       <Tab.Group as="div" className="flex flex-grow flex-col">
