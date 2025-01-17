@@ -1,24 +1,5 @@
 import apiClient from "./api";
 //-------------------------------------- AUTHENTICATION -------------------------------------------------
-export const sendEmail = async function (payload) {
-    const apiUrl = apiClient.createUrl(`auth/send-verification-email`);
-    const response = await apiClient.post(apiUrl,payload);
-    return response;
-}
-
-export const sendCode = async function (payload) {
-    const apiUrl = apiClient.createUrl(`auth/verify-email`);
-    const response = await apiClient.post(apiUrl,payload);
-    return response;
-}
-
-export const sendGoogleIDToken = async function (token) {
-    const apiUrl = apiClient.createUrl('auth/google');
-    // console.log(apiUrl);
-    const response = await apiClient.post(apiUrl, token);
-    return response;
-}
-
 export const SignInByCredentials = async function (payload) {
     const apiUrl = apiClient.createUrl('auth/login');
     const response = await apiClient.post(apiUrl, payload);
@@ -29,6 +10,12 @@ export const SignInGoogle = async function(){
     const apiUrl = apiClient.createUrl('auth/google');
     const response = await apiClient.get(apiUrl);
     return response; 
+}
+
+export const checkAuthentication = async function(){
+    const apiUrl = apiClient.createUrl('auth/test');
+    const response = await apiClient.get(apiUrl);
+    return response;
 }
 
 //-------------------------------------- USER -------------------------------------------------

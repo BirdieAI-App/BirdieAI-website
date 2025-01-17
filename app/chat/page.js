@@ -11,16 +11,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
+import { checkAuthentication } from "@/libs/request";
 
 const ChatPage = () => {
   const router = useRouter();
   const {id} = router.query;
 
-  useEffect(()=>{
+  useEffect(async() => {
     if(!id){//if 
-    
+      try{
+        const res = await checkAuthentication();
+        console.log(res)
+      }catch(err){
+        console.log(err.message)
+      }
     }
-
+    alert('user ID:', id)
   },[id])
   return (
     <div className="h-screen flex flex-col">
