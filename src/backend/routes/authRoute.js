@@ -28,10 +28,10 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       sameSite: 'Strict',   // Prevents CSRF
       maxAge: 60 * 60 * 1000 // 1 hour
     });
-    return res.status(200).json({id})
+    res.redirect(`${process.env.FRONTEND_URL}/chat?id=${id}`)
   },
   (err, req, res, next) => {
-    res.status(401).send(err.message)
+    return res.status(401).send(err.message)
   });
 
 
@@ -47,7 +47,7 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
       sameSite: 'Strict',   // Prevents CSRF
       maxAge: 60 * 60 * 1000 // 1 hour
     });
-    return res.status(200).json({id})
+    res.redirect(`${process.env.FRONTEND_URL}/chat?id=${id}`)
   }
 );
 

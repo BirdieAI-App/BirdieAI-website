@@ -57,6 +57,7 @@ async function appInitiallization() {
       GOOGLE_SECRET: secrets.GOOGLE_SECRET,
       CALLBACK_URL: process.env.CALLBACK_URL || secrets.CALLBACK_URL,
       MONGODB_URI: secrets.MONGODB_URI,
+      FRONTEND_URL: secrets.FRONTEND_URL
     };
     console.log('AWS Secrets loaded successfully');
 
