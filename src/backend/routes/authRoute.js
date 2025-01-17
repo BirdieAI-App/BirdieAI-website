@@ -1,6 +1,7 @@
 // libraries import
 import express from 'express';
 import passport from 'passport';
+import authenticateJWT from '../passport/authenticateJWT';
 
 const authRoute = express.Router();
 
@@ -50,16 +51,13 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
   }
 );
 
-authRoute.get('/auth/test', (req, res)=>{
+authRoute.get('/auth/test',authenticateJWT, (req, res)=>{
   console.log("/auth/test reached.");
   const isAuth = req.isAuthenticated();
-  if (isAuth) {
-      console.log("User is authenticated");
-      console.log("User record tied to session: " + JSON.stringify(req.user));
-  } else {
-      //User is not authenticated
-      console.log("User is not authenticated");
-  }
+  console.log("User is authenticated");
+  console.log("User record tied to session: " + JSON.stringify(req.user));
+  //if user is userthenticated, send the user their info
+  //if not redirect to login page
   //Return JSON object to client with results.
   res.json({isAuthenticated: isAuth, user: req.user});
 });
