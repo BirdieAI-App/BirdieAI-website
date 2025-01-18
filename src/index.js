@@ -3,6 +3,7 @@ import serverless from 'serverless-http';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import AWS from 'aws-sdk';
+import cookieParser from 'cookie-parser';
 
 // Initialize Express
 const app = express();
@@ -10,6 +11,7 @@ const app = express();
 // Middleware for body parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser)
 
 app.use((req, res, next) => {
   console.log(`Request URL: ${req.url}`);
