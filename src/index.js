@@ -20,7 +20,14 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN, Accept, Origin');
 
   if(!req.headers.authorization){
-    const token = req.cookies?.jwt;
+    const cookies = req.cookies;
+    let token = null;
+    if(!cookies){
+      console.log("NO COOKIES FOUND")
+    }else{
+      token = cookies.jwt;
+      console.log("FOUND COOKIES:", token)
+    }
     if (token) {
       req.headers.authorization = token;
     }
