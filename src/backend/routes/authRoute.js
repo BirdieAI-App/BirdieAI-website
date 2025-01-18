@@ -45,7 +45,8 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
       sameSite: 'Strict',   // Prevents CSRF
-      maxAge: 60 * 60 * 1000 // 1 hour
+      maxAge: 60 * 60 * 1000, // 1 hour
+      path:'/'
     });
     res.redirect(`${process.env.FRONTEND_URL}/chat?id=${id}`)
   }
