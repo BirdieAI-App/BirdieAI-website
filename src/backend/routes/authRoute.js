@@ -53,15 +53,27 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
   }
 );
 
-authRoute.get('/auth/test',authenticateJWT, (req, res)=>{
-  console.log("/auth/test reached.");
-  const isAuth = req.isAuthenticated();
-  console.log("User is authenticated");
-  console.log("User record tied to session: " + JSON.stringify(req.user));
-  //if user is userthenticated, send the user their info
-  //if not redirect to login page
-  //Return JSON object to client with results.
-  res.json({isAuthenticated: isAuth, user: req.user});
+authRoute.get('/auth/test', (req, res)=>{
+  const token = req.cookies?.jwt || req.headers.authorization;
+  // Check if the token exists
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided. Please log in.' });
+  }
+  // Verify the JWT
+  jwt.verify(token, 'BirdieAI', (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid or expired token.' });
+    }
+
+    // User is authenticated; attach the decoded token payload
+    console.log('/auth/test reached.');
+    console.log('Decoded token:', decoded);
+
+    return res.status(200).json({
+      isAuthenticated: true,
+      user: decoded, // This contains the user data encoded in the token
+    });
+  });
 });
 
 export default authRoute;

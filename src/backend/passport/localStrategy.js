@@ -24,7 +24,7 @@ const localStrategy = new passportLocal.Strategy({
                             expiresIn: '1h'
                         }
                     )
-                    return done(null, user);
+                    return done(null, {...user,token});
                 } else {
                     return done(null, false, {message: "Incorrect email or password"})
                 }

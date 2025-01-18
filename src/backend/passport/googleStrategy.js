@@ -33,8 +33,7 @@ const googleStrategy = new GoogleStrategy({
                 expiresIn: '1h'
             }
         )
-
-        return done(null, user);
+        return done(null, {...user, token});
     }
 );
 
