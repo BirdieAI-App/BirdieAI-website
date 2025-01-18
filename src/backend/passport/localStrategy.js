@@ -9,25 +9,22 @@ const localStrategy = new passportLocal.Strategy({
 },
     async (req, email, password, done) => {
         console.log("User authenticated through localStrategy");
-        let currentUser;
+        let user;
         try {
-            currentUser = await User.findOne({ "accountData.email": email });
-            if (currentUser) {
-                const match = await currentUser.comparePassword(password);
+            user = await User.findOne({ "accountData.email": email });
+            if (user) {
+                const match = await user.comparePassword(password);
                 if (match) {
                     const token = jwt.sign({
-                        id: currentUser._id.toString(),
-                        email: currentUser.accountData.email
+                        id: user._id.toString(),
+                        email: user.accountData.email
                     },
                         "BirdieAI",
                         {
                             expiresIn: '1h'
                         }
                     )
-                    return done(null, {
-                        id: currentUser._id.toString(),
-                        token
-                    });
+                    return done(null, user);
                 } else {
                     return done(null, false, {message: "Incorrect email or password"})
                 }
