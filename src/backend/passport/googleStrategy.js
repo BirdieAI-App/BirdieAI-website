@@ -11,9 +11,9 @@ const googleStrategy = new GoogleStrategy({
         console.log("User authenticated through Google. In passport callback.");
         const userId = profile.email
         // See if document with this unique userId exists in database 
-        let currentUser = await User.findOne({ "accountData.email": userId });
-        if (!currentUser) { //Add this user to the database
-            currentUser = await new User({
+        let user = await User.findOne({ "accountData.email": userId });
+        if (!user) { //Add this user to the database
+            user = await new User({
                 accountData: { 
                     email: userId 
                 },
@@ -24,21 +24,16 @@ const googleStrategy = new GoogleStrategy({
                 }
             }).save();
         }
-        console.log(currentUser._id.toString())
         const token = jwt.sign({
-                id: currentUser._id.toString(),
-                email: currentUser.accountData.email
+                id: user._id.toString(),
+                email: user.accountData.email
             },
             "BirdieAI",
             {
                 expiresIn: '1h'
             }
         )
-
-        return done(null, {
-            id:currentUser._id.toString(),
-            token
-        });
+        return done(null, {...user, token});
     }
 );
 
