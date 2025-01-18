@@ -23,14 +23,15 @@ const ChatPage = () => {
   useEffect(() => {
     const checkAuth = async () => {
         try {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`,{withCredentials: true} )
+          axios.defaults.withCredentials = true;
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`)
           console.log(res)
         } catch (err) {
           console.log(err.message)
         }
     }
 
-    checkAuth().catch(console.error);
+    checkAuth();
   }, [id])
   return (
     <div className="h-screen flex flex-col">
