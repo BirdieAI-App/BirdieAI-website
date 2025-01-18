@@ -44,7 +44,7 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
     res.cookie('jwt', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
-      sameSite: 'Strict',   // Prevents CSRF
+      sameSite: 'Lax',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
       path:'/'
     });
