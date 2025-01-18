@@ -23,13 +23,7 @@ const ChatPage = () => {
   useEffect(() => {
     const checkAuth = async () => {
         try {
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`,
-            {
-              headers:{
-                Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ODk3NzI2ZjkwMzRiYWE2MDhjODRiYyIsImVtYWlsIjoibGVob2FuZ2R1bmcyOTExMTk5OEBnbWFpbC5jb20iLCJpYXQiOjE3MzcxNjY4OTksImV4cCI6MTczNzE3MDQ5OX0._NB4nRxLR9T82e3-ext_K5S_DByiy6VEe0qee_jW2FQ'
-              }
-            }
-          )
+          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`,{withCredentials: true} )
           console.log(res)
         } catch (err) {
           console.log(err.message)
