@@ -25,8 +25,9 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
     res.cookie('jwt', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
-      sameSite: 'Strict',   // Prevents CSRF
-      maxAge: 60 * 60 * 1000 // 1 hour
+      sameSite: 'Lax',   // Prevents CSRF
+      maxAge: 60 * 60 * 1000, // 1 hour
+      path:'/'
     });
     res.redirect(`${process.env.FRONTEND_URL}/chat?id=${id}`)
   },
