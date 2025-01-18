@@ -1,3 +1,5 @@
-if [[ $VERCEL_GIT_PULL_REQUEST == "false" || $VERCEL_GIT_COMMIT_REF != "main" ]]; then
-  exit 0
+if [[ $VERCEL_ENV == "production"  ]] ; then 
+  exit 1
+else
+    git log -1 --pretty=oneline --abbrev-commit | grep -w "runPreview" && exit 1 || exit 0
 fi
