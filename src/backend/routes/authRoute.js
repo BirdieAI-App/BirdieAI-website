@@ -2,6 +2,7 @@
 import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken'
+import authenticateJWT from '../passport/authenticateJWT';
 
 const authRoute = express.Router();
 const extractDomain = (url) => {
@@ -25,8 +26,8 @@ authRoute.get('/auth/logout', (req, res) => {
 authRoute.post('/auth/login', passport.authenticate('local', { failWithError: true, session: false }),
   (req, res) => {
     console.log("/login route reached: successful authentication.");
-    const {id,token} = req.user;
-    console.log(`User with Id: ${id} signed in on ${new Date()}`)
+    const {_id,token} = req.user;
+    console.log(`User with Id: ${_id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.CALLBACK_URL);
     res.cookie('jwt', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
@@ -48,8 +49,8 @@ authRoute.get('/auth/google', passport.authenticate('google', { scope: [ 'email'
 authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failureRedirect: '/', session: false }),
   (req, res) => {
     console.log("/auth/google/callback reached.");
-    const {id,token} = req.user;
-    console.log(`User with Id: ${id} signed in on ${new Date()}`)
+    const {_id,token} = req.user;
+    console.log(`User with Id: ${_id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.CALLBACK_URL);
     res.cookie('jwt', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
@@ -64,26 +65,13 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
   }
 );
 
-authRoute.get('/auth/test', (req, res)=>{
-  const token = req.cookies?.jwt || req.headers.authorization;
-  // Check if the token exists
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided. Please log in.' });
-  }
-  // Verify the JWT
-  jwt.verify(token, 'BirdieAI', (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ error: 'Invalid or expired token.' });
-    }
+authRoute.get('/auth/test', authenticateJWT, (req, res)=>{
+  console.log('/auth/test reached.');
+  console.log('Decoded token:', req.user);
 
-    // User is authenticated; attach the decoded token payload
-    console.log('/auth/test reached.');
-    console.log('Decoded token:', decoded);
-
-    return res.status(200).json({
-      isAuthenticated: true,
-      user: decoded, // This contains the user data encoded in the token
-    });
+  return res.status(200).json({
+    isAuthenticated: true,
+    user: req.user, // This contains the user data encoded in the token
   });
 });
 
