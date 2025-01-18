@@ -13,19 +13,20 @@ const extractDomain = (url) => {
 
 authRoute.get('/auth/logout', (req, res) => {
   console.log('/auth/logout reached. Logging out');
-    // Clear the JWT cookie
-    res.clearCookie('jwt', {
-      httpOnly: true,  // Ensure it's the same settings as when you set the cookie
-      secure: true,    // Ensure cookies set over HTTPS are cleared
-      sameSite: 'None', // Match the sameSite setting
-    });
-    return res.status(200).json({message:"Logout Successfully"})
+  // Clear the JWT cookie
+  res.clearCookie('jwt', {
+    httpOnly: true,  // Ensure it's the same settings as when you set the cookie
+    secure: true,    // Ensure cookies set over HTTPS are cleared
+    sameSite: 'None', // Match the sameSite setting
+  });
+  return res.status(200).json({ message: "Logout Successfully" })
+});
 
 //Log in user using local strategy
 authRoute.post('/auth/login', passport.authenticate('local', { failWithError: true, session: false }),
   (req, res) => {
     console.log("/login route reached: successful authentication.");
-    const {_id,token} = req.user;
+    const { _id, token } = req.user;
     console.log(`User with Id: ${_id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.CALLBACK_URL);
     res.cookie('jwt', token, {
@@ -33,10 +34,10 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       secure: true,         // Ensures the cookie is only sent over HTTPS
       sameSite: 'None',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
-      path:'/',
+      path: '/',
       domain: domain
     });
-    if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
+    if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   },
   (err, req, res, next) => {
@@ -44,11 +45,11 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
   });
 
 
-authRoute.get('/auth/google', passport.authenticate('google', { scope: [ 'email', 'profile' ] }));
-authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failureRedirect: '/', session: false }),
+authRoute.get('/auth/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+authRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
     console.log("/auth/google/callback reached.");
-    const {_id,token} = req.user;
+    const { _id, token } = req.user;
     console.log(`User with Id: ${_id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.CALLBACK_URL);
     res.cookie('jwt', token, {
@@ -56,15 +57,15 @@ authRoute.get('/auth/google/callback', passport.authenticate( 'google', { failur
       secure: true,         // Ensures the cookie is only sent over HTTPS
       sameSite: 'None',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
-      path:'/',
+      path: '/',
       domain: domain
     });
-    if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
+    if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   }
 );
 
-authRoute.get('/auth/test', authenticateJWT, (req, res)=>{
+authRoute.get('/auth/test', authenticateJWT, (req, res) => {
   console.log('/auth/test reached.');
   console.log('Decoded token:', req.user);
 
