@@ -2,7 +2,7 @@
 import express from 'express';
 import passport from 'passport';
 import jwt from 'jsonwebtoken'
-import authenticateJWT from '../passport/authenticateJWT';
+import authenticateJWT from '../passport/authenticateJWT.js';
 
 const authRoute = express.Router();
 const extractDomain = (url) => {
@@ -19,8 +19,7 @@ authRoute.get('/auth/logout', (req, res) => {
       secure: true,    // Ensure cookies set over HTTPS are cleared
       sameSite: 'None', // Match the sameSite setting
     });
-    return res.redirect(`${process.env.FRONTEND_URL}/api/auth/signin`)
-});
+    return res.status(200).json({message:"Logout Successfully"})
 
 //Log in user using local strategy
 authRoute.post('/auth/login', passport.authenticate('local', { failWithError: true, session: false }),
