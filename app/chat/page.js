@@ -14,7 +14,6 @@ import { checkAuthentication } from "@/libs/request";
 
 const ChatPage = () => {
   const [isloading, setIsLoading] = useState(true);
-
   useEffect(() => {
     const checkAuth = async () => {
         try {
