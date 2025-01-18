@@ -12,27 +12,21 @@ import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
 // import { useRouter } from "next/router";
 import { checkAuthentication } from "@/libs/request";
-import { useSearchParams, usePathname } from 'next/navigation'; 
 import axios from "axios";
 
 const ChatPage = () => {
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const id = searchParams.get('id');  // Get id from search params
-
   useEffect(() => {
     const checkAuth = async () => {
         try {
-          axios.defaults.withCredentials = true;
-          const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`)
-          console.log(res)
+          const res = await checkAuthentication();
+          console.log(res)//user info for frontend in here
         } catch (err) {
-          console.log(err.message)
+          console.error(err.message)
         }
     }
 
     checkAuth();
-  }, [id])
+  }, [])
   return (
     <div className="h-screen flex flex-col">
       <Tab.Group as="div" className="flex flex-grow flex-col">

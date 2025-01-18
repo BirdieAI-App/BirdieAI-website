@@ -2,13 +2,11 @@ import axios from "axios";
 import { signIn } from "next-auth/react";
 import config from "../config.js";
 
-const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
-  }
+  },
 });
 
 // Add the createUrl method to the apiClient
@@ -32,10 +30,13 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // User not auth, ask to re-login
       message = error?.response?.data || "Please login";
-      signIn(undefined, { callbackUrl: config.auth.callbackUrl });
+      console.log(message)
+      console.log("BBBBBBBBBB")
+      // signIn(undefined, { callbackUrl: config.auth.callbackUrl });
     } else if (error.response?.status === 403) {
       // User not authorized, must subscribe/purchase/pick a plan
-      message = "Pick a plan to use this feature";
+      message = error?.response?.data || "Please login";
+      console.log("AAAAAAAAAAA")
     } else {
       message = error?.response?.data?.error || error.message || error.toString();
     }
@@ -43,12 +44,7 @@ apiClient.interceptors.response.use(
     error.message = typeof message === "string" ? message : JSON.stringify(message);
 
     // Attach additional information to the error object
-    return Promise.reject({
-      message: error.message,
-      status: error.response?.status,
-      ok: false,
-      url: error.config.url
-    });
+    return Promise.reject({error});
   }
 );
 
