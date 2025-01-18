@@ -10,24 +10,23 @@ import { Tab } from '@headlessui/react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 import { checkAuthentication } from "@/libs/request";
+import { useSearchParams, usePathname } from 'next/navigation'; 
 
 const ChatPage = () => {
-  const router = useRouter();
-  const {id} = router.query;
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const id = searchParams.get('id');  // Get id from search params
 
-  useEffect(async() => {
-    if(!id){//if 
-      try{
-        const res = await checkAuthentication();
-        console.log(res)
-      }catch(err){
-        console.log(err.message)
-      }
+  useEffect(() => {
+    const checkAuth = async () => {
+          const res = await checkAuthentication();
+          console.log(res)
     }
-    alert('user ID:', id)
-  },[id])
+
+    checkAuth().catch(console.error);
+  }, [id])
   return (
     <div className="h-screen flex flex-col">
       <Tab.Group as="div" className="flex flex-grow flex-col">

@@ -34,7 +34,7 @@ export const authOptions = {
         const { email, password } = credentials;
         let user = { email, password };
         try {
-          const response = await SignInByCredentials(user);
+          const response = null
           if (response) {
             user.userId = response._id;
             return user;
@@ -57,7 +57,7 @@ export const authOptions = {
       if (account?.provider === "google") {
         token.idToken = account.id_token;
         try {
-          const data = await sendGoogleIDToken(token);
+          const data = null
           if (data._id) {
             token.userId = data._id;
             // console.log(token);
