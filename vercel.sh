@@ -1,5 +1,13 @@
-if [[ $VERCEL_ENV == "production"  ]] ; then 
-  exit 1
+#!/bin/bash
+
+if [[ "$VERCEL_ENV" == "production" ]]; then
+    echo "Production build - proceeding"
+    exit 1  # Continue with build
 else
-    git log -1 --pretty=oneline --abbrev-commit | grep -w "runPreview" && exit 1 || exit 0
+    if [[ -z "$VERCEL_GIT_PULL_REQUEST_ID" ]]; then
+        echo "SKIPPING BUILD !!!!!! THIS IS A REGULAR COMMIT"
+        exit 0  # Skip build
+    fi
+    echo "PR deployment - proceeding"
+    exit 1  # Continue with build
 fi
