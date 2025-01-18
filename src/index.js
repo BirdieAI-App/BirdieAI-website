@@ -115,6 +115,7 @@ async function appInitiallization() {
   }
 }
 
+
 // Call the initialization function and export the handler
 await appInitiallization();
 
