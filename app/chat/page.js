@@ -13,7 +13,6 @@ import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons"
 import { checkAuthentication } from "@/libs/request";
 
 const ChatPage = () => {
-
   const [isloading, setIsLoading] = useState(true);
 
   useEffect(() => {
