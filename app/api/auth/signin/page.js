@@ -99,7 +99,7 @@ export default function SignIn() {
                             <hr className="w-full h-px my-8 bg-gray-200 border-0" />
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
                         </div>
-                        <form className="space-y-6" method="post" onSubmit={console.log("submit credentials")}>
+                        <form className="space-y-6" method="post" onSubmit={()=>console.log("submit credentials")}>
                             <input name="csrfToken" type="hidden" />
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
