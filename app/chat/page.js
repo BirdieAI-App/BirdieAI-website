@@ -21,8 +21,12 @@ const ChatPage = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+        try {
           const res = await checkAuthentication();
           console.log(res)
+        } catch (err) {
+          console.error(err.message)
+        }
     }
 
     checkAuth().catch(console.error);
