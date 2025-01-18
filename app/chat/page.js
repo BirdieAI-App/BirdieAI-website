@@ -13,6 +13,8 @@ import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons"
 // import { useRouter } from "next/router";
 import { checkAuthentication } from "@/libs/request";
 import { useSearchParams, usePathname } from 'next/navigation'; 
+import apiClient from "@/libs/api";
+import axios from "axios";
 
 const ChatPage = () => {
   const searchParams = useSearchParams();
@@ -21,15 +23,17 @@ const ChatPage = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-        try {
-          const res = await checkAuthentication();
-          console.log(res)
-        } catch (err) {
-          console.error(err.message)
-        }
+      try{
+        axios.defaults.withCredentials = true
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/test`,{withCredentials: true})
+        console.log(response)
+      }catch(err){
+        console.log(err.meesage)
+      }
+    
     }
 
-    checkAuth().catch(console.error);
+    checkAuth()
   }, [id])
   return (
     <div className="h-screen flex flex-col">

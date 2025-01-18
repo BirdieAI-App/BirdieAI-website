@@ -3,9 +3,9 @@ import { signIn } from "next-auth/react";
 import config from "../config.js";
 
 const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL;
-axios.defaults.withCredentials = true;
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   }
