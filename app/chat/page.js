@@ -10,25 +10,28 @@ import { Tab } from '@headlessui/react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons";
-// import { useRouter } from "next/router";
 import { checkAuthentication } from "@/libs/request";
-import axios from "axios";
 
 const ChatPage = () => {
+
+  const [isloading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const checkAuth = async () => {
         try {
           const res = await checkAuthentication();
+          setIsLoading(false)
           console.log(res)//user info for frontend in here
         } catch (err) {
-          console.error(err.message)
+          console.log(err)
+          setIsLoading(false)
         }
     }
 
     checkAuth();
   }, [])
   return (
-    <div className="h-screen flex flex-col">
+    (isloading ? <></>: <div className="h-screen flex flex-col">
       <Tab.Group as="div" className="flex flex-grow flex-col">
         {/* Panels */}
         <Tab.Panels className="flex-grow flex h-full">
@@ -92,7 +95,7 @@ const ChatPage = () => {
           </Tab>
         </Tab.List>
       </Tab.Group>
-    </div>
+    </div>)
   )
 }
 

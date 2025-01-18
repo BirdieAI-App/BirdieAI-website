@@ -28,22 +28,16 @@ apiClient.interceptors.response.use(
     let message = "";
 
     if (error.response?.status === 401) {
-      // User not auth, ask to re-login
-      message = error?.response?.data || "Please login";
-      console.log(message)
-      console.log("BBBBBBBBBB")
-      // signIn(undefined, { callbackUrl: config.auth.callbackUrl });
+      message = error.response.data.message
+      window.location.href = '/api/auth/signin'
     } else if (error.response?.status === 403) {
-      // User not authorized, must subscribe/purchase/pick a plan
-      message = error?.response?.data || "Please login";
-      console.log("AAAAAAAAAAA")
+      message = error.response.data.error;
+      window.location.href = '/api/auth/signin'
     } else {
       message = error?.response?.data?.error || error.message || error.toString();
     }
 
     error.message = typeof message === "string" ? message : JSON.stringify(message);
-
-    // Attach additional information to the error object
     return Promise.reject({error});
   }
 );
