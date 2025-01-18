@@ -1,27 +1,20 @@
 import apiClient from "./api";
 //-------------------------------------- AUTHENTICATION -------------------------------------------------
-export const sendEmail = async function (payload) {
-    const apiUrl = apiClient.createUrl(`auth/send-verification-email`);
-    const response = await apiClient.post(apiUrl,payload);
-    return response;
-}
-
-export const sendCode = async function (payload) {
-    const apiUrl = apiClient.createUrl(`auth/verify-email`);
-    const response = await apiClient.post(apiUrl,payload);
-    return response;
-}
-
-export const sendGoogleIDToken = async function (token) {
-    const apiUrl = apiClient.createUrl('auth/google');
-    // console.log(apiUrl);
-    const response = await apiClient.post(apiUrl, token);
-    return response;
-}
-
 export const SignInByCredentials = async function (payload) {
     const apiUrl = apiClient.createUrl('auth/login');
     const response = await apiClient.post(apiUrl, payload);
+    return response;
+}
+
+export const SignInGoogle = async function () {
+    const apiUrl = apiClient.createUrl('auth/google');
+    const response = await apiClient.get(apiUrl);
+    return response;
+}
+
+export const checkAuthentication = async function () {
+    const apiUrl = apiClient.createUrl('auth/test');
+    const response = await apiClient.get(apiUrl,{withCredentials: true});
     return response;
 }
 
@@ -37,7 +30,7 @@ export const postUser = async function (payload) {
     return response;
 }
 
-export const getUserByID = async function (userId){
+export const getUserByID = async function (userId) {
     const apiUrl = apiClient.createUrl(`users/${userId}`);
     const response = await apiClient.get(apiUrl);
     return response;
@@ -49,9 +42,9 @@ export const getAllThreadsByUser = async function (userId) {
     return response;
 }
 
-export const saveNewThread = async function(payload){
+export const saveNewThread = async function (payload) {
     const apiUrl = apiClient.createUrl(`threads`);
-    const response = await apiClient.put(apiUrl,payload);
+    const response = await apiClient.put(apiUrl, payload);
     return response;
 }
 //-------------------------------------- STRIPE -------------------------------------------------
@@ -67,52 +60,45 @@ export const createCustomerPortalSession = async function (payload) {
     return response;
 }
 
-export const checkPaymentStatus = async function(sessionID){
+export const checkPaymentStatus = async function (sessionID) {
     const apiUrl = apiClient.createUrl(`stripe/session/${sessionID}`);
     const response = await apiClient.get(apiUrl);
     return response;
 }
 
-export const getProductList = async function(){
+export const getProductList = async function () {
     const apiUrl = apiClient.createUrl('stripe/product-list');
     const response = await apiClient.get(apiUrl);
     return response;
 }
 
-export const getStripePrice = async function(priceID){
+export const getStripePrice = async function (priceID) {
     const apiUrl = apiClient.createUrl(`stripe/price/${priceID}`);
     const response = await apiClient.get(apiUrl);
     return response;
 }
 //-------------------------------------- MESSAGE -------------------------------------------------
 
-export const getAllMessagesByThreadId = async function(threadID){
+export const getAllMessagesByThreadId = async function (threadID) {
     const apiUrl = apiClient.createUrl(`messages/t/${threadID}`);
     const response = await apiClient.get(apiUrl);
     return response;
 }
 
-export const getDailyMessageCount = async function(userID){
+export const getDailyMessageCount = async function (userID) {
     const apiUrl = apiClient.createUrl(`messages/u/${userID}/count`);
     const response = await apiClient.get(apiUrl);
     return response;
-} 
+}
 
-export const saveNewMessage = async function(payload){
+export const saveNewMessage = async function (payload) {
     const apiUrl = apiClient.createUrl('messages');
-    const response = await apiClient.put(apiUrl,payload);
+    const response = await apiClient.put(apiUrl, payload);
     return response;
 }
 
-export const updateMessageByID = async function(messageID, payload){
+export const updateMessageByID = async function (messageID, payload) {
     const apiUrl = apiClient.createUrl(`messages/${messageID}`)
     const response = await apiClient.post(apiUrl, payload);
-    return response;
-}
-//-------------------------------------- OPENAIPROMPT -------------------------------------------------
-
-export const getOpenAIPrompt = async function(){
-    const apiUrl = apiClient.createUrl('openai/lastest');
-    const response = await apiClient.get('https://8osoy1l04c.execute-api.us-east-2.amazonaws.com/dev/openai/lastest');
     return response;
 }
