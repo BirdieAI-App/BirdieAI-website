@@ -7,7 +7,7 @@
 git checkout backend-prod
 
 # Step 2: Pull the latest in production branch
-git checkout backend-prod
+git pull
 
 # Step 3: Create a temporary branch from prod
 git checkout -b temp
