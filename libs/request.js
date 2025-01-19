@@ -1,17 +1,5 @@
 import apiClient from "./api";
 //-------------------------------------- AUTHENTICATION -------------------------------------------------
-export const SignInByCredentials = async function (payload) {
-    const apiUrl = apiClient.createUrl('auth/login');
-    const response = await apiClient.post(apiUrl, payload);
-    return response;
-}
-
-export const SignInGoogle = async function () {
-    const apiUrl = apiClient.createUrl('auth/google');
-    const response = await apiClient.get(apiUrl);
-    return response;
-}
-
 export const checkAuthentication = async function () {
     const apiUrl = apiClient.createUrl('auth/test');
     const response = await apiClient.get(apiUrl,{withCredentials: true});
