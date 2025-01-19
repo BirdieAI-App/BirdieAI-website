@@ -24,11 +24,12 @@ const googleStrategy = new GoogleStrategy({
                 }
             }).save();
         }
-        const token = jwt.sign({
+        const token = jwt.sign(
+            {
                 id: user._id.toString(),
                 email: user.accountData.email
             },
-            "BirdieAI",
+            process.env.JWT_SIGNING_SECRET,
             {
                 expiresIn: '1h'
             }
