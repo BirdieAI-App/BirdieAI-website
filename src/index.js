@@ -56,7 +56,8 @@ async function appInitiallization() {
       GOOGLE_SECRET: secrets.GOOGLE_SECRET,
       CALLBACK_URL: process.env.CALLBACK_URL || secrets.CALLBACK_URL,
       MONGODB_URI: secrets.MONGODB_URI,
-      FRONTEND_URL: secrets.FRONTEND_URL
+      FRONTEND_URL: secrets.FRONTEND_URL,
+      JWT_SIGNING_SECRET: secrets.JWT_SIGNING_SECRET
     };
     console.log('AWS Secrets loaded successfully');
 
@@ -114,6 +115,7 @@ async function appInitiallization() {
     process.exit(1); // Exit process if initialization fails
   }
 }
+
 
 // Call the initialization function and export the handler
 await appInitiallization();
