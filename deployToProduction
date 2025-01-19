@@ -4,7 +4,7 @@
 
 
 # Step 1: Switch to the production branch
-git checkout prod
+git checkout backend-prod
 
 # Step 2: Create a temporary branch from prod
 git checkout -b temp
