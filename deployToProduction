@@ -6,27 +6,30 @@
 # Step 1: Switch to the production branch
 git checkout backend-prod
 
-# Step 2: Create a temporary branch from prod
+# Step 2: Pull the latest in production branch
+git checkout backend-prod
+
+# Step 3: Create a temporary branch from prod
 git checkout -b temp
 
-# Step 3: Checkout changes from the backend-dev branch into the src/ directory
+# Step 4: Checkout changes from the backend-dev branch into the src/ directory of temp branch
 git checkout backend-dev -- src/
 
-# Step 4: Stage and commit the changes
+# Step 5: Stage and commit the changes
 git add src/
 git commit -m "Deploying changes to production"
 
-# Step 5: Switch to the backend-prod branch (the production branch for backend)
+# Step 6: Switch to the backend-prod branch (the production branch for backend)
 git checkout backend-prod
 
-# Step 6: Merge the temporary branch with the production branch
+# Step 7: Merge the temporary branch with the production branch
 git merge temp
 
-# Step 7: Delete the temporary branch after the merge
+# Step 8: Delete the temporary branch after the merge
 git branch -D temp
 
-# Step 8: Push the changes to the remote repository
+# Step 9: Push the changes to the remote repository
 git push
 
-# Step 9: Switching back to the backend-dev branch
+# Step 10: Switching back to the backend-dev branch
 git checkout backend-dev
