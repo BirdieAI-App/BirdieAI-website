@@ -14,7 +14,7 @@ const extractDomain = (url) => {
 authRoute.get('/auth/logout', (req, res) => {
   console.log('/auth/logout reached. Logging out');
   // Clear the JWT cookie
-  res.clearCookie('jwt', {
+  res.clearCookie('BirdieJWT', {
     httpOnly: true,  // Ensure it's the same settings as when you set the cookie
     secure: true,    // Ensure cookies set over HTTPS are cleared
     sameSite: 'None', // Match the sameSite setting
@@ -26,10 +26,10 @@ authRoute.get('/auth/logout', (req, res) => {
 authRoute.post('/auth/login', passport.authenticate('local', { failWithError: true, session: false }),
   (req, res) => {
     console.log("/login route reached: successful authentication.");
-    const { _id, token } = req.user;
-    console.log(`User with Id: ${_id} signed in on ${new Date()}`)
+    const { _doc, token } = req.user;
+    console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.CALLBACK_URL);
-    res.cookie('jwt', token, {
+    res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
       sameSite: 'None',   // Prevents CSRF
@@ -41,7 +41,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   },
   (err, req, res, next) => {
-    return res.status(401).send(err.message)
+    return res.status(401).json({message: err.message})
   });
 
 
@@ -49,10 +49,10 @@ authRoute.get('/auth/google', passport.authenticate('google', { scope: ['email',
 authRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
     console.log("/auth/google/callback reached.");
-    const { _id, token } = req.user;
-    console.log(`User with Id: ${_id} signed in on ${new Date()}`)
+    const { _doc, token } = req.user;
+    console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.CALLBACK_URL);
-    res.cookie('jwt', token, {
+    res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
       sameSite: 'None',   // Prevents CSRF
