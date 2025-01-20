@@ -3,10 +3,10 @@ import { Tab, Transition } from '@headlessui/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
-import { getAllThreadsByUser } from '@/libs/request';
+import { getAllThreadsByUser, saveNewThread } from '@/libs/request';
 
 const LibraryTab = () => {
-	const userId = "671994f8fa0175eecc8fa07b";
+	const userId = "678c6ba2b7b3e0bb250838bd"; //Huy Phung 
 	const [threads, setThreads] = useState([]);
 	useEffect(() => {
 		const fetchThreads = async () => {
@@ -24,6 +24,10 @@ const LibraryTab = () => {
 		console.log(thread);
 	}
 
+	const handleAddNewThread = async () => {
+		console.log('Thread added');
+	}
+
 	return (
 		<div className="flex flex-col w-full relative">
 			<Tab.Group as="div" className=" flex flex-col flex-grow">
@@ -33,7 +37,7 @@ const LibraryTab = () => {
 						autoFocus
 						className={({ selected }) =>
 							`px-4 py-2 m-1 flex flex-row flex-grow items-center justify-center gap-2 focus:outline-none 
-				${selected
+							${selected
 								? "bg-white text-black rounded-lg transition duration-300 ease-in-out"
 								: "text-gray-500"
 							}`
@@ -43,7 +47,7 @@ const LibraryTab = () => {
 					</Tab>
 					<Tab className={({ selected }) =>
 						`m-1 px-4 py-2 flex flex-row flex-grow items-center justify-center gap-2 focus:outline-none 
-				${selected
+						${selected
 							? "bg-white text-black rounded-lg transition duration-300 ease-in-out"
 							: "text-gray-500"
 						}`
@@ -58,13 +62,18 @@ const LibraryTab = () => {
 						<div className='flex flex-col flex-grow'>
 							<div className='flex flex-row justify-around items-center mt-6'>
 								<h1 className='font-bold text-lg'>Past Conversations</h1>
-								<button className='p-2 text-white text-sm bg-green-500 rounded-lg outline-none'> Start New Chat</button>
+								<button 
+									className='p-2 text-white text-sm bg-green-500 rounded-lg outline-none'
+									onClick={handleAddNewThread}
+								> 
+									Start New Chat 
+								</button>
 							</div>
 							{/* Scroll section */}
 							<div className='flex flex-col flex-grow gap-2 mt-4 p-4'>
 								{threads.map((thread, index) => (
-									<button 
-										className='flex flex-row items-center gap-2 p-4 border-2 border-gray-300 rounded-lg outline-none' 
+									<button
+										className='flex flex-row items-center gap-2 p-4 border-2 border-gray-300 rounded-lg outline-none'
 										key={index}
 										onClick={() => handleThreadClick(thread)}
 									>
