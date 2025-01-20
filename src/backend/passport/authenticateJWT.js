@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { redirectFrontend } from '../routes/util';
+import { redirectFrontend } from '../routes/util.js';
 
 const authenticateJWT = (req, res, next) =>{
     const token = req.headers.authorization;
