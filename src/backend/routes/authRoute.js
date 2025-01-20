@@ -1,8 +1,8 @@
 // libraries import
 import express from 'express';
 import passport from 'passport';
-import jwt from 'jsonwebtoken'
 import authenticateJWT from '../passport/authenticateJWT.js';
+import { redirectFrontend } from './util.js';
 
 const authRoute = express.Router();
 const extractDomain = (url) => {
@@ -10,7 +10,7 @@ const extractDomain = (url) => {
   return hostname;
 };
 
-
+// ---------------------------------------------------------------------------------------------------
 authRoute.get('/auth/logout', (req, res) => {
   console.log('/auth/logout reached. Logging out');
   // Clear the JWT cookie
@@ -19,7 +19,7 @@ authRoute.get('/auth/logout', (req, res) => {
     secure: true,    // Ensure cookies set over HTTPS are cleared
     sameSite: 'None', // Match the sameSite setting
   });
-  return res.status(200).json({ message: "Logout Successfully" })
+  redirectFrontend(`${process.env.FRONTEND_URL}/api/auth/signin`)
 });
 
 //Log in user using local strategy
@@ -38,13 +38,13 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       domain: domain
     });
     if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
-    res.redirect(`${process.env.FRONTEND_URL}/chat`)
+    redirectFrontend(`${process.env.FRONTEND_URL}/chat`)
   },
   (err, req, res, next) => {
-    return res.status(401).json({message: err.message})
+    return res.status(401).json({ message: err.message })
   });
 
-
+//Login user using google Strategy
 authRoute.get('/auth/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 authRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
@@ -61,7 +61,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       domain: domain
     });
     if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
-    res.redirect(`${process.env.FRONTEND_URL}/chat`)
+    redirectFrontend(`${process.env.FRONTEND_URL}/chat`)
   }
 );
 

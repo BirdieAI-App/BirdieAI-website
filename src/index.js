@@ -16,10 +16,6 @@ app.use(cookieParser())
 app.use((req, res, next) => {
   console.log(`Request URL: ${req.url}`);
   console.log(`Request Method: ${req.method}`);
-  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL); // Your frontend domain
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN, Accept, Origin');
 
   if(!req.headers.authorization){
     const cookies = req.cookies;
@@ -79,10 +75,10 @@ async function appInitiallization() {
           callback(new Error('Not allowed by CORS'));
         }
       },
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
       credentials: true,
-      optionsSuccessStatus: 200,
+      optionsSuccessStatus: 204,
     };
     app.use(cors(corsOptions));
 
