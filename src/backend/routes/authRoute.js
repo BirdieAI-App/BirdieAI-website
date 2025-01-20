@@ -19,7 +19,7 @@ authRoute.get('/auth/logout', (req, res) => {
     secure: true,    // Ensure cookies set over HTTPS are cleared
     sameSite: 'None', // Match the sameSite setting
   });
-  redirectFrontend(`${process.env.FRONTEND_URL}/api/auth/signin`)
+  redirectFrontend(`${process.env.FRONTEND_URL}/api/auth/signin`, req,res)
 });
 
 //Log in user using local strategy
@@ -38,7 +38,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       domain: domain
     });
     if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
-    redirectFrontend(`${process.env.FRONTEND_URL}/chat`)
+    redirectFrontend(`${process.env.FRONTEND_URL}/chat`, req, res)
   },
   (err, req, res, next) => {
     return res.status(401).json({ message: err.message })
@@ -61,7 +61,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       domain: domain
     });
     if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
-    redirectFrontend(`${process.env.FRONTEND_URL}/chat`)
+    redirectFrontend(`${process.env.FRONTEND_URL}/chat`, req, res)
   }
 );
 
