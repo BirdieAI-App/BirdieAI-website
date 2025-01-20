@@ -27,7 +27,7 @@ app.use((req, res, next) => {
     if(!cookies){
       console.log("NO COOKIES FOUND")
     }else{
-      token = cookies.jwt;
+      token = cookies.BirdieJWT;
       console.log("FOUND COOKIES:", token)
     }
     if (token) {
