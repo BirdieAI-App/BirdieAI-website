@@ -17,12 +17,12 @@ app.use((req, res, next) => {
   console.log(`Request URL: ${req.url}`);
   console.log(`Request Method: ${req.method}`);
 
-  if(!req.headers.authorization){
+  if (!req.headers.authorization) {
     const cookies = req.cookies;
     let token = null;
-    if(!cookies){
+    if (!cookies) {
       console.log("NO COOKIES FOUND")
-    }else{
+    } else {
       token = cookies.BirdieJWT;
       console.log("FOUND COOKIES:", token)
     }
@@ -65,7 +65,7 @@ async function appInitiallization() {
 
     // CORS configuration
     const allowedOrigins = [
-        `${process.env.FRONTEND_URL}`
+      `${process.env.FRONTEND_URL}`
     ];
     const corsOptions = {
       origin: (origin, callback) => {
@@ -77,10 +77,16 @@ async function appInitiallization() {
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
-      credentials: true,
-      optionsSuccessStatus: 204,
+      credentials: true
     };
     app.use(cors(corsOptions));
+    app.options('*', (req, res) => {
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.status(204).send(); // No content for preflight
+    });
 
     // Dynamically import passportConfig and routes after secrets are loaded
     const passportConfig = (await import('./backend/passport/config.js')).default;
