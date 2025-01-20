@@ -5,7 +5,7 @@ import { getProviders, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { SignInLocal, singInWithGoogle } from '@/libs/request';
+import { SignInLocal, signInWithGoogle } from '@/libs/request';
 
 export default function SignIn() {
     const [email, setEmail] = useState("");
@@ -13,7 +13,17 @@ export default function SignIn() {
 
     const handleSignInGoogle = async() =>{
         try{
-            const response = await singInWithGoogle();
+            const response = await signInWithGoogle();
+        }catch(err){
+            console.log(err.message)
+        }
+    }
+
+    const handleLocalSignIn = async() =>{
+        event.preventDefault();
+        event.stopPropagation()
+        try{
+            const response = await SignInLocal({email, password});
         }catch(err){
             console.log(err.message)
         }
@@ -25,16 +35,22 @@ export default function SignIn() {
                 <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Sign in to your account</h1>
-                        <button className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
-                            onClick={() => handleSignInGoogle()}>
-                                <img className="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo" />
-                                <span className='ml-3'> Continue with Google</span>
-                            </button>
+                        <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`} passHref>
+                            <div className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
+                                <img
+                                    className="w-6 h-6"
+                                    src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                    loading="lazy"
+                                    alt="google logo"
+                                />
+                                <span className="ml-3">Continue with Google</span>
+                            </div>
+                        </Link>
                         <div className="inline-flex items-center justify-center w-full">
                             <hr className="w-full h-px my-8 bg-gray-200 border-0" />
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
                         </div>
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleLocalSignIn}>
                             <input name="csrfToken" type="hidden" />
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>

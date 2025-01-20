@@ -29,10 +29,10 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401) {
       message = error.response.data.message
-      window.location.href = '/api/auth/signin'
+      // window.location.href = '/api/auth/signin'
     } else if (error.response?.status === 403) {
       message = error.response.data.error;
-      window.location.href = '/api/auth/signin'
+      // window.location.href = '/api/auth/signin'
     } else {
       message = error?.response?.data?.error || error.message || error.toString();
     }
