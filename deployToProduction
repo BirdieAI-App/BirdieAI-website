@@ -1,35 +1,48 @@
+#!/bin/bash
+
 # Ensure this script has execute permissions. If not, run the following command first:
 #     chmod +x ./deployToProduction
 # After execute the command above, simply do: ./deployToProduction to execute all the defined script below
 
+# Function to execute a step and check its result
+execute_step() {
+    local step_number=$1
+    shift
+    echo "Executing Step $step_number..."
+    if eval "$@"; then
+        echo "Step $step_number completed successfully."
+        echo "--------------- Step($step_number/${#commands[@]})"
+    else
+        echo "Error: Step $step_number failed. Exiting."
+        exit 1
+    fi
+}
 
+# Array of commands for each step
+commands=(
+    "git checkout backend-prod"
+    "git pull"
+    "git checkout -b temp"
+    "git checkout backend-dev -- src/"
+    "git add src/ && git commit -m \"Deploying changes to production\""
+    "git checkout backend-prod"
+    "git merge temp"
+    "git branch -D temp"
+    "git push"
+    "git checkout backend-dev"
+)
 # Step 1: Switch to the production branch
-git checkout backend-prod
-
 # Step 2: Pull the latest in production branch
-git pull
-
 # Step 3: Create a temporary branch from prod
-git checkout -b temp
-
 # Step 4: Checkout changes from the backend-dev branch into the src/ directory of temp branch
-git checkout backend-dev -- src/
-
 # Step 5: Stage and commit the changes
-git add src/
-git commit -m "Deploying changes to production"
-
 # Step 6: Switch to the backend-prod branch (the production branch for backend)
-git checkout backend-prod
-
 # Step 7: Merge the temporary branch with the production branch
-git merge temp
-
 # Step 8: Delete the temporary branch after the merge
-git branch -D temp
-
 # Step 9: Push the changes to the remote repository
-git push
-
 # Step 10: Switching back to the backend-dev branch
-git checkout backend-dev
+
+# Iterate through each step
+for ((step=1; step<=${#commands[@]}; step++)); do
+    execute_step $step "${commands[$step-1]}"
+done
