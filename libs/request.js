@@ -6,6 +6,12 @@ export const checkAuthentication = async function () {
     return response;
 }
 
+export const singInWithGoogle = async function(){
+    const apiUrl = apiClient.createUrl('auth/google');
+    const response = await apiClient.get(apiUrl);
+    return response;
+}
+
 //-------------------------------------- USER -------------------------------------------------
 export const getAllUSers = async function () {
     const response = await apiClient.get('/users');
