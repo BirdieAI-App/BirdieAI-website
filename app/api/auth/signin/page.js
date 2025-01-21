@@ -25,21 +25,8 @@ export default function SignIn() {
         try{
             const response = await SignInLocal({email, password});
         }catch(err){
-            // console.log(err.message)
+            console.log(err.message)
         }
-
-        // fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
-        //     method: "POST",
-        //     body: JSON.stringify({
-        //         email,password
-        //     }),
-        //     headers: {
-        //         "Content-type": "application/json; charset=UTF-8"
-        //     }
-        // })
-        //     // Converting to JSON
-        //     .then(response => response.json())
-        //     .then(json => console.log(json));
 
     }
 
@@ -86,7 +73,7 @@ export default function SignIn() {
                                     </div>
                                 </div>
                                 <div className="mt-2">
-                                    <input id="password" name="password" type="password" autoComplete="current-password"
+                                    <input id="password" name="password" type="text" autoComplete="current-password"
                                         required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         placeholder="••••••••"
                                         value={password}

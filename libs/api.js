@@ -5,7 +5,7 @@ import config from "../config.js";
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
   maxRedirects: 0,
-  validateStatus: (status) =>{
+  validateStatus: (status) => {
     return status >= 200 && status < 400;
   },
   headers: {
@@ -24,24 +24,21 @@ apiClient.createUrl = function (endpoint) {
 
 apiClient.interceptors.response.use(
   (response) => {
-    // if (response.status == 302) {
-    //   const redirectUrl = response.headers.location;
-    //   // You can now use the redirectUrl as needed
-    //   console.log('Redirect URL:', redirectUrl);
-    //   // window.location.replace(redirectUrl);
-    //   return new Promise(() => {});
-    // }
-    console.log(response)
+    if (response.data.redirect) {
+      // window.location.href = response.data.url;
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          // window.location.href = response.data.url;
+        }, 1000);
+      });
+    }
     return response.data;
   },
   (error) => {
-    if (error.response && error.response.status >= 300 && error.response.status < 400) {
-      const redirectUrl = error.response.headers.location;
-      console.log('AAAAAAA')
-      window.location.href = redirectUrl
-      return new Promise(() => {});
+    if (error.response && error.response.status == 401 && error.response.data.redirect) {
+      window.location = error.response.data.url
+      return new Promise(() => { });
     }
-    console.log(error)
     return Promise.reject(error);
   }
 );
