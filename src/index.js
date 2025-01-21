@@ -63,6 +63,14 @@ async function appInitiallization() {
       console.log('Database connected successfully');
     }
 
+    app.options('*', (req, res) => {
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.status(204).send(); // No content for preflight
+    });
+
     // CORS configuration
     const allowedOrigins = [
       `${process.env.FRONTEND_URL}`
@@ -80,13 +88,6 @@ async function appInitiallization() {
       credentials: true
     };
     app.use(cors(corsOptions));
-    app.options('*', (req, res) => {
-      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      res.status(204).send(); // No content for preflight
-    });
 
     // Dynamically import passportConfig and routes after secrets are loaded
     const passportConfig = (await import('./backend/passport/config.js')).default;
