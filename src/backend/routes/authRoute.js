@@ -27,7 +27,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
     console.log("/login route reached: successful authentication.");
     const { _doc, token } = req.user;
     console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
-    let domain = extractDomain(process.env.CALLBACK_URL);
+    let domain = extractDomain(process.env.FRONTEND_URL);
     res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
@@ -49,7 +49,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
     console.log("/auth/google/callback reached.");
     const { _doc, token } = req.user;
     console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
-    let domain = extractDomain(process.env.CALLBACK_URL);
+    let domain = extractDomain(process.env.FRONTEND_URL);
     res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
