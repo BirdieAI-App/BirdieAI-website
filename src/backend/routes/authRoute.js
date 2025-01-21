@@ -2,7 +2,6 @@
 import express from 'express';
 import passport from 'passport';
 import authenticateJWT from '../passport/authenticateJWT.js';
-import { redirectFrontend } from './util.js';
 
 const authRoute = express.Router();
 const extractDomain = (url) => {
@@ -19,7 +18,7 @@ authRoute.get('/auth/logout', (req, res) => {
     secure: true,    // Ensure cookies set over HTTPS are cleared
     sameSite: 'None', // Match the sameSite setting
   });
-  redirectFrontend(`${process.env.FRONTEND_URL}/api/auth/signin`, req,res)
+  return res.status(200).json({message: "logout Successfully"})
 });
 
 //Log in user using local strategy
@@ -37,8 +36,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       path: '/',
       domain: domain
     });
-    if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
-    redirectFrontend(`${process.env.FRONTEND_URL}/chat`, req, res)
+    return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
   },
   (err, req, res, next) => {
     return res.status(401).json({ message: err.message })
@@ -60,8 +58,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       path: '/',
       domain: domain
     });
-    if (process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send('Login Sucessfully')
-    redirectFrontend(`${process.env.FRONTEND_URL}/chat`, req, res)
+    return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`}) 
   }
 );
 

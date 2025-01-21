@@ -63,14 +63,6 @@ async function appInitiallization() {
       console.log('Database connected successfully');
     }
 
-    app.options('*', (req, res) => {
-      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      res.status(204).send(); // No content for preflight
-    });
-
     // CORS configuration
     const allowedOrigins = [
       `${process.env.FRONTEND_URL}`
@@ -83,7 +75,7 @@ async function appInitiallization() {
           callback(new Error('Not allowed by CORS'));
         }
       },
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
       credentials: true
     };
