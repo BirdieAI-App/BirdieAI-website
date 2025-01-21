@@ -4,41 +4,45 @@ import config from "../config.js";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  maxRedirects: 0,
+  validateStatus: (status) =>{
+    return status >= 200 && status < 400;
+  },
   headers: {
     'Content-Type': 'application/json'
   },
 });
 
 // Add the createUrl method to the apiClient
-apiClient.createUrl = function(endpoint) {
+apiClient.createUrl = function (endpoint) {
   if (!endpoint) {
     throw new Error('Endpoint must be provided');
   }
-  
   const baseUrl = this.defaults.baseURL; // Use the baseURL from the axios instance
-  
   return `${baseUrl.replace(/\/$/, '')}/${endpoint}`;
 };
 
 apiClient.interceptors.response.use(
-  function (response) {
+  (response) => {
+    // if (response.status == 302) {
+    //   const redirectUrl = response.headers.location;
+    //   // You can now use the redirectUrl as needed
+    //   console.log('Redirect URL:', redirectUrl);
+    //   // window.location.replace(redirectUrl);
+    //   return new Promise(() => {});
+    // }
+    console.log(response)
     return response.data;
   },
-  function (error) {
-    let message = "";
-
-    if (error.response?.status === 401) {
-      message = error.response.data.message
-      // window.location.href = '/api/auth/signin'
-    } else if (error.response?.status === 403) {
-      message = error.response.data.error;
-      // window.location.href = '/api/auth/signin'
-    } else {
-      message = error?.response?.data?.error || error.message || error.toString();
+  (error) => {
+    if (error.response && error.response.status >= 300 && error.response.status < 400) {
+      const redirectUrl = error.response.headers.location;
+      console.log('AAAAAAA')
+      window.location.href = redirectUrl
+      return new Promise(() => {});
     }
-
-    error.message = typeof message === "string" ? message : JSON.stringify(message);
-    return Promise.reject({error});
+    console.log(error)
+    return Promise.reject(error);
   }
 );
 

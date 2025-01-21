@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { getProviders, signIn } from 'next-auth/react';
+// import { getProviders, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,24 +11,38 @@ export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSignInGoogle = async() =>{
-        try{
+    const handleSignInGoogle = async () => {
+        try {
             const response = await signInWithGoogle();
-        }catch(err){
+        } catch (err) {
             console.log(err.message)
         }
     }
 
-    const handleLocalSignIn = async() =>{
+    const handleLocalSignIn = async () => {
         event.preventDefault();
         event.stopPropagation()
         try{
             const response = await SignInLocal({email, password});
         }catch(err){
-            console.log(err.message)
+            // console.log(err.message)
         }
+
+        // fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //         email,password
+        //     }),
+        //     headers: {
+        //         "Content-type": "application/json; charset=UTF-8"
+        //     }
+        // })
+        //     // Converting to JSON
+        //     .then(response => response.json())
+        //     .then(json => console.log(json));
+
     }
-    
+
     return (
         <section className="bg-gray-50">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -59,7 +73,7 @@ export default function SignIn() {
                                         required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         placeholder="name@company.com"
                                         value={email}
-                                        onChange={(e)=>{setEmail(e.target.value)}}
+                                        onChange={(e) => { setEmail(e.target.value) }}
                                     />
                                 </div>
                             </div>
@@ -76,7 +90,7 @@ export default function SignIn() {
                                         required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         placeholder="••••••••"
                                         value={password}
-                                        onChange={(e)=>{setPassword(e.target.value)}}
+                                        onChange={(e) => { setPassword(e.target.value) }}
                                     />
                                 </div>
                             </div>

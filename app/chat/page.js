@@ -22,7 +22,7 @@ const ChatPage = () => {
           setIsLoading(false)
           console.log(res)//user info for frontend in here
         } catch (err) {
-          console.log(err)
+          // console.log(err)
           setIsLoading(false)
         }
     }
