@@ -34,6 +34,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       sameSite: 'None',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
       path: '/',
+      domain: domain
     });
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   },
@@ -55,6 +56,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       sameSite: 'None',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
       path: '/',
+      domain: domain
     });
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   }
