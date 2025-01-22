@@ -37,8 +37,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       path: '/',
       domain: domain
     });
-    if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
-    res.redirect(`${process.env.FRONTEND_URL}/chat`)
+    return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
   },
   (err, req, res, next) => {
     return res.status(401).json({ message: err.message })
