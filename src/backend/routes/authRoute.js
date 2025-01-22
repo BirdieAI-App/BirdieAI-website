@@ -6,7 +6,7 @@ import authenticateJWT from '../passport/authenticateJWT.js';
 const authRoute = express.Router();
 const extractDomain = (url) => {
   const { hostname } = new URL(url);
-  return hostname;
+  return hostname === 'localhost' ? undefined : hostname;;
 };
 
 // ---------------------------------------------------------------------------------------------------
@@ -31,12 +31,13 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
     console.log("Setting cookie to domain:", domain)
     res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
-      secure: true,         // Ensures the cookie is only sent over HTTPS
+      secure: domain? true: false,  
       sameSite: 'None',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
       path: '/',
       domain: domain
     });
+    if(process.env.FRONTEND_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   },
   (err, req, res, next) => {
@@ -60,6 +61,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       path: '/',
       domain: domain
     });
+    if(process.env.FRONTEND_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   }
 );
