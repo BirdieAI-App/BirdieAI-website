@@ -24,19 +24,11 @@ apiClient.createUrl = function (endpoint) {
 
 apiClient.interceptors.response.use(
   (response) => {
-    if (response.data.redirect) {
-      // window.location.href = response.data.url;
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // window.location.href = response.data.url;
-        }, 1000);
-      });
-    }
     return response.data;
   },
   (error) => {
     if (error.response && error.response.status == 401 && error.response.data.redirect) {
-      window.location = error.response.data.url
+      // window.location = error.response.data.url
       return new Promise(() => { });
     }
     return Promise.reject(error);
