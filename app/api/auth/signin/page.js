@@ -10,26 +10,6 @@ import { SignInLocal, signInWithGoogle } from '@/libs/request';
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const handleSignInGoogle = async () => {
-        try {
-            const response = await signInWithGoogle();
-        } catch (err) {
-            console.log(err.message)
-        }
-    }
-
-    const handleLocalSignIn = async () => {
-        event.preventDefault();
-        event.stopPropagation()
-        try{
-            const response = await SignInLocal({email, password});
-        }catch(err){
-            console.log(err.message)
-        }
-
-    }
-
     return (
         <section className="bg-gray-50">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -51,7 +31,7 @@ export default function SignIn() {
                             <hr className="w-full h-px my-8 bg-gray-200 border-0" />
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
                         </div>
-                        <form className="space-y-6" onSubmit={handleLocalSignIn}>
+                        <form className="space-y-6">
                             <input name="csrfToken" type="hidden" />
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
