@@ -14,7 +14,7 @@ export const signInWithGoogle = async function(){
 
 export const SignInLocal = async function(payload){
     const apiUrl = apiClient.createUrl('auth/login');
-    const response = await apiClient.post(apiUrl, payload, {responseType: 'document'});
+    const response = await apiClient.post(apiUrl, payload);
     return response;
 }
 
