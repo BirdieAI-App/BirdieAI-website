@@ -81,6 +81,7 @@ async function appInitiallization() {
       optionsSuccessStatus: 200 
     };
     app.options('*', (req, res) => {
+      console.log('in OPTIONS request for ALL routes')
       res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
       res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
