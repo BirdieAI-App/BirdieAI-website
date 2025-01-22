@@ -67,7 +67,7 @@ async function appInitiallization() {
       res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
       res.header('Access-Control-Allow-Credentials', 'true');
-      res.status(200).send();
+      return res.status(200).send();
     });
     // CORS configuration
     const allowedOrigins = [
