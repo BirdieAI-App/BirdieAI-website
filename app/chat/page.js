@@ -15,20 +15,20 @@ import { checkAuthentication } from "@/libs/request";
 const ChatPage = () => {
   const [isloading, setIsLoading] = useState(false);
   
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //       try {
-  //         const res = await checkAuthentication();
-  //         setIsLoading(false)
-  //         console.log(res)//user info for frontend in here
-  //       } catch (err) {
-  //         // console.log(err)
-  //         setIsLoading(false)
-  //       }
-  //   }
+  useEffect(() => {
+    const checkAuth = async () => {
+        try {
+          const res = await checkAuthentication();
+          setIsLoading(false)
+          console.log(res)//user info for frontend in here
+        } catch (err) {
+          // console.log(err)
+          setIsLoading(false)
+        }
+    }
 
-  //   checkAuth();
-  // }, [])
+    checkAuth();
+  }, [])
   return (
     (isloading ? <></>: <div className="h-screen flex flex-col">
       <Tab.Group as="div" className="flex flex-grow flex-col">
