@@ -37,7 +37,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       path: '/',
       domain: domain
     });
-    if(process.env.FRONTEND_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
+    if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   },
   (err, req, res, next) => {
@@ -61,7 +61,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       path: '/',
       domain: domain
     });
-    if(process.env.FRONTEND_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
+    if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
   }
 );
