@@ -28,6 +28,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
     const { _doc, token } = req.user;
     console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.FRONTEND_URL);
+    console.log("Setting cookie to domain:", domain)
     res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
@@ -50,6 +51,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
     const { _doc, token } = req.user;
     console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
     let domain = extractDomain(process.env.FRONTEND_URL);
+    console.log("Setting cookie to domain:", domain)
     res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
       secure: true,         // Ensures the cookie is only sent over HTTPS
