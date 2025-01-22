@@ -62,6 +62,7 @@ async function appInitiallization() {
       await mongoose.connect(process.env.MONGODB_URI);
       console.log('Database connected successfully');
     }
+
     // CORS configuration
     const allowedOrigins = [
       `${process.env.FRONTEND_URL}`
@@ -76,10 +77,17 @@ async function appInitiallization() {
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
-      credentials: true
+      credentials: true,
+      optionsSuccessStatus: 200 
     };
+    app.options('*', (req, res) => {
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      return res.sendStatus(200); // This ensures no further processing of the OPTIONS request
+    });
     app.use(cors(corsOptions));
-    app.options('*', cors(corsOptions));
 
     // Dynamically import passportConfig and routes after secrets are loaded
     const passportConfig = (await import('./backend/passport/config.js')).default;
