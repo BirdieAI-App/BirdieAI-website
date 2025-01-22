@@ -62,7 +62,13 @@ async function appInitiallization() {
       await mongoose.connect(process.env.MONGODB_URI);
       console.log('Database connected successfully');
     }
-
+    app.options('*', (req, res) => {
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      res.status(200).send();
+    });
     // CORS configuration
     const allowedOrigins = [
       `${process.env.FRONTEND_URL}`

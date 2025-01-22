@@ -35,7 +35,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
       maxAge: 60 * 60 * 1000, // 1 hour
       path: '/',
     });
-    return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
+    res.redirect(`${process.env.FRONTEND_URL}/chat`)
   },
   (err, req, res, next) => {
     return res.status(401).json({ message: err.message })
@@ -56,7 +56,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
       maxAge: 60 * 60 * 1000, // 1 hour
       path: '/',
     });
-    return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`}) 
+    res.redirect(`${process.env.FRONTEND_URL}/chat`)
   }
 );
 
