@@ -31,7 +31,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
     console.log("Setting cookie to domain:", domain)
     res.cookie('BirdieJWT', token, {
       httpOnly: true,       // Prevents JavaScript access (XSS protection)
-      secure: domain? true : false,  
+      secure: true,  
       sameSite: 'None',   // Prevents CSRF
       maxAge: 60 * 60 * 1000, // 1 hour
       path: '/',
