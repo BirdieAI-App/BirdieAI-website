@@ -16,18 +16,14 @@ app.use(cookieParser())
 app.use((req, res, next) => {
   console.log(`Request URL: ${req.url}`);
   console.log(`Request Method: ${req.method}`);
-  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL); // Your frontend domain
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-XSRF-TOKEN, Accept, Origin');
 
-  if(!req.headers.authorization){
+  if (!req.headers.authorization) {
     const cookies = req.cookies;
     let token = null;
-    if(!cookies){
+    if (!cookies) {
       console.log("NO COOKIES FOUND")
-    }else{
-      token = cookies.jwt;
+    } else {
+      token = cookies.BirdieJWT;
       console.log("FOUND COOKIES:", token)
     }
     if (token) {
@@ -69,7 +65,7 @@ async function appInitiallization() {
 
     // CORS configuration
     const allowedOrigins = [
-        `${process.env.FRONTEND_URL}`
+      `${process.env.FRONTEND_URL}`
     ];
     const corsOptions = {
       origin: (origin, callback) => {
@@ -79,11 +75,19 @@ async function appInitiallization() {
           callback(new Error('Not allowed by CORS'));
         }
       },
-      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
       credentials: true,
-      optionsSuccessStatus: 200,
+      optionsSuccessStatus: 200 
     };
+    app.options('*', (req, res) => {
+      console.log('in OPTIONS request for ALL routes')
+      res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
+      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      return res.sendStatus(200); // This ensures no further processing of the OPTIONS request
+    });
     app.use(cors(corsOptions));
 
     // Dynamically import passportConfig and routes after secrets are loaded
