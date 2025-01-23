@@ -4,7 +4,6 @@ import config from "../config.js";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
-  withCredentials: true,
   maxRedirects: 0,
   validateStatus: (status) => {
     return status >= 200 && status < 400;
@@ -26,7 +25,7 @@ apiClient.createUrl = function (endpoint) {
 apiClient.interceptors.response.use(
   (response) => {
     if(response.data.redirect){
-      // window.location = response.data.url
+      window.location = response.data.url
     }
     return response.data;
   },
