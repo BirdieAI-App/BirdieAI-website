@@ -31,7 +31,7 @@ const ChatPage = () => {
   }, [])
   return (
     (isloading ? <></>: <div className="h-screen flex flex-col">
-      <Tab.Group as="div" className="flex flex-grow flex-col">
+      <Tab.Group as="div" className="flex flex-grow flex-col mb-14">
         {/* Panels */}
         <Tab.Panels className="flex-grow flex h-full">
           <Tab.Panel className="flex h-full w-full">
@@ -49,7 +49,7 @@ const ChatPage = () => {
         </Tab.Panels>
 
         {/* Tab List */}
-        <Tab.List className="flex justify-between">
+        <Tab.List className="flex justify-between fixed bottom-0 w-full bg-white border-t-2 border-gray-200">
           <Tab
             autoFocus
             className={({ selected }) =>
