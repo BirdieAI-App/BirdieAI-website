@@ -18,7 +18,7 @@ authRoute.get('/auth/logout', (req, res) => {
     secure: true,    // Ensure cookies set over HTTPS are cleared
     sameSite: 'None', // Match the sameSite setting
   });
-  return res.status(200).json({message: "logout Successfully"})
+  return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
 });
 
 //Log in user using local strategy

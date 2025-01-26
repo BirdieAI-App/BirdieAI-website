@@ -3,91 +3,45 @@ import User from '../models/User.js';
 import Thread from '../models/Thread.js';
 import Message from '../models/Message.js';
 import OpenAIPrompt from '../models/OpenAIPrompt.js';
+import { checkRequiredKeys, validateRequest } from '../utils/requestValidation.js';
+import OpenAI from 'openai';
+import asyncErrorHandler from '../utils/asyncErrorHandler.js';
 
 const messageRoute = express.Router();
-const validMessageProps = Object.keys(Message.schema.paths).filter((keys)=>!keys.startsWith("_"));
-const freeTierMessageLimit = 5
-
-const isValidRequest = (req) => {
-    // true if request is good formated
-    // false if request contains keys that does not belongs to database
-    for(const keys in req.body){
-        if(!validMessageProps.includes(keys)){
-            console.log(`${keys} is not a valid props in Message collection`)
-            return false;
-        }
-    }
-    return true;
-}
-
-const validateRequestBody = (field, res, errorMessage) => {
-    if (!field) {
-        console.log(errorMessage);
-        res.status(400).send(errorMessage);
-        return false;
-    }
-    return true;
-};
 
 messageRoute.route("/messages")
     //GET: getting all mesages existing in database
-    .get(async(req,res)=>{
+    .get(asyncErrorHandler(async (req, res) => {
         console.log('in /messages (GET) all messages in database');
-        try{
-            const messages = await Message.find();
-            return res.status(200).json(messages);
-        }catch(err){
-            return res.status(500).send("Unexpected error occured while getting all the messages in database: "+err);
-        }
-    })
-    //DELETE: deleting all theads existing in database
-    .delete(async(req,res)=>{
-        console.log('in /messages (DELETE) all messages in database');
-        try{
-            const deletedMessage = await Message.deleteMany();
-            if(deletedMessage.deletedCount == 0){
-                return res.status(200).send("No messages were deleted");
-            }
-            return res.status(200).send("Sucessfully deleted all messages in database")
-        }catch(err){
-            return res.status(500).send("Unexpected error occured while deleting all messages in database: "+ err);
-        }
-    })
+        const messages = await Message.find();
+        return res.status(200).json(messages);
+
+    }))
     //PUT: saving a new message into database ---- auto update "update_at"
-    .put(async(req,res)=>{
+    .put(validateRequest(Message.schema), asyncErrorHandler(async (req, res) => {
         console.log('in /messages (PUT) saving new message into database');
+        const { threadID, userID, prompt, feedback } = req.body;
         //-------------------------------------------- VALIDATING REQUEST ---------------------------------------------------------
-        if(!isValidRequest(req)){
-            return res.status(400).send("Request body contains an invalid field")
+        // check for required keys
+        if (!checkRequiredKeys(userID, "userID", res) ||
+            !checkRequiredKeys(prompt, "prompt", res)) {
+            return;
         }
         let user;
-        const {threadID, userID, prompt} = req.body;
-        try {
-            // Validate required fields
-            if (
-                !validateRequestBody(req.body.userID, res, "Request body must contain userID") ||
-                !validateRequestBody(req.body.prompt, res, "Request body must contain the user's prompt")
-            ) {
-                return;
-            }
-        
-            // Check if thread exists
-            const thread = await Thread.findOne({ threadID: threadID });
+        let newThread;
+        const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY })
+        if (threadID) {  // Check if thread exists when user Provides
+            const thread = await Thread.findById(threadID);
             if (!thread) {
                 const message = `Thread with ID=${threadID} does NOT exist in the database.`;
-                console.log(message);
-                return res.status(400).send(message);
+                return res.status(400).json({ message: message });
             }
-            // Check if user exists
-            user = await User.findById(userID);
-            if (!user) {
-                const message = `User with ID=${userID} does NOT exist in the database.`;
-                console.log(message);
-                return res.status(400).send(message);
-            }
-        } catch (err) {
-            console.error(`Unexpected error: ${err}`);
-            return res.status(500).send(`Unexpected error occurred: ${err.message}`);
+        }
+        // Check if user exists
+        user = await User.findById(userID);
+        if (!user) {
+            const message = `User with ID=${userID} does NOT exist in the database.`;
+            return res.status(400).json({ message: message });
         }
         //-------------------------------------------- PROCESSING REQUEST ---------------------------------------------------------
         // 1. counting to see if the total number of message exceed user limit withing 1 day (ONLY APPLY FOR Free tier user)
@@ -95,92 +49,117 @@ messageRoute.route("/messages")
         // 3. construct the conversation based on threadID
         // 4. save the prompt + answer 
         // 5. returns the response
-        if(user.profileData.subscriptionTier === 'Free'){
+
+        //Step 1
+        if (user.profileData.subscriptionTier === 'Free') {
             const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
             const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
-            const dailyMessageCount = await Message.countDocuments({ 
+            const dailyMessageCount = await Message.countDocuments({
                 userID: userID,
                 createdAt: {
                     $gte: todayTimestamp,
                     $lt: tomorrowTimestamp
                 }
             });
-            if(dailyMessageCount >= 5){
-                return res.status(201).send("user reached daily message")
+            if (dailyMessageCount >= 5) {
+                return res.status(400).json({ message: "user reached daily message" })
             }
         }
-        try{
-            const openAIPrompt = await OpenAIPrompt.findOne().sort({ createdAt: -1 });
-            console.log(openAIPrompt)
-        }catch(err){
-            const msg = `error while retrive lastest prompt for OPENAI: ${err.message}`
-            console.log(msg);
+
+        //Step 2
+        const openAIPrompt = await OpenAIPrompt.findOne().sort({ createdAt: -1 });
+
+        // Step 3 construct message and retrieve response from OPEN AI
+        // 3a. construct messages from threadHistory
+        let chatHistory;
+        if (threadID) {
+            const messageList = await Message.find({ threadID: threadID, userID: userID });
+            const history = messageList.map(msg => [
+                { role: 'user', content: msg.prompt },
+                { role: 'assistant', content: msg.response }
+            ]).flat();
+            chatHistory = [...history, { role: 'user', content: prompt }]
+        } else {
+            const response = await openai.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [
+                    {
+                        role: "system", content: `I am a highly efficient summarizer. 
+                        Here are examples: 'Best vacation in Europe' from 
+                        'What are the best vacation spots in Europe?'; 
+                        'Discussing project deadline' from 
+                        'We need to extend the project deadline by two weeks due to unforeseen issues.' 
+                        Now, summarize the following user message within 4 to 5 words into a title:`
+                    },
+                    {
+                        role: "user",
+                        content: prompt,
+                    },
+                ]
+            })
+            const title = response.choices[0].message.content;
+            newThread = await new Thread({
+                userID: user._id.toString(),
+                title: title
+            }).save();
+            chatHistory = [{ role: 'user', content: prompt }]
+        }
+        //3b. Retrieve response from openAI
+        const gptResponse = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [{ role: "system", content: openAIPrompt.toString() }, ...chatHistory],
+        });
+        console.log(gptResponse.choices[0].message.content)
+
+        // Step 4 Saving the new Message
+        const newMessageBody = {
+            threadID: threadID || newThread._id.toString(),
+            userID: user._id.toString(),
+            prompt: prompt,
+            response: gptResponse.choices[0].message.content
         }
 
+        const message = await new Message(newMessageBody).save();
+        return res.status(200).json(message);
+    }))
 
-        // const newMessageBody = {}
-        // for(const key in req.body){
-        //     newMessageBody[key] = req.body[key]
-        // }
-        // try{
-        //     // adding new message into message collection and update 'update_at' field in Thread collection
-        //     const message = await new Message(newMessageBody).save();
-        //     return res.status(200).json(message);
-        // }catch(err){
-        //     return res.status(500).send("Unexpected err occured while saving new message into database: "+ err);
-        // }
-    })
-    
 messageRoute.route('/messages/:messageID')
     //POST: update a message with a given messageID
-    .post(async(req,res)=>{
+    .post(validateRequest(Message.schema), asyncErrorHandler(async (req, res) => {
         const messageID = req.params.messageID;
-        console.log("in /messages/:messageID (POST) updating message with messageID: "+ messageID);
-        if(!isValidRequest(req)){
-            return res.status(400).send("Request body contains an invalid field")
+        console.log("in /messages/:messageID (POST) updating message with messageID: " + messageID);
+        const message = await Message.findById(messageID);
+        if (!message) {
+            console.log("Message with messageID=" + messageID + " does NOT exist in database")
+            return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
         }
-        try{
-            const message = await Message.findOne({"_id": messageID});
-            if(!message){
-                console.log("Message with messageID=" + messageID + " does NOT exist in database")
-                return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
-            }
-            for(const key in req.body){
-                message[key] = req.body[key];
-            }
-            await message.save();
-            return res.status(200).json(message);
-        }catch(err){
-            return res.status(500).send("Unexpected error occured while updating message with messageID: "+ messageID + ": "+ err);
+        for (const key in req.body) {
+            message[key] = req.body[key];
         }
-    })
+        await message.save();
+        return res.status(200).json(message);
+    }))
     //GET: getting a specific message given messageID
-    .get(async(req,res)=>{
+    .get(asyncErrorHandler(async (req, res) => {
         const messageID = req.params.messageID;
-        console.log("in /messages/:messageID (GET) getting message with messageID: "+ messageID);
-        try{
-            const message = await Message.findOne({"_id": messageID});
-            if(!message){
-                console.log("Message with messageID=" + messageID + " does NOT exist in database")
-                return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
-            }
-            return res.status(200).json(message);
-        }catch(err){
-            return res.status(500).send("Unexpected error occured while getting message with messageID: "+ messageID + ": "+ err);
+        console.log("in /messages/:messageID (GET) getting message with messageID: " + messageID);
+        const message = await Message.findOne({ "_id": messageID });
+        if (!message) {
+            console.log("Message with messageID=" + messageID + " does NOT exist in database")
+            return res.status(400).send("Message with messageID=" + messageID + " does NOT exist in database");
         }
-    })
+        return res.status(200).json(message);
+
+    }))
 
 
 messageRoute.route('/messages/t/:threadID')
     // GET: getting all mesages belongs to a user with ThreadID
-    .get(async(req,res)=>{
+    .get(asyncErrorHandler(async (req, res) => {
         const threadID = req.params.threadID
-        console.log("in /message/t/:threadID getting all messages belongs to threadID: "+ threadID);
-        try{
-            const messages = await Message.find({"threadID": threadID})
-            return res.status(200).json(messages);
-        }catch(err){
-            return res.status(500).send(`Unexpected error occured while getting messages associated with threadID:${threadID}: `+ err);
-        }
-    })
+        console.log("in /message/t/:threadID getting all messages belongs to threadID: " + threadID);
+        const messages = await Message.find({ "threadID": threadID })
+        return res.status(200).json(messages);
+
+    }))
 export default messageRoute;
