@@ -1,6 +1,7 @@
 import passportLocal from 'passport-local';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs';
 
 const localStrategy = new passportLocal.Strategy({
     usernameField: "email",
@@ -14,7 +15,7 @@ const localStrategy = new passportLocal.Strategy({
             user = await User.findOne({ "accountData.email": email });
             if (user) {
                 console.log("User Found!!!!.......... Comparing password")
-                const match = await user.comparePassword(password);
+                const match = await bcrypt.compare(password, user.accountData.password);
                 if (match) {
                     console.log("Password matched!")
                     const token = jwt.sign(
