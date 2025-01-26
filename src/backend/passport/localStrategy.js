@@ -13,8 +13,10 @@ const localStrategy = new passportLocal.Strategy({
         try {
             user = await User.findOne({ "accountData.email": email });
             if (user) {
+                console.log("User Found!!!!.......... Comparing password")
                 const match = await user.comparePassword(password);
                 if (match) {
+                    console.log("Password matched!")
                     const token = jwt.sign(
                         {
                             id: user._id.toString(),
@@ -27,14 +29,17 @@ const localStrategy = new passportLocal.Strategy({
                     )
                     return done(null, { ...user, token });
                 } else {
+                    console.log("Password NOT matched!")
                     const error = new Error("Incorrect email or password")
                     return done(error)
                 }
             } else { //user with email not found in DB
+                console.log("User NOT FOUND!")
                 const error = new Error("Incorrect email or password")
                 return done(error)
             }
         } catch (err) {
+            console.log(err.message)
             return done(err);
         }
     }
