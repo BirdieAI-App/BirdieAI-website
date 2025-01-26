@@ -169,7 +169,6 @@ messageRoute.route('/messages/:messageID')
             return res.status(500).send("Unexpected error occured while getting message with messageID: "+ messageID + ": "+ err);
         }
     })
-    //DELETE: Delete a thread with a given messageID
 
 
 messageRoute.route('/messages/t/:threadID')
@@ -184,27 +183,4 @@ messageRoute.route('/messages/t/:threadID')
             return res.status(500).send(`Unexpected error occured while getting messages associated with threadID:${threadID}: `+ err);
         }
     })
-    // DELETE: delete all mesages belongs to a user with given ID
-
-messageRoute
-    .route('/messages/u/:userID/count')
-    // GET: counting number of messages that belong to a given threadID
-    .get(async (req, res) => {
-        const userID = req.params.userID;
-        console.log("in /message/t/:threadID (GET) number of messages messages from today that belongs to userID: "+ userID);
-        try {
-            const todayTimestamp = new Date().setHours(0, 0, 0, 0);  // Start of today
-            const tomorrowTimestamp = todayTimestamp + (24 * 60 * 60 * 1000);  // Add 24 hours in milliseconds
-            const messageCount = await Message.countDocuments({ 
-                userID: userID,
-                createdAt: {
-                    $gte: todayTimestamp,
-                    $lt: tomorrowTimestamp
-                  }
-             });
-            return res.status(200).json({ count: messageCount });
-        } catch (err) {
-            return res.status(500).send("Unexpected error occurred when getting the count of messages: " + err.message);
-        }
-    });
 export default messageRoute;

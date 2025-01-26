@@ -4,8 +4,7 @@ import Thread from "./Thread.js";
 const messageSchema = new mongoose.Schema({
   threadID: {
     // the id associated from Thread collections
-    // type: mongoose.Schema.Types.ObjectId, -> This will associated to ObjectID in Thread Table
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Thread",
   },
@@ -19,11 +18,6 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   response: String,
-  message_total_token: {
-    //number of token returns from OpenAI
-    type: Number,
-    required: true,
-  },
   feedback: {
     type: String,
     enum: ["like", "dislike", "none"],
