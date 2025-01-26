@@ -25,6 +25,12 @@ const LibraryTab = () => {
 	}
 
 	const handleAddNewThread = async () => {
+		// const payload = {
+		// 	userID: userId,
+		// 	title: 'New Chat',
+		// }
+		// const response = await saveNewThread(payload);
+		// console.log(response);
 		console.log('Thread added');
 	}
 
@@ -62,11 +68,11 @@ const LibraryTab = () => {
 						<div className='flex flex-col flex-grow'>
 							<div className='flex flex-row justify-around items-center mt-6'>
 								<h1 className='font-bold text-lg'>Past Conversations</h1>
-								<button 
+								<button
 									className='p-2 text-white text-sm bg-green-500 rounded-lg outline-none'
 									onClick={handleAddNewThread}
-								> 
-									Start New Chat 
+								>
+									Start New Chat
 								</button>
 							</div>
 							{/* Scroll section */}

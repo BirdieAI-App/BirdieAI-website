@@ -1,9 +1,13 @@
 import React from 'react';
 
-const ChatMessage = ({ message }) => {
+const ChatMessage = ({ payload, session }) => {
+  console.log(payload);
+  console.log(session);
   return (
     <div className="">
-      {message}
+      {payload.prompt}
+      <br />
+      {payload.response}
     </div>
   );
 };
