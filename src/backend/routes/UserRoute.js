@@ -6,7 +6,7 @@ import { validateRequest, checkRequiredKeys } from '../utils/requestValidation.j
 
 const userRoute = express.Router();
 
-userRoute.route('/users/:userId')
+userRoute.route('/:userId')
     //GET request: getting a user with a given userID
     .get(authenticateJWT, asyncErrorHandler(async (req, res) => {
         const userId = req.params.userId;
@@ -68,7 +68,7 @@ userRoute.route('/users/:userId')
 
     }))
 
-userRoute.route('/users')
+userRoute.route('/')
     //GET request: getting all users in the database
     .get(authenticateJWT, asyncErrorHandler(async (req, res) => {
         console.log("in /users route (GET) all user in database.");

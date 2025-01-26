@@ -9,7 +9,7 @@ import asyncErrorHandler from '../utils/asyncErrorHandler.js';
 
 const messageRoute = express.Router();
 
-messageRoute.route("/messages")
+messageRoute.route('/')
     //GET: getting all mesages existing in database
     .get(asyncErrorHandler(async (req, res) => {
         console.log('in /messages (GET) all messages in database');
@@ -123,7 +123,7 @@ messageRoute.route("/messages")
         return res.status(200).json(message);
     }))
 
-messageRoute.route('/messages/:messageID')
+messageRoute.route('/:messageID')
     //POST: update a message with a given messageID
     .post(validateRequest(Message.schema), asyncErrorHandler(async (req, res) => {
         const messageID = req.params.messageID;
@@ -153,7 +153,7 @@ messageRoute.route('/messages/:messageID')
     }))
 
 
-messageRoute.route('/messages/t/:threadID')
+messageRoute.route('/t/:threadID')
     // GET: getting all mesages belongs to a user with ThreadID
     .get(asyncErrorHandler(async (req, res) => {
         const threadID = req.params.threadID

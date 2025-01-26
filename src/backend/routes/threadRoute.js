@@ -7,7 +7,7 @@ import asyncErrorHandler from '../utils/asyncErrorHandler.js';
 const threadRoute = express.Router();
 
 threadRoute
-  .route("/threads")
+  .route("/")
   //GET: getting all threads existing in database
   .get(asyncErrorHandler(async (req, res) => {
     console.log("in /threads route (GET) all threads in database.");
@@ -39,7 +39,7 @@ threadRoute
   }));
 
 threadRoute
-  .route("/threads/:threadID")
+  .route("/:threadID")
   //GET: getting a specific thread given threadID
   .get(asyncErrorHandler(async (req, res) => {
     const threadID = req.params.threadID;
@@ -75,7 +75,7 @@ threadRoute
   });
 
 threadRoute
-  .route("/threads/u/:userID")
+  .route("/u/:userID")
   //GET: getting all threads belongs to a user with givenID
   .get(asyncErrorHandler(async (req, res) => {
     const userID = req.params.userID;

@@ -10,7 +10,7 @@ const extractDomain = (url) => {
 };
 
 // ---------------------------------------------------------------------------------------------------
-authRoute.get('/auth/logout', (req, res) => {
+authRoute.get('/logout', (req, res) => {
   console.log('/auth/logout reached. Logging out');
   // Clear the JWT cookie
   res.clearCookie('BirdieJWT', {
@@ -22,7 +22,7 @@ authRoute.get('/auth/logout', (req, res) => {
 });
 
 //Log in user using local strategy
-authRoute.post('/auth/login', passport.authenticate('local', { failWithError: true, session: false }),
+authRoute.post('/login', passport.authenticate('local', { failWithError: true, session: false }),
   (req, res) => {
     console.log("/login route reached: successful authentication.");
     const { _doc, token } = req.user;
@@ -44,7 +44,7 @@ authRoute.post('/auth/login', passport.authenticate('local', { failWithError: tr
   });
 
 //Login user using google Strategy
-authRoute.get('/auth/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+authRoute.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
 authRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
     console.log("/auth/google/callback reached.");
@@ -65,7 +65,7 @@ authRoute.get('/auth/google/callback', passport.authenticate('google', { failure
   }
 );
 
-authRoute.get('/auth/test', authenticateJWT, (req, res) => {
+authRoute.get('/test', authenticateJWT, (req, res) => {
   console.log('/auth/test reached.');
   console.log('Decoded token:', req.user);
 

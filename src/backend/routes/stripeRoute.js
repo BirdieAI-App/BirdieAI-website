@@ -3,7 +3,7 @@ import Stripe from 'stripe';
 
 const stripeRoute = express.Router();
 
-stripeRoute.post('/stripe/create-checkout', async (req, res) => {
+stripeRoute.post('/create-checkout', async (req, res) => {
     console.log("in /stripe/create-checkout (POST) to create stripe checkout session")
     const { priceId, userId, successUrl, cancelUrl } = req.body;
     if (!priceId) {
@@ -71,7 +71,7 @@ stripeRoute.post('/stripe/create-checkout', async (req, res) => {
 }
 )
 
-stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
+stripeRoute.post('/create-customer-portal', async (req, res) => {
     console.log("in /stripe/create-customer-portal (POST) to create stripe customer portal session");
     const { userId, returnUrl } = req.body;
     if (!returnUrl) {
@@ -108,7 +108,7 @@ stripeRoute.post('/stripe/create-customer-portal', async (req, res) => {
     }
 });
 
-stripeRoute.get('/stripe/session/:sessionID', async (req, res) => {
+stripeRoute.get('/session/:sessionID', async (req, res) => {
     console.log("in /stripe/session/:sessionID checkin Payment Status")
     const sessionID = req.params.sessionID;
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -121,7 +121,7 @@ stripeRoute.get('/stripe/session/:sessionID', async (req, res) => {
 
 })
 
-stripeRoute.get('/stripe/product-list', async(req, res)=>{
+stripeRoute.get('/product-list', async(req, res)=>{
     console.log('in /stripe/product-list (GET) all active stripe product')
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     try{
@@ -132,7 +132,7 @@ stripeRoute.get('/stripe/product-list', async(req, res)=>{
     }
 })
 
-stripeRoute.get('/stripe/price/:priceID', async (req, res) => {
+stripeRoute.get('/price/:priceID', async (req, res) => {
     const priceID = req.params.priceID;
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     console.log(`in /stripe/price/:priceID getting price with id: ${priceID}`)
