@@ -45,7 +45,7 @@ authRoute.post('/login', passport.authenticate('local', { failWithError: true, s
 
 //Login user using google Strategy
 authRoute.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
-authRoute.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
+authRoute.get('/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
     console.log("/auth/google/callback reached.");
     const { _doc, token } = req.user;
