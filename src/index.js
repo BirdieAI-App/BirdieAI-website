@@ -53,7 +53,8 @@ async function appInitiallization() {
       CALLBACK_URL: process.env.CALLBACK_URL || secrets.CALLBACK_URL,
       MONGODB_URI: secrets.MONGODB_URI,
       FRONTEND_URL: secrets.FRONTEND_URL,
-      JWT_SIGNING_SECRET: secrets.JWT_SIGNING_SECRET
+      JWT_SIGNING_SECRET: secrets.JWT_SIGNING_SECRET,
+      OPENAI_KEY: secrets.OPENAI_KEY
     };
     console.log('AWS Secrets loaded successfully');
 
@@ -105,13 +106,28 @@ async function appInitiallization() {
     passportConfig(app);
 
     // Define routes
-    app.use('/', authRoute);
-    app.use('/', stripeRoute);
-    app.use('/', stripeWebhookRoute);
-    app.use('/', userRoute);
-    app.use('/', authenticateJWT, openAIPromptRoute);
-    app.use('/', authenticateJWT, threadRoute);
-    app.use('/', authenticateJWT, messageRoute);
+    app.use('/auth', authRoute);
+    app.use('/stripe', stripeRoute);
+    app.use('/stripe', stripeWebhookRoute);
+    app.use('/users', userRoute);
+    app.use('/openai', authenticateJWT, openAIPromptRoute);
+    app.use('/threads', authenticateJWT, threadRoute);
+    app.use('/messages', authenticateJWT, messageRoute);
+
+    app.all('*', (req, res, next)=>{// route for catching all the requests that is not specified above
+      // return res.status(404).json({message: `Cannot find ${req.originalUrl} route with ${req.method} method on server`});
+      const err = new Error(`Cannot find ${req.originalUrl} route with ${req.method} method on server`);
+      err.statusCode = 404;
+      next(err);
+    })
+
+    app.use((error, req, res, next)=>{
+      error.statusCode = error.statusCode || 500;
+      console.log(error.message)
+      return res.status(error.statusCode).json({
+        message: `Unexpected Error occured with message: ${error.message}`
+      })
+    })
 
     console.log('App initialized successfully');
   } catch (error) {

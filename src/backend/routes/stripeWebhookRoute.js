@@ -4,7 +4,7 @@ import User from '../models/User.js';
 
 const stripeWebhookRoute = express.Router();
 
-stripeWebhookRoute.post('/stripe/webhook', async (req, res) => {
+stripeWebhookRoute.post('/webhook', async (req, res) => {
 
     const event = req.body;
     // Handle the event
