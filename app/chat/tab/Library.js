@@ -25,12 +25,12 @@ const LibraryTab = () => {
 	}
 
 	const handleAddNewThread = async () => {
-		// const payload = {
-		// 	userID: userId,
-		// 	title: 'New Chat',
-		// }
-		// const response = await saveNewThread(payload);
-		// console.log(response);
+		const payload = {
+			userID: userId,
+			title: 'New Chat',
+		}
+		const response = await saveNewThread(payload);
+		console.log(response);
 		console.log('Thread added');
 	}
 

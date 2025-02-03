@@ -12,8 +12,8 @@ import { getAllMessagesByThreadId } from '@/libs/request';
 import { useSession } from 'next-auth/react';
 
 const message1 = {
-  prompt: "Hello, how can I help you today?",
-  response: "I am feeling good.",
+  prompt: "Hello, how can I help you today Hello, how can I help you today Hello, how can I help you today Hello, how can I help you today?",
+  response: "I am feeling good I am feeling good I am feeling good I am feeling good.",
 }
 
 const message2 = {
@@ -29,6 +29,8 @@ const message3 = {
 const ChatTab = () => {
   const [chatMessage, setChatMessage] = useState('');
   const { data: session, status } = useSession();
+
+  const plan = "Free";
 
   // const threadID = "thread_nay_la_fake";
   // useEffect(() => {
@@ -66,6 +68,10 @@ const ChatTab = () => {
   const handleUserPlanButton = () => {
     console.log('Your plan: Free');
   }
+
+  const handleUserUpgradePlanButton = () => {
+    console.log('Upgrade');
+  }
   return (
     <div className="flex flex-col w-full relative">
       {/* ____________________________Navigation bar___________________________________ */}
@@ -80,7 +86,7 @@ const ChatTab = () => {
             />
           </li>
           <li className='text-3xl flex flex-row items-center gap-4'>
-            <p className=''>Ask Birdie</p>
+            <p className=''>New Chat</p>
             <button
               className='text-2xl'
               onClick={handleAddNewChatButton}
@@ -92,7 +98,17 @@ const ChatTab = () => {
             <Menu as="div" className="relative inline-block text-left">
               <div>
                 <Menu.Button className="inline-flex justify-center">
-                  <FontAwesomeIcon icon={faUser} className="text-2xl" />
+                  {
+                    session?.user?.image ?
+                      <Image
+                        src={session.user.image}
+                        alt={session.user.name}
+                        className="w-12 h-12 rounded-full"
+                        width={48}
+                        height={48}
+                      />
+                      : <FontAwesomeIcon icon={faUser} className="text-2xl" />
+                  }
                 </Menu.Button>
               </div>
 
@@ -119,6 +135,19 @@ const ChatTab = () => {
                         </button>
                       )}
                     </Menu.Item>
+                    <div className="px-1 py-1">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            className={`${active ? "bg-red-500 text-white" : "text-gray-900"
+                              } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                            onClick={handleLogOutButton}
+                          >
+                            Log out
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </div>
                     <Menu.Item>
                       {({ active }) => (
                         <button
@@ -131,19 +160,21 @@ const ChatTab = () => {
                       )}
                     </Menu.Item>
                   </div>
-                  <div className="px-1 py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <button
-                          className={`${active ? "bg-red-500 text-white" : "text-gray-900"
-                            } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                          onClick={handleLogOutButton}
-                        >
-                          Log out
-                        </button>
-                      )}
-                    </Menu.Item>
-                  </div>
+                  {
+                    plan === "Free" ?
+                      <div className="p-2">
+                        <Menu.Item>
+                          <button
+                            className='text-sm text-white bg-green-500 p-2 w-full rounded-lg'
+                            onClick={handleUserUpgradePlanButton}
+                          >
+                            Upgrade
+                          </button>
+                        </Menu.Item>
+                      </div>
+                      : null
+                  }
+
                 </Menu.Items>
               </Transition>
             </Menu>
