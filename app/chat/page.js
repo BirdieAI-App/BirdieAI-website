@@ -28,7 +28,6 @@ const ChatPage = () => {
           setIsLoading(false)
         }
     }
-
     checkAuth();
   }, [])
   return (
