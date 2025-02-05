@@ -1,83 +1,25 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { getProviders, signIn } from 'next-auth/react';
+// import { getProviders, signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { getCsrfToken } from "next-auth/react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useRouter } from 'next/navigation';
-import { validateData } from '@/libs/util';
-import { SignInGoogle } from '@/libs/request';
+import { SignInLocal, signInWithGoogle } from '@/libs/request';
 
 export default function SignIn() {
-    // const [providers, setProviders] = useState(null);
-    // const [csrfToken, setCsrfToken] = useState("");
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    // useEffect(() => {
-    //     async function fetchProviders() {
-    //         const res = await getProviders();
-    //         setProviders(res);
-    //         // console.log(res);
-    //     }
-
-    //     const fetchCsrfToken = async () => {
-    //         const token = await getCsrfToken();
-    //         setCsrfToken(token);
-    //     };
-
-    //     fetchCsrfToken();
-    //     fetchProviders();
-    // }, []);
-
-    // if (!providers) {
-    //     return <div>Loading...</div>;
-    // } 
-
-    // const handleSubmit = async (event) => {
-    //     event.preventDefault();
-
-    //     setLoading(true);
-
-    //     const formData = new FormData(event.target);
-    //     const email = formData.get('email');
-    //     const password = formData.get('password');
-
-    //     if (!validateData({email,password})) {
-    //         setTimeout(setLoading(false),500);
-    //         return;
-    //     }
-
-    //     const res = await signIn('credentials', {
-    //         redirect: false,
-    //         email,
-    //         password
-    //     });
-
-    //     // console.log(res);
-
-    //     if (res.error) {
-    //         // const err = JSON.parse(res.error);
-    //         setLoading(false);
-    //         toast.error("Your email does not exist OR your password does not match. Please retry!");
-    //     } else {
-    //         setTimeout(() => {
-    //             setLoading(false);
-    //             router.push("/chat");
-    //         }, 2000);
-    //     }
-    // };
-
-    const handleSignInWithGoogle = async () => {
-        try {
-            window.location.href = SignInGoogle();
-        } catch (err) {
-            console.log(err.message);
+    const handleLocalSignIn = async () =>{
+        event.stopPropagation();
+        event.preventDefault();
+        try{
+            const response = await SignInLocal({email,password});
+        }catch(err){
+            console.log(err.message)
         }
     }
-
     return (
         <section className="bg-gray-50">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -99,7 +41,8 @@ export default function SignIn() {
                             <hr className="w-full h-px my-8 bg-gray-200 border-0" />
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
                         </div>
-                        <form className="space-y-6" method="post" onSubmit={()=>console.log("submit credentials")}>
+                        <form className="space-y-6" onSubmit={handleLocalSignIn}>
+                        {/* <form className="space-y-6" method='POST' action={`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`}> */}
                             <input name="csrfToken" type="hidden" />
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email address</label>
@@ -107,6 +50,8 @@ export default function SignIn() {
                                     <input id="email" name="email" type="email" autoComplete="email"
                                         required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         placeholder="name@company.com"
+                                        value={email}
+                                        onChange={(e) => { setEmail(e.target.value) }}
                                     />
                                 </div>
                             </div>
@@ -119,16 +64,17 @@ export default function SignIn() {
                                     </div>
                                 </div>
                                 <div className="mt-2">
-                                    <input id="password" name="password" type="password" autoComplete="current-password"
+                                    <input id="password" name="password" type="text" autoComplete="current-password"
                                         required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => { setPassword(e.target.value) }}
                                     />
                                 </div>
                             </div>
                             <div>
-                                <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                                    disabled={loading}>
-                                    {loading ? 'Signing in...' : 'Sign in'}
+                                <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                    Sign in
                                 </button>
                             </div>
                         </form>
