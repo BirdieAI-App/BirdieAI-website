@@ -38,13 +38,13 @@ export const getUserByID = async function (userId) {
 //-------------------------------------- THREADS -------------------------------------------------
 export const getAllThreadsByUser = async function (userId) {
     const apiUrl = apiClient.createUrl(`threads/u/${userId}`);
-    const response = await apiClient.get(apiUrl);
+    const response = await apiClient.get(apiUrl, {withCredentials: true});
     return response;
 }
 
 export const saveNewThread = async function (payload) {
     const apiUrl = apiClient.createUrl(`threads`);
-    const response = await apiClient.put(apiUrl, payload);
+    const response = await apiClient.put(apiUrl, payload, {withCredentials: true});
     return response;
 }
 //-------------------------------------- STRIPE -------------------------------------------------
@@ -81,7 +81,7 @@ export const getStripePrice = async function (priceID) {
 
 export const getAllMessagesByThreadId = async function (threadID) {
     const apiUrl = apiClient.createUrl(`messages/t/${threadID}`);
-    const response = await apiClient.get(apiUrl);
+    const response = await apiClient.get(apiUrl, {withCredentials: true});
     return response;
 }
 
@@ -93,7 +93,7 @@ export const getDailyMessageCount = async function (userID) {
 
 export const saveNewMessage = async function (payload) {
     const apiUrl = apiClient.createUrl('messages');
-    const response = await apiClient.put(apiUrl, payload);
+    const response = await apiClient.put(apiUrl, payload, {withCredentials: true});
     return response;
 }
 

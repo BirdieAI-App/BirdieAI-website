@@ -13,7 +13,9 @@ import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons"
 import { checkAuthentication } from "@/libs/request";
 
 const ChatPage = () => {
-  const [isloading, setIsLoading] = useState(false);
+  const [isloading, setIsLoading] = useState(true);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedThread, setSelectedThread] = useState(null);
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -26,22 +28,26 @@ const ChatPage = () => {
           setIsLoading(false)
         }
     }
-
     checkAuth();
   }, [])
   return (
     (isloading ? <></>: <div className="h-screen flex flex-col">
-      <Tab.Group as="div" className="flex flex-grow flex-col">
+      <Tab.Group 
+        as="div" 
+        className="flex flex-grow flex-col mb-14"
+        selectedIndex={selectedIndex}
+        onChange={setSelectedIndex}
+      >
         {/* Panels */}
         <Tab.Panels className="flex-grow flex h-full">
-          <Tab.Panel className="flex h-full w-full">
-            <ChatTab />
+          <Tab.Panel className="flex h-full w-full" >
+            <ChatTab  selectedThread={selectedThread}/>
           </Tab.Panel>
           <Tab.Panel className="flex h-full w-full">
             <DiscoverTab />
           </Tab.Panel>
           <Tab.Panel className="flex h-full w-full">
-            <LibraryTab />
+            <LibraryTab setSelectedThread={setSelectedThread} setSelectedIndex={setSelectedIndex}/>
           </Tab.Panel>
           <Tab.Panel className="flex h-full">
             <ToDoListTab />
@@ -49,9 +55,8 @@ const ChatPage = () => {
         </Tab.Panels>
 
         {/* Tab List */}
-        <Tab.List className="flex justify-between">
+        <Tab.List className="flex justify-between fixed bottom-0 w-full bg-white border-t-2 border-gray-200">
           <Tab
-            autoFocus
             className={({ selected }) =>
               `px-4 py-2 flex flex-col flex-grow items-center focus:outline-none 
               ${selected
