@@ -8,49 +8,71 @@ import { faUser, faSquarePlus } from "@fortawesome/free-regular-svg-icons"
 import { faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import { Menu, Transition } from '@headlessui/react';
 import ChatMessage from '@/components/ChatMessage';
-import { getAllMessagesByThreadId } from '@/libs/request';
+import { getAllMessagesByThreadId, saveNewMessage } from '@/libs/request';
 import { useSession } from 'next-auth/react';
 
-const message1 = {
-  prompt: "Hello, how can I help you today Hello, how can I help you today Hello, how can I help you today Hello, how can I help you today?",
-  response: "I am feeling good I am feeling good I am feeling good I am feeling good.",
-}
-
-const message2 = {
-  prompt: "That is great to hear!",
-  response: "Thank you!",
-}
-
-const message3 = {
-  prompt: "You're welcome!",
-  response: "Goodbye!",
-}
-
-const ChatTab = () => {
-  const [chatMessage, setChatMessage] = useState('');
+const ChatTab = ({ selectedThread }) => {
+  const [currentChatMessage, setCurrentChatMessage] = useState('');
+  // conversation contains all the history message and message just submitted, each object has a prompt and a response
+  const [conversation, setConversation] = useState([]);
   const { data: session, status } = useSession();
 
   const plan = "Free";
+  const userId = "678c6ba2b7b3e0bb250838bd"; //Huy Phung 
 
-  // const threadID = "thread_nay_la_fake";
-  // useEffect(() => {
-  //   console.log('Chat tab mounted');
-  //   console.log(threadID);
-  //   // Fetch chat messages for the threadID here
-  //   const fetchMessages = async () => {
-  //     try {
-  //       const messages = await getAllMessagesByThreadId(threadID);
-  //       console.log(messages);
-  //     } catch (error) {
-  //       console.error('Error fetching messages:', error);
-  //     }
-  //   };
-  //   fetchMessages();
-  // })
+  useEffect(() => {
+    const threadID = selectedThread?._id || "67a03d6ae374ebd57d145794";
+    console.log(threadID);
+    // Fetch chat messages for the threadID here
+    const fetchMessages = async () => {
+      try {
+        const messages = await getAllMessagesByThreadId(threadID);
+        console.log(messages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+    fetchMessages();
+    const messages = [
+      {
+        prompt: "Hello, how can I help you today?",
+        response: "I am feeling good.",
+      },
+      {
+        prompt: "That is great to hear!",
+        response: "Thank you!",
+      },
+      {
+        prompt: "You're welcome!",
+        response: "Goodbyesad!",
+      }
+    ]
+    setConversation(messages);
+  }, [selectedThread]);
 
-  const handleSubmitChatMessage = () => {
+  const handleSubmitChatMessageButton = async () => {
+    if(!currentChatMessage.trim()) return;
     console.log('Submit chat message');
-    console.log(chatMessage);
+    const payload = {
+      userID: userId,
+      threadID: selectedThread?._id || "67a03d6ae374ebd57d145794",
+      prompt: currentChatMessage,
+    }
+
+    // const newMessage = await saveNewMessage(payload);
+    // console.log("response is: ", newMessage);
+    // const answer = {
+    //   prompt: newMessage.prompt,
+    //   response: newMessage.response,
+    // }
+
+    const answer = {
+      prompt: payload.prompt,
+      response: "I am a bot, I don't know how to respond to that.",
+    }
+    setConversation([...conversation, answer]);
+    setCurrentChatMessage('');
+    // console.log(currentChatMessage);
   }
 
   const handleAddNewChatButton = () => {
@@ -121,7 +143,7 @@ const ChatTab = () => {
                 leaveTo="transform opacity-0 scale-95"
               >
                 <Menu.Items
-                  className="absolute right-0 mt-2 w-40 origin-top-right border border-black 
+                  className="absolute right-0 mt-2 w-40 origin-top-right border border-black z-50 
                     						bg-white divide-y divide-gray-200 rounded-md shadow-lg focus:outline-none">
                   <div className="px-1 py-1">
                     <Menu.Item>
@@ -184,9 +206,11 @@ const ChatTab = () => {
       {/*____________________________Chat display_____________________________________ */}
       <div className="flex flex-col w-full h-full ">
         <div className='flex flex-grow flex-col'>
-          <ChatMessage payload={message1} session={session} />
-          <ChatMessage payload={message2} session={session} />
-          <ChatMessage payload={message3} session={session} />
+          {
+            conversation.map((message, index) => (
+              <ChatMessage key={index} payload={message} session={session} />
+            ))
+          }
         </div>
 
         {/*____________________________Chat input______________________________________ */}
@@ -196,12 +220,12 @@ const ChatTab = () => {
               className='w-full p-2 border-2 border-gray-200 rounded-md outline-none'
               type="text"
               placeholder="Ask Birdie Coach"
-              value={chatMessage}
-              onChange={(e) => setChatMessage(e.target.value)}
+              value={currentChatMessage}
+              onChange={(e) => setCurrentChatMessage(e.target.value)}
             />
             <button
               className='absolute bg-green-500 text-white rounded-r-md right-4 p-2'
-              onClick={handleSubmitChatMessage}
+              onClick={handleSubmitChatMessageButton}
             >
               <FontAwesomeIcon icon={faLocationArrow} className='text-2xl' />
             </button>
