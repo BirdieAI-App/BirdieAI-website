@@ -77,33 +77,35 @@ userRoute.route('/')
 
     }))
     //POST request: saving a new user into database
-    .post(asyncErrorHandler(async (req, res) => {
+    .post(validateRequest(User.schema), asyncErrorHandler(async (req, res) => {
         console.log("in /users route (POST) saving a new user into database.");
         //validate body of the request
-        for (const bodyProp in req.body) {
-            if (bodyProp === 'accountData') {
-                for (const accountProp in req.body.accountData) {
-                    if (!validAccountDataProps.includes(accountProp)) {
-                        return res.status(400).send("user /POST request formatted incorrectly. Props:" +
-                            accountProp + " does not exist in the user schema"
-                        );
-                    }
-                }
-            } else if (bodyProp == 'profileData') {
-                for (const profileProp in req.body.profileData) {
-                    if (!validProfileDataProps.includes(profileProp)) {
-                        return res.status(400).send("user /POST request formatted incorrectly.Props: " +
-                            profileProp + " doesnot exist in the user schema"
-                        );
-                    }
-                }
-            } else {
-                return res.status(400).send('users /POST request formatted incorrectly. ' +
-                    "Only the following props are allowed in top-level:" +
-                    "'accountData', 'profileData'"
-                );
-            }
-        }
+        // const validAccountDataProps = [email, password];
+        // const validProfileDataProps = [stripeCustomerId, firstName, lastName, subscriptionTier];
+        // for (const bodyProp in req.body) {
+        //     if (bodyProp === 'accountData') {
+        //         for (const accountProp in req.body.accountData) {
+        //             if (!validAccountDataProps.includes(accountProp)) {
+        //                 return res.status(400).send("user /POST request formatted incorrectly. Props:" +
+        //                     accountProp + " does not exist in the user schema"
+        //                 );
+        //             }
+        //         }
+        //     } else if (bodyProp == 'profileData') {
+        //         for (const profileProp in req.body.profileData) {
+        //             if (!validProfileDataProps.includes(profileProp)) {
+        //                 return res.status(400).send("user /POST request formatted incorrectly.Props: " +
+        //                     profileProp + " doesnot exist in the user schema"
+        //                 );
+        //             }
+        //         }
+        //     } else {
+        //         return res.status(400).send('users /POST request formatted incorrectly. ' +
+        //             "Only the following props are allowed in top-level:" +
+        //             "'accountData', 'profileData'"
+        //         );
+        //     }
+        // }
         let user = await User.findOne({ "accountData.email": req.body.accountData.email });
         if (user) {//checking for user availability ---- user existed
             return res.status(400).send("email: " + req.body.accountData.email + " already existed in databsae");
