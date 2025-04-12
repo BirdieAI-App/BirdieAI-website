@@ -4,9 +4,27 @@ import passport from 'passport';
 import authenticateJWT from '../passport/authenticateJWT.js';
 
 const authRoute = express.Router();
+// const extractDomain = (url) => {
+//   const { hostname } = new URL(url);
+//   return hostname === 'localhost' ? undefined : hostname;;
+// };
+
 const extractDomain = (url) => {
   const { hostname } = new URL(url);
-  return hostname === 'localhost' ? undefined : hostname;;
+  
+  // Return undefined for localhost
+  if (hostname === 'localhost') {
+    return undefined;
+  }
+  
+  // For production: get the base domain (e.g., birdieapp.co from www.birdieapp.co)
+  const parts = hostname.split('.');
+  if (parts.length > 1) {
+    // Get just the last two parts of the domain
+    return parts.slice(-2).join('.');
+  }
+  
+  return hostname;
 };
 
 // ---------------------------------------------------------------------------------------------------
