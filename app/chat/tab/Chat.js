@@ -45,13 +45,21 @@ const ChatTab = ({ selectedThread }) => {
       {
         prompt: "You're welcome!",
         response: "Goodbyesad!",
+      },
+      {
+        prompt: "You're welcome!",
+        response: "Goodbyesad!",
+      },
+      {
+        prompt: "You're last!",
+        response: "lasttttttt!",
       }
     ]
     setConversation(messages);
   }, [selectedThread]);
 
   const handleSubmitChatMessageButton = async () => {
-    if(!currentChatMessage.trim()) return;
+    if (!currentChatMessage.trim()) return;
     console.log('Submit chat message');
     const payload = {
       userID: userId,
@@ -95,9 +103,9 @@ const ChatTab = ({ selectedThread }) => {
     console.log('Upgrade');
   }
   return (
-    <div className="flex flex-col w-full relative">
+    <div className="flex flex-col w-full relative ">
       {/* ____________________________Navigation bar___________________________________ */}
-      <nav className="border-b-2 border-gray-200">
+      <nav className="border-b-2 bg-white border-gray-200 w-full fixed z-50">
         <ul className="px-4 flex flex-row items-center justify-between">
           <li className="hover:bg-gray-700">
             <Image
@@ -204,7 +212,7 @@ const ChatTab = ({ selectedThread }) => {
         </ul>
       </nav>
       {/*____________________________Chat display_____________________________________ */}
-      <div className="flex flex-col w-full h-full ">
+      <div className="flex flex-col w-full h-full mt-20 mb-44">
         <div className='flex flex-grow flex-col'>
           {
             conversation.map((message, index) => (
@@ -214,7 +222,7 @@ const ChatTab = ({ selectedThread }) => {
         </div>
 
         {/*____________________________Chat input______________________________________ */}
-        <div className="flex flex-col items-center justify-between">
+        <div className="flex flex-col items-center justify-between w-full fixed bottom-14 bg-white z-50">
           <div className="relative flex flex-row w-full px-4 pt-4 border-t-2 border-gray-200">
             <input
               className='w-full p-2 border-2 border-gray-200 rounded-md outline-none'
