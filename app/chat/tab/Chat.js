@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import logo from '@/app/icon.png';
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -212,34 +212,32 @@ const ChatTab = ({ selectedThread }) => {
         </ul>
       </nav>
       {/*____________________________Chat display_____________________________________ */}
-      <div className="flex flex-col w-full h-full mt-20 mb-44">
-        <div className='flex flex-grow flex-col'>
-          {
-            conversation.map((message, index) => (
-              <ChatMessage key={index} payload={message} session={session} />
-            ))
-          }
-        </div>
+      <div className='flex flex-grow flex-col mt-24 mb-44 overflow-y-hidden'>
+        {
+          conversation.map((message, index) => (
+            <ChatMessage key={index} payload={message} session={session} />
+          ))
+        }
+      </div>
 
-        {/*____________________________Chat input______________________________________ */}
-        <div className="flex flex-col items-center justify-between w-full fixed bottom-14 bg-white z-50">
-          <div className="relative flex flex-row w-full px-4 pt-4 border-t-2 border-gray-200">
-            <input
-              className='w-full p-2 border-2 border-gray-200 rounded-md outline-none'
-              type="text"
-              placeholder="Ask Birdie Coach"
-              value={currentChatMessage}
-              onChange={(e) => setCurrentChatMessage(e.target.value)}
-            />
-            <button
-              className='absolute bg-green-500 text-white rounded-r-md right-4 p-2'
-              onClick={handleSubmitChatMessageButton}
-            >
-              <FontAwesomeIcon icon={faLocationArrow} className='text-2xl' />
-            </button>
-          </div>
-          <p className='pb-4 pt-2 text-xs text-gray-500'>Please consult healthcare providers for medical advice.</p>
+      {/*____________________________Chat input______________________________________ */}
+      <div className="flex flex-col items-center justify-between w-full fixed bottom-14 bg-white z-50">
+        <div className="relative flex flex-row w-full px-4 pt-4 border-t-2 border-gray-200">
+          <input
+            className='w-full p-2 border-2 border-gray-200 rounded-md outline-none'
+            type="text"
+            placeholder="Ask Birdie Coach"
+            value={currentChatMessage}
+            onChange={(e) => setCurrentChatMessage(e.target.value)}
+          />
+          <button
+            className='absolute bg-green-500 text-white rounded-r-md right-4 p-2'
+            onClick={handleSubmitChatMessageButton}
+          >
+            <FontAwesomeIcon icon={faLocationArrow} className='text-2xl' />
+          </button>
         </div>
+        <p className='pb-4 pt-2 text-xs text-gray-500'>Please consult healthcare providers for medical advice.</p>
       </div>
     </div>
   );

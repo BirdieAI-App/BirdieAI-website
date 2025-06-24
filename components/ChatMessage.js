@@ -1,47 +1,67 @@
 import React from 'react';
 import logo from '@/app/icon.png';
 import Image from "next/image";
+import { useRef, useEffect } from 'react';
+import { set } from 'mongoose';
 
 const BotResponse = ({ response }) => {
   return (
-    <div className="flex items-end">
-      <Image
-        src={logo}
-        alt="Chatbot"
-        className="w-12 h-12 rounded-full shrink-0 relative top-6"
-        referrerPolicy="no-referrer"
-        width={48}
-        height={48}
-      />
-      <p className="px-4 py-2 mr-16 text-lg bg-gray-100 rounded-3xl rounded-bl-none">{response}</p>
+    <div className="chat chat-start">
+      <div className="chat-image avatar">
+        <div className="w-10 rounded-full">
+          <Image
+            alt="bot response"
+            src={logo} />
+        </div>
+      </div>
+      <div className="chat-header">
+        <time className="text-xs opacity-50">time</time>
+      </div>
+      <div className="chat-bubble bg-gray-100 text-black">
+        {response}
+      </div>
+      <div className="chat-footer opacity-50">footer</div>
     </div>
   );
 };
 
-const UserPrompt = ({ prompt, session }) => { 
+const UserPrompt = ({ prompt, session }) => {
   return (
-    <div className="flex flex-row-reverse items-end gap-4 relative pb-4">
-      <Image
-        src={session?.user?.image || logo}
-        alt={session?.user?.name || "Account"}
-        className="w-12 h-12 rounded-full shrink-0 relative top-6"
-        referrerPolicy="no-referrer"
-        width={48}
-        height={48}
-      />
-      <p className="px-4 py-2 text-lg text-right bg-green-100 rounded-3xl rounded-br-none max-w-[60%]">{prompt}</p>
+    <div className="chat chat-end">
+      <div className="chat-image avatar">
+        <div className="w-10 rounded-full">
+          <Image
+            src={session?.user?.image || logo}
+            alt={session?.user?.name || "Account"}
+          />
+        </div>
+      </div>
+      <div className="chat-header">
+        <time className="text-xs opacity-50">time</time>
+      </div>
+      <div className="chat-bubble bg-green-100 text-black ">{prompt}</div>
+      <div className="chat-footer opacity-50">footer</div>
     </div>
   );
 }
 
 const ChatMessage = ({ payload, session }) => {
+  const messagesToBottomRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesToBottomRef.current) {
+      messagesToBottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [payload]);
+
   return (
-    <div className="flex flex-col p-4 -z-0">
-      {/* bot prompt */}
-      
+    <div className="">
+      {/* bot  */}
       {payload.prompt && <UserPrompt prompt={payload.prompt} session={session} />}
-      {/* user response */}
+      <div ref={messagesToBottomRef} />
+      {/* user  */}
       {payload.response && <BotResponse response={payload.response} />}
+      <div ref={messagesToBottomRef} />
     </div>
   );
 };
