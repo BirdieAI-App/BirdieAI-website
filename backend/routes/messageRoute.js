@@ -130,17 +130,17 @@ messageRoute.route('/')
             content: gptResponse.choices[0].message.content,
             role: "Bot",
             messageID: userPrompt._id.toString()
+        }        
+        const message = await new Message(newMessageBody).save();
+
+        const returnResponse = {
+            threadID: threadID,
+            userID: userID,
+            role: "Bot",
+            content: message.content,
+            createdAt: message.createdAt
         }
 
-        //createat user, role 
-            //    {
-            // threadID: threadID,
-            // userID: userID,
-            // createdAt: 1:01AM,
-            // role: "Bot"
-            // content"why u ask?"
-            // } 
-        const message = await new Message(newMessageBody).save();
         return res.status(200).json(message);
     }))
 

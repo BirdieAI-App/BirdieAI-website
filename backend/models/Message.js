@@ -62,5 +62,6 @@ messageSchema.pre("save", async function (next) {
   }
 });
 
+
 const Message = mongoose.model("Message", messageSchema);
 export default Message;
