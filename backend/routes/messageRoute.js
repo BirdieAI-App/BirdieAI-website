@@ -6,6 +6,7 @@ import OpenAIPrompt from '../models/OpenAIPrompt.js';
 import { checkRequiredKeys, validateRequest } from '../utils/requestValidation.js';
 import OpenAI from 'openai';
 import asyncErrorHandler from '../utils/asyncErrorHandler.js';
+import { content } from '@/tailwind.config.js';
 
 const messageRoute = express.Router();
 
@@ -45,10 +46,12 @@ messageRoute.route('/')
         }
         //-------------------------------------------- PROCESSING REQUEST ---------------------------------------------------------
         // 1. counting to see if the total number of message exceed user limit withing 1 day (ONLY APPLY FOR Free tier user)
-        // 2. getting the latest prompt from openAI prompt collection
-        // 3. construct the conversation based on threadID
-        // 4. save the prompt + answer 
-        // 5. returns the response
+        // 2. saving the user prompt
+        // 3. getting the latest prompt from openAI prompt collection
+        // 4. construct the conversation based on threadID
+        // 5. get answer from OpenAI
+        // 6. save the answer 
+        // 7. returns the response
 
         //Step 1
         if (user.profileData.subscriptionTier === 'Free') {
@@ -66,7 +69,7 @@ messageRoute.route('/')
             }
         }
 
-        //Step 2
+        //Step 3
         const openAIPrompt = await OpenAIPrompt.findOne().sort({ createdAt: -1 });
 
         // Step 3 construct message and retrieve response from OPEN AI
@@ -97,28 +100,46 @@ messageRoute.route('/')
                     },
                 ]
             })
+            //Summarize and making the thread title
             const title = response.choices[0].message.content;
             newThread = await new Thread({
                 userID: user._id.toString(),
                 title: title
             }).save();
-            chatHistory = [{ role: 'user', content: prompt }]
+            threadID = newThread._id.toString();
+            chatHistory = [{ role: 'user', content: prompt }];
         }
+
+        const userPrompt = await new Message({
+            threadID: threadID,
+            userID: userID,
+            content: prompt,
+            role: "User"
+        }).save();
+
         //3b. Retrieve response from openAI
         const gptResponse = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: [{ role: "system", content: openAIPrompt.toString() }, ...chatHistory],
         });
-        console.log(gptResponse.choices[0].message.content)
 
         // Step 4 Saving the new Message
         const newMessageBody = {
-            threadID: threadID || newThread._id.toString(),
-            userID: user._id.toString(),
-            prompt: prompt,
-            response: gptResponse.choices[0].message.content
+            threadID: threadID,
+            userID: userID,
+            content: gptResponse.choices[0].message.content,
+            role: "Bot",
+            messageID: userPrompt._id.toString()
         }
 
+        //createat user, role 
+            //    {
+            // threadID: threadID,
+            // userID: userID,
+            // createdAt: 1:01AM,
+            // role: "Bot"
+            // content"why u ask?"
+            // } 
         const message = await new Message(newMessageBody).save();
         return res.status(200).json(message);
     }))
