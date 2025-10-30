@@ -9,11 +9,23 @@ const app = express();
 
 // CORS configuration
 const allowedOrigins = [
-	`${process.env.FRONTEND_URL}`
-];
+	process.env.FRONTEND_URL,
+	process.env.FRONTEND_URL_WWW,
+	process.env.FRONTEND_URL_ALT
+].filter(Boolean);
+
+const isAllowedOrigin = (origin) => {
+	try {
+		if (!origin) return true; // Allow SSR/same-origin
+		return allowedOrigins.includes(origin);
+	} catch {
+		return false;
+	}
+};
+
 const corsOptions = {
 	origin: (origin, callback) => {
-		if (!origin || allowedOrigins.includes(origin)) {
+		if (isAllowedOrigin(origin)) {
 			callback(null, true);
 		} else {
 			callback(new Error('Not allowed by CORS'));
@@ -24,14 +36,20 @@ const corsOptions = {
 	credentials: true,
 	optionsSuccessStatus: 200
 };
+
 app.options('*', (req, res) => {
 	console.log('in OPTIONS request for ALL routes')
-	res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL);
+	const origin = req.headers.origin;
+	if (isAllowedOrigin(origin)) {
+		res.header('Access-Control-Allow-Origin', origin);
+		res.header('Vary', 'Origin');
+	}
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 	res.header('Access-Control-Allow-Credentials', 'true');
 	return res.sendStatus(200); // This ensures no further processing of the OPTIONS request
 });
+
 app.use(cors(corsOptions));
 
 
