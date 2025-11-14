@@ -1,0 +1,7 @@
+{
+  "exec": "node",
+  "ext": "js,json",
+  "ignore": ["node_modules", ".next"],
+  "watch": ["server.mjs", "backend"]
+}
+

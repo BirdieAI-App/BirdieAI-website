@@ -26,7 +26,9 @@ const isAllowedOrigin = (origin) => {
 const corsOptions = {
 	origin: (origin, callback) => {
 		if (isAllowedOrigin(origin)) {
-			callback(null, true);
+			// Return the origin string directly so CORS middleware can reflect it properly
+			// When origin is undefined (same-origin), return true; otherwise return the origin string
+			callback(null, origin !== undefined ? origin : true);
 		} else {
 			callback(new Error('Not allowed by CORS'));
 		}
