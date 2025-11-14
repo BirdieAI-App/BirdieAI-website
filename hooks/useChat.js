@@ -1,6 +1,5 @@
 import React, { useState, useEffect, use } from "react";
 import { extractFirstFourWords } from "@/libs/util";
-import { OpenAIService } from "@/libs/OpenAIService";
 import { getAllMessagesByThreadId, getDailyMessageCount, getOpenAIPrompt, getUserByID, saveNewMessage, saveNewThread } from "@/libs/request";
 
 export function useChat() {
@@ -31,7 +30,6 @@ export function useChat() {
     const [message, setMessage] = useState("");
     const [freeThreadCount, setFreeThreadCount] = useState(0);
 
-    const OpenAI = new OpenAIService();
     const retrieveAllMessagesByThreadID = async function (id) {
         try {
             const response = getAllMessagesByThreadId();
@@ -108,6 +106,7 @@ export function useChat() {
             });
             return updatedData;
         }
+        // Build conversation context (for potential display/use), but generate via backend
         const cur = filterConversationData(conversation);
         const newOpenAIConversation = [
             {
@@ -120,59 +119,27 @@ export function useChat() {
                 content: message,
             },
         ];
-
         setOpenAIConversation(newOpenAIConversation);
-        const OpenAIResponse = await OpenAI.getResponse(newOpenAIConversation);
-        const OpenAIMessage = OpenAIResponse.choices[0]?.message?.content || "";
 
-        setMessage("");
-        let updatedThreadID = threadID;
-        let threadResponse = null;
-        if (threadID.length === 0) {
-            try {
-                // Create Thread
-                const thread = await OpenAI.createThread();
-                updatedThreadID = thread.id;
-                setThreadID(updatedThreadID);
-
-                const newThreadBody = {
-                    userID: userID,
-                    threadID: updatedThreadID,
-                    status: userTier,//userTier by the time of thread creation
-                    title: message ? extractFirstFourWords(message) : "",
-                    file_ID: "Do not know what this is for",
-                    modified_thread: false,
-                };
-
-                // Save Thread
-                threadResponse = saveNewThread(newThreadBody);
-                console.log("Thread saved successfully!");
-                if (userTier === 'Free') setFreeThreadCount(freeThreadCount + 1);
-            } catch (error) {
-                console.log(`Error when trying to save Thread: ${error}`);
-                return null;
-            }
-        }
-        // Save Message
-        if (OpenAIMessage.length > 0 && updatedThreadID.length > 0) {
-            const messageBody = {
-                threadID: updatedThreadID,
-                messageID: Date.now().toString(),
+        // Generate and save via backend (also handles creating a new thread if needed)
+        try {
+            const payload = {
+                threadID: threadID || undefined,
                 userID: userID,
                 prompt: message,
-                response: OpenAIMessage,
-                message_total_token: OpenAIResponse.usage?.total_tokens || 0,
             };
-
-            try {
-                const messageResponse = await saveNewMessage(messageBody);
-                setCurrentMessageData(messageResponse);
-            } catch (error) {
-                console.log(`Error when trying to save Message: ${error}`);
+            const saved = await saveNewMessage(payload);
+            setCurrentMessageData(saved);
+            if (saved?.threadID && saved.threadID !== threadID) {
+                setThreadID(saved.threadID);
             }
+        } catch (error) {
+            console.log(`Error when trying to save Message: ${error}`);
         }
+
+        setMessage("");
         setSentFirstMessage(false);
-        return threadResponse ? threadResponse : null;
+        return null;
     };
 
 

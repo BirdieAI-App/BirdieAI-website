@@ -48,12 +48,12 @@ authRoute.post('/login', passport.authenticate('local', { failWithError: true, s
     let domain = extractDomain(process.env.FRONTEND_URL);
     console.log("Setting cookie to domain:", domain)
     res.cookie('BirdieJWT', token, {
-      httpOnly: true,       // Prevents JavaScript access (XSS protection)
-      secure: true,  
-      sameSite: 'None',   // Prevents CSRF
-      maxAge: 60 * 60 * 1000, // 1 hour
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
+      maxAge: 60 * 60 * 1000,
       path: '/',
-      // domain: domain
+      domain: domain
     });
     return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
   },
@@ -71,12 +71,12 @@ authRoute.get('/google/callback', passport.authenticate('google', { failureRedir
     let domain = extractDomain(process.env.FRONTEND_URL);
     console.log("Setting cookie to domain:", domain)
     res.cookie('BirdieJWT', token, {
-      httpOnly: true,       // Prevents JavaScript access (XSS protection)
-      secure: true,         // Ensures the cookie is only sent over HTTPS
-      sameSite: 'None',   // Prevents CSRF
-      maxAge: 60 * 60 * 1000, // 1 hour
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'None',
+      maxAge: 60 * 60 * 1000,
       path: '/',
-      // domain: domain
+      domain: domain
     });
     // if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
     res.redirect(`${process.env.FRONTEND_URL}/chat`)
