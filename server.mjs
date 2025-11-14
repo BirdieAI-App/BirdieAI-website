@@ -54,7 +54,16 @@ app.options('*', (req, res) => {
 
 app.use(cors(corsOptions));
 
-
+// Additional middleware to ensure CORS headers are set on all responses
+app.use((req, res, next) => {
+	const origin = req.headers.origin;
+	if (origin && isAllowedOrigin(origin)) {
+		res.header('Access-Control-Allow-Origin', origin);
+		res.header('Vary', 'Origin');
+	}
+	res.header('Access-Control-Allow-Credentials', 'true');
+	next();
+});
 
 // Middleware for body parsing
 app.use(express.urlencoded({ extended: true }));
