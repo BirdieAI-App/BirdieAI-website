@@ -130,6 +130,7 @@ async function appInitiallization() {
 		// const stripeWebhookRoute = (await import('./backend/routes/stripeWebhookRoute.js')).default;
 		const authRoute = (await import('./backend/routes/authRoute.js')).default;
 		const openAIPromptRoute = (await import('./backend/routes/OpenAIPromptRoute.js')).default;
+		const discoverQuestionRoute = (await import('./backend/routes/discoverQuestionRoute.js')).default;
 		const authenticateJWT = (await import('./backend/passport/authenticateJWT.js')).default;
 
 		// Initialize Passport
@@ -137,6 +138,7 @@ async function appInitiallization() {
 
 		// Define routes
 		app.use('/call/auth', authRoute);
+		app.use('/call/discover', discoverQuestionRoute);
 		// app.use('/call/stripe', stripeRoute);
 		// app.use('/call/stripe', stripeWebhookRoute);
 		app.use('/call/users', userRoute);

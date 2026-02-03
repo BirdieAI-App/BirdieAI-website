@@ -1,90 +1,70 @@
-import React, { useState } from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import { Combobox } from "@headlessui/react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
+import { getDiscoverQuestions } from '@/libs/request';
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
 
-const questions = [
-  {
-    id: 1,
-    title: "Morning Sickess Relief",
-    content: "Is it normal to worry about weight during pregnancy? Seeking experiences on body image and health tips.",
-    Category: "General Pregnancy",
-    keywords: ["Weight", "Body Changes", "second trimester"]
-  },
-  {
-    id: 2,
-    title: "Safe Exercise",
-    content: "What are some good ways to manage stress during pregnancy?",
-    Category: "General Pregnancy",
-    keywords: ["Stress", "Mental Health", "preparation"]
-  },
-  {
-    id: 3,
-    title: "Pregnancy Diet",
-    content: "How do you deal with the fear of miscarriage?",
-    Category: "General Pregnancy",
-    keywords: ["Miscarriage", "Fear", "third trimester"]
-  },
-  {
-    id: 4,
-    title: "Parenting",
-    content: "How do you deal with children?",
-    Category: "Parenting",
-    keywords: ["Children", "Parenting", "breastfeeding"]
-  },
-  {
-    id: 5,
-    title: "Milk Supply",
-    content: "How do you deal with the fear of miscarriage?",
-    Category: "Parenting",
-    keywords: ["Miscarriage", "Fear"]
-  },
-  {
-    id: 6,
-    title: "Parenting Advice",
-    content: "im a new mom and i need help",
-    Category: "Parenting",
-    keywords: ["Children", "Parenting"]
-  }
-]
-
-const categories = [
-  "All questions", "First Trimester", "Second Trimester", "Third Trimester", "General Pregnancy", "Parenting"
-]
-
-const DiscoverTab = () => {
-  const [selectedQuestion, setSelectedQuestion] = useState(questions[0]);
+const DiscoverTab = ({ onQuestionClick }) => {
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All questions');
 
-  const filteredQuestions = questions.filter((singleQuestionData) => {
-    return singleQuestionData.content.toLowerCase().includes(query.toLowerCase());
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const data = await getDiscoverQuestions();
+        setQuestions(data || []);
+        if (data?.length) setSelectedQuestion(data[0]);
+      } catch (error) {
+        console.error('Error fetching questions:', error);
+        setQuestions([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
+
+  const categories = ['All questions', ...Array.from(new Set(questions.map(q => q.category).filter(Boolean)))];
+
+  const filteredQuestions = questions.filter((q) => {
+    const matchesSearch = q.content?.toLowerCase().includes(query.toLowerCase()) ||
+      q.title?.toLowerCase().includes(query.toLowerCase());
+    const matchesCategory = selectedCategory === 'All questions' || q.category === selectedCategory;
+    return matchesSearch && matchesCategory;
   });
 
   const handleSearchQuestion = (value) => {
     setSelectedQuestion(value);
-    console.log(value);
-  }
+  };
 
   const handleCategoryButton = (category) => {
     setSelectedCategory(category);
-    console.log(category);
-  }
+  };
 
   const handleQuestionButton = (question) => {
-    // setSelectedQuestion(question);
-    console.log(question.title);
+    onQuestionClick?.(question);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col w-full h-full p-4">
-      <h1 className="text-2xl font-bold"> Top Mom's concerns</h1>
-      {/* Search section */}
+      <h1 className="text-2xl font-bold">Top Mom&apos;s concerns</h1>
+
       <Combobox
         as="div"
         value={selectedQuestion}
@@ -92,79 +72,75 @@ const DiscoverTab = () => {
         className="border-2 border-gray-300 rounded-lg relative my-4 overflow-hidden"
       >
         <Combobox.Input
-          className={"w-full p-2 outline-none"}
+          className="w-full p-2 outline-none"
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search for questions..."
+          displayValue={(q) => q?.content || ''}
         />
-        {/* <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute left-0 top-5 transform -translate-y-1/2 flex items-center px-4 gap-4 text-gray-500' /> */}
-
-
-        <Combobox.Options
-          className="h-fit w-full p-2 border-2 border-gray-200 divide-y-2 rounded-md outline-none"
-        >
-          {filteredQuestions.length === 0 &&
+        <Combobox.Options className="h-fit w-full p-2 border-2 border-gray-200 divide-y-2 rounded-md outline-none max-h-40 overflow-y-auto">
+          {filteredQuestions.length === 0 && (
             <Combobox.Option value="" disabled>
               No results found
             </Combobox.Option>
-          }
-          {filteredQuestions.map((singleQuestionData) => (
-            <Combobox.Option key={singleQuestionData.id} value={singleQuestionData.content}>
-              {singleQuestionData.content}
+          )}
+          {filteredQuestions.map((q) => (
+            <Combobox.Option key={q._id} value={q}>
+              {q.content}
             </Combobox.Option>
           ))}
         </Combobox.Options>
       </Combobox>
-      {/* Category listed as carousel */}
+
       <Swiper
         modules={[FreeMode]}
         freeMode={true}
         spaceBetween={15}
         grabCursor={true}
         slidesPerView={2}
-        // onSlideChange={() => console.log('slide change')}
-        // onSwiper={(swiper) => console.log(swiper)}
-        className='w-full'
+        className="w-full"
       >
-        {
-          categories.map((category) => (
-            <SwiperSlide key={category}
-              className={`px-4 py-2 border-2 border-gray-300 rounded-lg font-bold text-center
-                                    ${selectedCategory === category ? 'bg-black text-gray-200' : 'bg-white text-black'}`}
-              onClick={() => handleCategoryButton(category)}>
-              {category}
-            </SwiperSlide>
-          ))
-        }
+        {categories.map((category) => (
+          <SwiperSlide
+            key={category}
+            className={`px-4 py-2 border-2 border-gray-300 rounded-lg font-bold text-center cursor-pointer
+              ${selectedCategory === category ? 'bg-black text-gray-200' : 'bg-white text-black'}`}
+            onClick={() => handleCategoryButton(category)}
+          >
+            {category}
+          </SwiperSlide>
+        ))}
       </Swiper>
-      {/* Questions listed - main content */}
+
       <div className="flex flex-col mt-8 mb-16 overflow-y-scroll">
-        {
-          questions.map((question) => (
+        {filteredQuestions.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">No questions found. Run the seed script to load questions.</p>
+        ) : (
+          filteredQuestions.map((question) => (
             <button
-              key={question.id}
-              className="w-full p-4 my-2 border-2 border-gray-300 rounded-lg text-left"
+              key={question._id}
+              className="w-full p-4 my-2 border-2 border-gray-300 rounded-lg text-left hover:border-green-500 transition-colors"
               onClick={() => handleQuestionButton(question)}
             >
               <h2 className="font-bold text-xl">{question.title}</h2>
-              <p className='text-slate-700 text-lg'>{question.content}</p>
-              <div className='flex flex-row gap-2 mt-2'>
-                {
-                  question.keywords.map((keyword) => (
+              <p className="text-slate-700 text-lg">{question.content}</p>
+              {question.keywords?.length > 0 && (
+                <div className="flex flex-row flex-wrap gap-2 mt-2">
+                  {question.keywords.map((keyword) => (
                     <span
                       key={keyword}
-                      className="text-sm text-black font-bold rounded-lg bg-gray-100 overflow-hidden px-2 py-1 mr-2"
+                      className="text-sm text-black font-bold rounded-lg bg-gray-100 px-2 py-1"
                     >
                       {keyword}
                     </span>
-                  ))
-                }
-              </div>
+                  ))}
+                </div>
+              )}
             </button>
           ))
-        }
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default DiscoverTab;

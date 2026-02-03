@@ -102,3 +102,10 @@ export const updateMessageByID = async function (messageID, payload) {
     const response = await apiClient.post(apiUrl, payload);
     return response;
 }
+
+//-------------------------------------- DISCOVER -------------------------------------------------
+export const getDiscoverQuestions = async function (category) {
+    const apiUrl = apiClient.createUrl(`discover/questions${category ? `?category=${encodeURIComponent(category)}` : ''}`);
+    const response = await apiClient.get(apiUrl, { withCredentials: true });
+    return response;
+}

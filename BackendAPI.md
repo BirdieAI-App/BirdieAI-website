@@ -1,5 +1,18 @@
 # Backend API Documentation
 
+## Environment Variables
+
+Environment variables are stored in the Vercel project. For local development:
+
+1. **Pull env from Vercel:** `npm run env:pull` (creates `.env.local` from Vercel)
+2. **Run dev:** `vercel dev` (recommended) or `npm run dev`
+3. **Seed discover questions:** `npm run seed:discover` (requires `npm run env:pull` first)
+4. **Full setup:** `npm run setup` (pulls env + seeds discover)
+
+See `.env.example` for the list of required variables (set these in Vercel Dashboard).
+
+---
+
 ## Auth Route
 
 **Note:** This route has already been implemented by the backend developer. No additional information is available.

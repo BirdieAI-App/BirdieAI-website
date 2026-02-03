@@ -2,8 +2,14 @@ import axios from "axios";
 import { signIn } from "next-auth/react";
 import config from "../config.js";
 
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_BACKEND_URL) return process.env.NEXT_PUBLIC_BACKEND_URL;
+  if (typeof window !== 'undefined') return window.location.origin;
+  return '';
+};
+
 const apiClient = axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BACKEND_URL}/call`,
+  baseURL: `${getBaseUrl()}/call`,
   maxRedirects: 0,
   validateStatus: (status) => {
     return status >= 200 && status < 400;
