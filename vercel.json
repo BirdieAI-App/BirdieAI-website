@@ -1,17 +1,11 @@
-{ 
-    "version": 2, 
-    "builds": [
-        {
-            "src": "server.mjs",
-            "use": "@vercel/node"
-        },
-        { 
-            "src": "package.json", 
-            "use": "@vercel/next" 
-        }
-    ],
-    "rewrites": [{ 
-        "source": "/call/(.*)", 
-        "destination": "server.mjs" 
-    }] 
+{
+  "version": 2,
+  "builds": [
+    { "src": "server.mjs", "use": "@vercel/node" },
+    { "src": "package.json", "use": "@vercel/next" }
+  ],
+  "rewrites": [{ "source": "/call/(.*)", "destination": "server.mjs" }],
+  "functions": {
+    "server.mjs": { "maxDuration": 30 }
+  }
 }

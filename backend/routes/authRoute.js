@@ -111,4 +111,20 @@ authRoute.get('/test', authenticateJWT, (req, res) => {
   });
 });
 
+// Forgot password - send verification code (stub: returns 501 until email/verification implemented)
+authRoute.post('/forgot-password/send', (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ message: 'Email is required' });
+  // TODO: Implement email sending + store verification code
+  res.status(501).json({ message: 'Forgot password not yet implemented' });
+});
+
+// Forgot password - verify code and return temp credentials (stub)
+authRoute.post('/forgot-password/verify', (req, res) => {
+  const { email, verificationCode } = req.body || {};
+  if (!email || !verificationCode) return res.status(400).json({ message: 'Email and verification code required' });
+  // TODO: Implement code verification + return temp credentials
+  res.status(501).json({ message: 'Forgot password not yet implemented' });
+});
+
 export default authRoute;

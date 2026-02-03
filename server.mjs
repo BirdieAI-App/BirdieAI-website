@@ -1,5 +1,4 @@
 import express from 'express';
-import serverless from 'serverless-http';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
@@ -23,6 +22,8 @@ const isAllowedOrigin = (origin) => {
 		// Allow any vercel.app deployment (preview + production)
 		if (origin.includes('vercel.app')) return true;
 		if (origin.includes('localhost')) return true;
+		// Allow production domain (birdieapp.co and www)
+		if (origin.includes('birdieapp.co')) return true;
 		return false;
 	} catch {
 		return false;
@@ -75,26 +76,57 @@ app.use(express.json());
 app.use(cookieParser())
 
 app.use((req, res, next) => {
-	console.log(`Request URL: ${req.url}`);
-	console.log(`Request Method: ${req.method}`);
-
 	if (!req.headers.authorization) {
-		const cookies = req.cookies;
-		let token = null;
-		if (!cookies) {
-			console.log("NO COOKIES FOUND")
-		} else {
-			token = cookies.BirdieJWT;
-			console.log("FOUND COOKIES:", token)
-		}
-		if (token) {
-			req.headers.authorization = token;
-		}
+		const token = req.cookies?.BirdieJWT;
+		if (token) req.headers.authorization = token;
 	}
-	next(); // Pass control to the next middleware or route handler
+	next();
 });
 
-// Function to load secrets and initialize the app
+// Health check - match multiple possible paths (Vercel may pass path differently)
+app.get('/call/health', (req, res) => res.status(200).json({ ok: true }));
+app.get('/health', (req, res) => res.status(200).json({ ok: true }));
+// Debug route - diagnose path/routing on Vercel
+app.get('/call/debug', (req, res) => res.status(200).json({
+	ok: true,
+	path: req.path,
+	url: req.url,
+	originalUrl: req.originalUrl,
+	baseUrl: req.baseUrl,
+}));
+app.get('/debug', (req, res) => res.status(200).json({
+	ok: true,
+	path: req.path,
+	url: req.url,
+	originalUrl: req.originalUrl,
+}));
+// Debug: match any path for health to diagnose routing
+app.get('*', (req, res, next) => {
+	if (req.path === '/health' || req.path.endsWith('/health')) {
+		return res.status(200).json({ ok: true, path: req.path, url: req.url });
+	}
+	next();
+});
+
+// Track init state - backend must respond immediately, init runs in background
+let initialized = false;
+let initError = null;
+app.use((req, res, next) => {
+	const p = req.path || req.url || '';
+	const isHealth = p === '/call/health' || p === '/health' || p.endsWith('/health');
+	const isDebug = p === '/call/debug' || p === '/debug' || p.endsWith('/debug');
+	if (isHealth || isDebug) return next();
+	if (p.startsWith('/call') && !initialized) {
+		return res.status(503).json({
+			message: initError ? 'Backend misconfigured' : 'Backend initializing',
+			retry: !initError,
+			...(process.env.NODE_ENV === 'development' && initError && { error: initError })
+		});
+	}
+	next();
+});
+
+// Async initialization - add DB-dependent routes
 async function appInitiallization() {
 	try {
 		// Load secrets from AWS Secrets Manager
@@ -120,8 +152,12 @@ async function appInitiallization() {
 		// console.log('AWS Secrets loaded successfully');
 
 		// Connect to MongoDB
+		const mongoUri = process.env.MONGODB_URI;
+		if (!mongoUri || typeof mongoUri !== 'string') {
+			throw new Error('MONGODB_URI is not set. Add it in Vercel Project Settings → Environment Variables.');
+		}
 		if (mongoose.connection.readyState !== 1) {
-			await mongoose.connect(process.env.MONGODB_URI);
+			await mongoose.connect(mongoUri);
 			console.log('Database connected successfully');
 		}
 
@@ -141,7 +177,6 @@ async function appInitiallization() {
 		passportConfig(app);
 
 		// Define routes
-		app.get('/call/health', (req, res) => res.status(200).json({ ok: true }));
 		app.use('/call/auth', authRoute);
 		app.use('/call/discover', discoverQuestionRoute);
 		// app.use('/call/stripe', stripeRoute);
@@ -151,32 +186,36 @@ async function appInitiallization() {
 		app.use('/call/threads', authenticateJWT, threadRoute);
 		app.use('/call/messages', authenticateJWT, messageRoute);
 
-		app.all('*', (req, res, next) => {// route for catching all the requests that is not specified above
-			// return res.status(404).json({message: `Cannot find ${req.originalUrl} route with ${req.method} method on server`});
-			const err = new Error(`Cannot find ${req.originalUrl} route with ${req.method} method on server`);
-			err.statusCode = 404;
-			next(err);
-		})
-
-		app.use((error, req, res, next) => {
-			const statusCode = error.statusCode || (error.message?.includes('CORS') ? 403 : 500);
-			console.error('Server error:', error.message);
-			return res.status(statusCode).json({
-				message: error.message || 'Unexpected error occurred'
-			});
-		});
-
 		console.log('App initialized successfully');
+		initialized = true;
 	} catch (error) {
 		console.error('Error during initialization:', error.message);
-		process.exit(1); // Exit process if initialization fails
+		initError = error.message;
+		// Keep initialized=false so middleware returns 503 for /call/* requests
 	}
 }
 
+// Catch-all - 404 for unmatched routes
+app.all('*', (req, res, next) => {
+	const err = new Error(`Not found: ${req.method} ${req.url}`);
+	err.statusCode = 404;
+	next(err);
+});
+
+app.use((error, req, res, next) => {
+	const statusCode = error.statusCode || (error.message?.includes('CORS') ? 403 : 500);
+	console.error('Server error:', error.message);
+	res.status(statusCode).json({
+		message: error.message || 'Unexpected error occurred'
+	});
+});
 
 
-// Call the initialization function and export the handler
-await appInitiallization();
 
+// Run init in background - do NOT await (avoids Vercel cold-start timeout / 505)
+appInitiallization().catch((err) => {
+	console.error('Unhandled init error:', err.message);
+	initError = err.message;
+});
 
 export default app;

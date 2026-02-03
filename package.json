@@ -15,6 +15,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed:discover": "node backend/scripts/seedDiscoverQuestions.mjs",
+    "seed:discover:prod": "vercel env pull .env.local && node backend/scripts/seedDiscoverQuestions.mjs",
     "setup": "npm run env:pull && npm run seed:discover"
   },
   "dependencies": {
