@@ -81,7 +81,12 @@ authRoute.post('/login', passport.authenticate('local', { failWithError: true, s
   });
 
 //Login user using google Strategy
-authRoute.get('/google', passport.authenticate('google', { scope: ['email', 'profile'] }));
+authRoute.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_ID || !process.env.GOOGLE_SECRET) {
+    return res.status(503).json({ message: 'Google sign-in is not configured' });
+  }
+  passport.authenticate('google', { scope: ['email', 'profile'] })(req, res, next);
+});
 authRoute.get('/google/callback', passport.authenticate('google', { failureRedirect: '/', session: false }),
   (req, res) => {
     console.log("/auth/google/callback reached.");
