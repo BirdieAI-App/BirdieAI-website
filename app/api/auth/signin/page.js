@@ -26,7 +26,7 @@ export default function SignIn() {
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Sign in to your account</h1>
                         <a
-                            href={`${process.env.NEXT_PUBLIC_BACKEND_URL || ''}/call/auth/google`}
+                            href="/call/auth/google"
                             className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
                         >
                             <img

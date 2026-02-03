@@ -27,31 +27,40 @@ const extractDomain = (url) => {
   return hostname;
 };
 
-// Helper function to get cookie options based on environment
-const getCookieOptions = () => {
-  const domain = extractDomain(process.env.FRONTEND_URL);
-  const isLocalhost = !domain; // domain is undefined for localhost
+// Helper function to get cookie options based on environment and request
+const getCookieOptions = (req) => {
+  const host = req?.headers?.host || '';
+  const isVercelPreview = host.includes('vercel.app');
+  const isLocalhost = host.includes('localhost');
   const isProduction = process.env.NODE_ENV === 'production';
-  
+
+  // On Vercel preview: don't set domain so cookie uses current host
+  // On localhost: no domain
+  // On production (birdieapp.co): set domain for subdomain sharing
+  let domain;
+  if (!isVercelPreview && !isLocalhost && process.env.FRONTEND_URL) {
+    domain = extractDomain(process.env.FRONTEND_URL);
+  }
+
   return {
     httpOnly: true,
-    // For production (cross-origin): secure must be true when sameSite is 'None'
-    // For localhost: secure must be false (localhost uses HTTP, not HTTPS)
     secure: isProduction && !isLocalhost,
-    sameSite: isLocalhost ? 'Lax' : 'None', // Use 'Lax' for localhost, 'None' for cross-origin
+    sameSite: isLocalhost || isVercelPreview ? 'Lax' : 'None',
     maxAge: 60 * 60 * 1000, // 1 hour
     path: '/',
-    ...(domain && { domain }) // Only set domain if it's not undefined
+    ...(domain && { domain })
   };
 };
 
 // ---------------------------------------------------------------------------------------------------
 authRoute.get('/logout', (req, res) => {
   console.log('/auth/logout reached. Logging out');
-  // Clear the JWT cookie with the same settings as when it was set
-  const cookieOptions = getCookieOptions();
+  const cookieOptions = getCookieOptions(req);
   res.clearCookie('BirdieJWT', cookieOptions);
-  return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
+  const redirectUrl = (req?.headers?.host && req.headers.host.includes('vercel.app'))
+    ? `https://${req.headers.host}/chat`
+    : `${process.env.FRONTEND_URL}/chat`;
+  return res.status(200).json({redirect: true, url: redirectUrl});
 });
 
 //Log in user using local strategy
@@ -60,10 +69,12 @@ authRoute.post('/login', passport.authenticate('local', { failWithError: true, s
     console.log("/login route reached: successful authentication.");
     const { _doc, token } = req.user;
     console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
-    const cookieOptions = getCookieOptions();
-    console.log("Setting cookie with options:", cookieOptions)
+    const cookieOptions = getCookieOptions(req);
     res.cookie('BirdieJWT', token, cookieOptions);
-    return res.status(200).json({redirect: true, url: `${process.env.FRONTEND_URL}/chat`})
+    const redirectUrl = (req?.headers?.host && req.headers.host.includes('vercel.app'))
+      ? `https://${req.headers.host}/chat`
+      : `${process.env.FRONTEND_URL}/chat`;
+    return res.status(200).json({redirect: true, url: redirectUrl})
   },
   (err, req, res, next) => {
     return res.status(401).json({ message: err.message })
@@ -76,11 +87,12 @@ authRoute.get('/google/callback', passport.authenticate('google', { failureRedir
     console.log("/auth/google/callback reached.");
     const { _doc, token } = req.user;
     console.log(`User with Id: ${_doc._id} signed in on ${new Date()}`)
-    const cookieOptions = getCookieOptions();
-    console.log("Setting cookie with options:", cookieOptions)
+    const cookieOptions = getCookieOptions(req);
     res.cookie('BirdieJWT', token, cookieOptions);
-    // if(process.env.CALLBACK_URL.includes('localhost')) return res.status(200).send("login Successfully!!")
-    res.redirect(`${process.env.FRONTEND_URL}/chat`)
+    const redirectUrl = (req?.headers?.host && req.headers.host.includes('vercel.app'))
+      ? `https://${req.headers.host}/chat`
+      : `${process.env.FRONTEND_URL}/chat`;
+    res.redirect(redirectUrl);
   }
 );
 

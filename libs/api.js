@@ -3,9 +3,9 @@ import { signIn } from "next-auth/react";
 import config from "../config.js";
 
 const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_BACKEND_URL) return process.env.NEXT_PUBLIC_BACKEND_URL;
+  // In browser: always use same-origin so API calls work on Vercel preview and production
   if (typeof window !== 'undefined') return window.location.origin;
-  return '';
+  return process.env.NEXT_PUBLIC_BACKEND_URL || '';
 };
 
 const apiClient = axios.create({

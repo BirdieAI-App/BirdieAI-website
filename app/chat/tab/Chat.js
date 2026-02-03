@@ -123,7 +123,7 @@ const ChatTab = ({ userId, selectedThread, setSelectedThread, initialPrompt, set
 
   const handleLogOutButton = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || ''}/call/auth/logout`, { credentials: 'include' });
+      const res = await fetch('/call/auth/logout', { credentials: 'include' });
       const data = await res.json();
       if (data?.url) {
         window.location.href = data.url;

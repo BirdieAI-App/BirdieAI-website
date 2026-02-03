@@ -7,11 +7,13 @@ import cookieParser from 'cookie-parser';
 // Initialize Express
 const app = express();
 
-// CORS configuration
+// CORS configuration - include Vercel deployment URL for preview/production
+const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
 const allowedOrigins = [
 	process.env.FRONTEND_URL,
 	process.env.FRONTEND_URL_WWW,
-	process.env.FRONTEND_URL_ALT
+	process.env.FRONTEND_URL_ALT,
+	vercelUrl
 ].filter(Boolean);
 
 const isAllowedOrigin = (origin) => {
