@@ -18,8 +18,12 @@ const allowedOrigins = [
 
 const isAllowedOrigin = (origin) => {
 	try {
-		if (!origin) return true; // Allow SSR/same-origin
-		return allowedOrigins.includes(origin);
+		if (!origin) return true; // Allow same-origin (no Origin header)
+		if (allowedOrigins.includes(origin)) return true;
+		// Allow any vercel.app deployment (preview + production)
+		if (origin.includes('vercel.app')) return true;
+		if (origin.includes('localhost')) return true;
+		return false;
 	} catch {
 		return false;
 	}
@@ -28,8 +32,6 @@ const isAllowedOrigin = (origin) => {
 const corsOptions = {
 	origin: (origin, callback) => {
 		if (isAllowedOrigin(origin)) {
-			// Return the origin string directly so CORS middleware can reflect it properly
-			// When origin is undefined (same-origin), return true; otherwise return the origin string
 			callback(null, origin !== undefined ? origin : true);
 		} else {
 			callback(new Error('Not allowed by CORS'));
@@ -139,6 +141,7 @@ async function appInitiallization() {
 		passportConfig(app);
 
 		// Define routes
+		app.get('/call/health', (req, res) => res.status(200).json({ ok: true }));
 		app.use('/call/auth', authRoute);
 		app.use('/call/discover', discoverQuestionRoute);
 		// app.use('/call/stripe', stripeRoute);
@@ -156,12 +159,12 @@ async function appInitiallization() {
 		})
 
 		app.use((error, req, res, next) => {
-			error.statusCode = error.statusCode || 500;
-			console.log(error.message)
-			return res.status(error.statusCode).json({
-				message: `Unexpected Error occured with message: ${error.message}`
-			})
-		})
+			const statusCode = error.statusCode || (error.message?.includes('CORS') ? 403 : 500);
+			console.error('Server error:', error.message);
+			return res.status(statusCode).json({
+				message: error.message || 'Unexpected error occurred'
+			});
+		});
 
 		console.log('App initialized successfully');
 	} catch (error) {
