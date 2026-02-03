@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "scripts": {
+    "postinstall": "npx update-browserslist-db@latest --yes",
     "env:pull": "vercel env pull .env.local",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\"",
     "dev:vercel": "vercel dev",

@@ -1,11 +1,10 @@
 "use client"
 
-import { useEffect, useState } from 'react';
-// import { getProviders, signIn } from 'next-auth/react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { SignInLocal, signInWithGoogle } from '@/libs/request';
+import { SignInLocal } from '@/libs/request';
 
 export default function SignIn() {
     const [email, setEmail] = useState("");

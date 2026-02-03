@@ -73,7 +73,7 @@ const ChatTab = ({ userId, selectedThread, setSelectedThread, initialPrompt, set
       };
       submitInitial();
     }
-  }, [initialPrompt]);
+  }, [initialPrompt, userId, isSubmitting, selectedThread, setInitialPrompt, setSelectedThread]);
 
   const handleSubmitChatMessageButton = async () => {
     const messageToSend = currentChatMessage.trim();

@@ -18,6 +18,19 @@ export const SignInLocal = async function(payload){
     return response;
 }
 
+//-------------------------------------- FORGOT PASSWORD -------------------------------------------------
+export const sendEmail = async function (payload) {
+    const apiUrl = apiClient.createUrl('auth/forgot-password/send');
+    const response = await apiClient.post(apiUrl, payload, { withCredentials: true });
+    return response;
+};
+
+export const sendCode = async function (payload) {
+    const apiUrl = apiClient.createUrl('auth/forgot-password/verify');
+    const response = await apiClient.post(apiUrl, payload, { withCredentials: true });
+    return response;
+};
+
 //-------------------------------------- USER -------------------------------------------------
 export const getAllUSers = async function () {
     const response = await apiClient.get('/users');
