@@ -4,8 +4,5 @@
     { "src": "server.mjs", "use": "@vercel/node" },
     { "src": "package.json", "use": "@vercel/next" }
   ],
-  "rewrites": [{ "source": "/call/(.*)", "destination": "server.mjs" }],
-  "functions": {
-    "server.mjs": { "maxDuration": 30 }
-  }
+  "rewrites": [{ "source": "/call/(.*)", "destination": "server.mjs" }]
 }
