@@ -114,6 +114,7 @@ const ChatTab = ({ userId, selectedThread, setSelectedThread, initialPrompt, set
 
   const handleAddNewChatButton = () => {
     setConversation([]);
+    setSelectedThread?.(null);
     router.refresh();
   };
 

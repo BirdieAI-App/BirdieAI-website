@@ -19,11 +19,18 @@ const isAllowedOrigin = (origin) => {
 	try {
 		if (!origin) return true; // Allow same-origin (no Origin header)
 		if (allowedOrigins.includes(origin)) return true;
-		// Allow any vercel.app deployment (preview + production)
-		if (origin.includes('vercel.app')) return true;
-		if (origin.includes('localhost')) return true;
-		// Allow production domain (birdieapp.co and www)
-		if (origin.includes('birdieapp.co')) return true;
+		let hostname;
+		try {
+			hostname = new URL(origin).hostname;
+		} catch {
+			return false;
+		}
+		// Vercel deployments: *.vercel.app only (not vercel.app.evil.com)
+		if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) return true;
+		// Localhost
+		if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost')) return true;
+		// Production: exact match for birdieapp.co and www.birdieapp.co
+		if (hostname === 'birdieapp.co' || hostname === 'www.birdieapp.co') return true;
 		return false;
 	} catch {
 		return false;
@@ -186,6 +193,13 @@ async function appInitiallization() {
 		app.use('/call/threads', authenticateJWT, threadRoute);
 		app.use('/call/messages', authenticateJWT, messageRoute);
 
+		// Catch-all 404 - must be registered AFTER routes (Express matches in registration order)
+		app.all('*', (req, res, next) => {
+			const err = new Error(`Not found: ${req.method} ${req.url}`);
+			err.statusCode = 404;
+			next(err);
+		});
+
 		console.log('App initialized successfully');
 		initialized = true;
 	} catch (error) {
@@ -194,13 +208,6 @@ async function appInitiallization() {
 		// Keep initialized=false so middleware returns 503 for /call/* requests
 	}
 }
-
-// Catch-all - 404 for unmatched routes
-app.all('*', (req, res, next) => {
-	const err = new Error(`Not found: ${req.method} ${req.url}`);
-	err.statusCode = 404;
-	next(err);
-});
 
 app.use((error, req, res, next) => {
 	const statusCode = error.statusCode || (error.message?.includes('CORS') ? 403 : 500);
