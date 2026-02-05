@@ -2,10 +2,21 @@ import GoogleStrategy from 'passport-google-oauth2';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken'
 
+// Use VERCEL_URL for preview/production on Vercel when CALLBACK_URL not set
+const getCallbackUrl = () => {
+    const base = process.env.CALLBACK_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null);
+    return base ? `${base.replace(/\/$/, '')}/call/auth/google/callback` : null;
+};
+
+const callbackURL = getCallbackUrl();
+if (!callbackURL || !process.env.GOOGLE_ID || !process.env.GOOGLE_SECRET) {
+    console.warn('Google OAuth: missing CALLBACK_URL/VERCEL_URL, GOOGLE_ID, or GOOGLE_SECRET');
+}
+
 const googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: `${process.env.CALLBACK_URL}/call/auth/google/callback`
+    callbackURL: callbackURL || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/call/auth/google/callback`
 },
     async (accessToken, refreshToken, profile, done) => {
         console.log("User authenticated through Google. In passport callback.");

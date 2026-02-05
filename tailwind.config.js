@@ -1,4 +1,6 @@
-module.exports = {
+import daisyui from 'daisyui';
+
+export default {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",

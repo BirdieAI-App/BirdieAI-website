@@ -36,7 +36,7 @@ messageSchema.pre("save", async function (next) {
   const timestamps = message.createdAt;
   try {
     await Thread.updateOne(
-      { threadID: message.threadID },
+      { _id: message.threadID },
       { $set: { updatedAt: timestamps } }
     );
     next();

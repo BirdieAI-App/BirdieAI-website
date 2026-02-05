@@ -1,26 +1,26 @@
-import React, { use, useEffect, useState } from 'react';
-import { Tab, Transition } from '@headlessui/react';
+import React, { useEffect, useState } from 'react';
+import { Tab } from '@headlessui/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComment } from "@fortawesome/free-regular-svg-icons";
 import { faBook } from "@fortawesome/free-solid-svg-icons";
 import { getAllThreadsByUser, saveNewThread } from '@/libs/request';
-import { set } from 'mongoose';
 
-const LibraryTab = ({setSelectedThread, setSelectedIndex}) => {
-	const userId = "678c6ba2b7b3e0bb250838bd"; //Huy Phung 
+const LibraryTab = ({ userId, setSelectedThread, setSelectedIndex }) => {
 	const [threads, setThreads] = useState([]);
+
 	useEffect(() => {
+		if (!userId) return;
 		const fetchThreads = async () => {
 			try {
-				const threads = await getAllThreadsByUser(userId);
-				console.log(threads);
-				setThreads(threads);
+				const data = await getAllThreadsByUser(userId);
+				setThreads(data || []);
 			} catch (error) {
 				console.error('Error fetching threads:', error);
+				setThreads([]);
 			}
 		};
 		fetchThreads();
-	}, []);
+	}, [userId]);
 
 	const handleThreadClick = (thread) => {
 		console.log(thread);
@@ -29,16 +29,16 @@ const LibraryTab = ({setSelectedThread, setSelectedIndex}) => {
 	}
 
 	const handleAddNewThread = async () => {
-		const payload = {
-			userID: userId,
-			title: 'New Chat',
+		if (!userId) return;
+		try {
+			const payload = { userID: userId, title: 'New Chat' };
+			const response = await saveNewThread(payload);
+			setThreads(prev => [...prev, response]);
+			setSelectedThread(response);
+			setSelectedIndex(0);
+		} catch (error) {
+			console.error('Error creating thread:', error);
 		}
-		const response = await saveNewThread(payload);
-		setThreads([...threads, response]);
-		setSelectedThread(response);
-		setSelectedIndex(0);
-		console.log(response);
-		console.log('Thread added');
 	}
 
 	return (

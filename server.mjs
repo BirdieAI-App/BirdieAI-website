@@ -1,5 +1,4 @@
 import express from 'express';
-import serverless from 'serverless-http';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
@@ -7,54 +6,111 @@ import cookieParser from 'cookie-parser';
 // Initialize Express
 const app = express();
 
-// CORS configuration
+// CORS configuration - include Vercel deployment URL for preview/production
+const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null;
 const allowedOrigins = [
 	process.env.FRONTEND_URL,
 	process.env.FRONTEND_URL_WWW,
-	process.env.FRONTEND_URL_ALT
+	process.env.FRONTEND_URL_ALT,
+	vercelUrl,
+	'https://birdieapp.co',
+	'https://www.birdieapp.co',
+	'http://localhost:3000',
 ].filter(Boolean);
 
-const isAllowedOrigin = (origin) => {
+const isAllowedOrigin = (origin, req) => {
 	try {
-		if (!origin) return true; // Allow SSR/same-origin
-		return allowedOrigins.includes(origin);
+		if (!origin) return true; // Allow same-origin (no Origin header)
+		if (allowedOrigins.includes(origin)) return true;
+		let hostname;
+		try {
+			hostname = new URL(origin).hostname;
+		} catch {
+			return false;
+		}
+		// Allow when origin host matches request Host (same-site)
+		const requestHost = req?.headers?.host?.split(':')[0];
+		if (requestHost && hostname === requestHost) return true;
+		// Vercel deployments: *.vercel.app only
+		if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) return true;
+		// Localhost
+		if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost')) return true;
+		// Production: birdieapp.co and all subdomains
+		if (hostname === 'birdieapp.co' || hostname.endsWith('.birdieapp.co')) return true;
+		// Allow if origin hostname matches any configured FRONTEND_URL
+		for (const url of allowedOrigins) {
+			try {
+				if (new URL(url).hostname === hostname) return true;
+			} catch { /* skip */ }
+		}
+		return false;
 	} catch {
 		return false;
 	}
 };
 
-const corsOptions = {
-	origin: (origin, callback) => {
-		if (isAllowedOrigin(origin)) {
-			// Return the origin string directly so CORS middleware can reflect it properly
-			// When origin is undefined (same-origin), return true; otherwise return the origin string
-			callback(null, origin !== undefined ? origin : true);
-		} else {
-			callback(new Error('Not allowed by CORS'));
-		}
-	},
-	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
-	credentials: true,
-	optionsSuccessStatus: 200
+// Dynamic CORS - has access to req so we can allow origin matching request Host
+const corsOptions = (req, callback) => {
+	const origin = req.headers.origin;
+	const allowed = isAllowedOrigin(origin, req);
+	callback(null, {
+		origin: allowed ? (origin || true) : false,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
+		credentials: true,
+		optionsSuccessStatus: 200,
+	});
 };
 
-app.options('*', (req, res) => {
-	console.log('in OPTIONS request for ALL routes')
+// CORS debug - match multiple paths (Vercel may pass /call/cors-check or /cors-check)
+const handleCorsCheck = (req, res) => {
+	res.set('Access-Control-Allow-Origin', '*');
+	res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+	if (req.method === 'OPTIONS') return res.sendStatus(200);
 	const origin = req.headers.origin;
-	if (isAllowedOrigin(origin)) {
+	const allowed = isAllowedOrigin(origin, req);
+	return res.status(200).json({
+		origin: origin || '(none - same-origin request)',
+		allowed,
+		allowedOrigins,
+		path: req.path,
+		url: req.url,
+	});
+};
+app.all('/call/cors-check', handleCorsCheck);
+app.all('/cors-check', handleCorsCheck);
+app.use((req, res, next) => {
+	const p = (req.path || req.url || '').split('?')[0];
+	if (p.endsWith('/cors-check') || p.includes('/cors-check')) {
+		return handleCorsCheck(req, res);
+	}
+	next();
+});
+
+app.options('*', (req, res) => {
+	const origin = req.headers.origin;
+	if (isAllowedOrigin(origin, req)) {
 		res.header('Access-Control-Allow-Origin', origin);
 		res.header('Vary', 'Origin');
 	}
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 	res.header('Access-Control-Allow-Credentials', 'true');
-	return res.sendStatus(200); // This ensures no further processing of the OPTIONS request
+	return res.sendStatus(200);
 });
 
 app.use(cors(corsOptions));
 
-
+// Additional middleware to ensure CORS headers are set on all responses
+app.use((req, res, next) => {
+	const origin = req.headers.origin;
+	if (origin && isAllowedOrigin(origin, req)) {
+		res.header('Access-Control-Allow-Origin', origin);
+		res.header('Vary', 'Origin');
+	}
+	res.header('Access-Control-Allow-Credentials', 'true');
+	next();
+});
 
 // Middleware for body parsing
 app.use(express.urlencoded({ extended: true }));
@@ -62,26 +118,57 @@ app.use(express.json());
 app.use(cookieParser())
 
 app.use((req, res, next) => {
-	console.log(`Request URL: ${req.url}`);
-	console.log(`Request Method: ${req.method}`);
-
 	if (!req.headers.authorization) {
-		const cookies = req.cookies;
-		let token = null;
-		if (!cookies) {
-			console.log("NO COOKIES FOUND")
-		} else {
-			token = cookies.BirdieJWT;
-			console.log("FOUND COOKIES:", token)
-		}
-		if (token) {
-			req.headers.authorization = token;
-		}
+		const token = req.cookies?.BirdieJWT;
+		if (token) req.headers.authorization = token;
 	}
-	next(); // Pass control to the next middleware or route handler
+	next();
 });
 
-// Function to load secrets and initialize the app
+// Health check - match multiple possible paths (Vercel may pass path differently)
+app.get('/call/health', (req, res) => res.status(200).json({ ok: true }));
+app.get('/health', (req, res) => res.status(200).json({ ok: true }));
+// Debug route - diagnose path/routing on Vercel
+app.get('/call/debug', (req, res) => res.status(200).json({
+	ok: true,
+	path: req.path,
+	url: req.url,
+	originalUrl: req.originalUrl,
+	baseUrl: req.baseUrl,
+}));
+app.get('/debug', (req, res) => res.status(200).json({
+	ok: true,
+	path: req.path,
+	url: req.url,
+	originalUrl: req.originalUrl,
+}));
+// Debug: match any path for health to diagnose routing
+app.get('*', (req, res, next) => {
+	if (req.path === '/health' || req.path.endsWith('/health')) {
+		return res.status(200).json({ ok: true, path: req.path, url: req.url });
+	}
+	next();
+});
+
+// Track init state - backend must respond immediately, init runs in background
+let initialized = false;
+let initError = null;
+app.use((req, res, next) => {
+	const p = req.path || req.url || '';
+	const isHealth = p === '/call/health' || p === '/health' || p.endsWith('/health');
+	const isDebug = p === '/call/debug' || p === '/debug' || p.endsWith('/debug');
+	if (isHealth || isDebug) return next();
+	if (p.startsWith('/call') && !initialized) {
+		return res.status(503).json({
+			message: initError ? 'Backend misconfigured' : 'Backend initializing',
+			retry: !initError,
+			...(process.env.NODE_ENV === 'development' && initError && { error: initError })
+		});
+	}
+	next();
+});
+
+// Async initialization - add DB-dependent routes
 async function appInitiallization() {
 	try {
 		// Load secrets from AWS Secrets Manager
@@ -107,8 +194,12 @@ async function appInitiallization() {
 		// console.log('AWS Secrets loaded successfully');
 
 		// Connect to MongoDB
+		const mongoUri = process.env.MONGODB_URI;
+		if (!mongoUri || typeof mongoUri !== 'string') {
+			throw new Error('MONGODB_URI is not set. Add it in Vercel Project Settings → Environment Variables.');
+		}
 		if (mongoose.connection.readyState !== 1) {
-			await mongoose.connect(process.env.MONGODB_URI);
+			await mongoose.connect(mongoUri);
 			console.log('Database connected successfully');
 		}
 
@@ -121,6 +212,7 @@ async function appInitiallization() {
 		// const stripeWebhookRoute = (await import('./backend/routes/stripeWebhookRoute.js')).default;
 		const authRoute = (await import('./backend/routes/authRoute.js')).default;
 		const openAIPromptRoute = (await import('./backend/routes/OpenAIPromptRoute.js')).default;
+		const discoverQuestionRoute = (await import('./backend/routes/discoverQuestionRoute.js')).default;
 		const authenticateJWT = (await import('./backend/passport/authenticateJWT.js')).default;
 
 		// Initialize Passport
@@ -128,6 +220,7 @@ async function appInitiallization() {
 
 		// Define routes
 		app.use('/call/auth', authRoute);
+		app.use('/call/discover', discoverQuestionRoute);
 		// app.use('/call/stripe', stripeRoute);
 		// app.use('/call/stripe', stripeWebhookRoute);
 		app.use('/call/users', userRoute);
@@ -135,32 +228,36 @@ async function appInitiallization() {
 		app.use('/call/threads', authenticateJWT, threadRoute);
 		app.use('/call/messages', authenticateJWT, messageRoute);
 
-		app.all('*', (req, res, next) => {// route for catching all the requests that is not specified above
-			// return res.status(404).json({message: `Cannot find ${req.originalUrl} route with ${req.method} method on server`});
-			const err = new Error(`Cannot find ${req.originalUrl} route with ${req.method} method on server`);
+		// Catch-all 404 - must be registered AFTER routes (Express matches in registration order)
+		app.all('*', (req, res, next) => {
+			const err = new Error(`Not found: ${req.method} ${req.url}`);
 			err.statusCode = 404;
 			next(err);
-		})
-
-		app.use((error, req, res, next) => {
-			error.statusCode = error.statusCode || 500;
-			console.log(error.message)
-			return res.status(error.statusCode).json({
-				message: `Unexpected Error occured with message: ${error.message}`
-			})
-		})
+		});
 
 		console.log('App initialized successfully');
+		initialized = true;
 	} catch (error) {
 		console.error('Error during initialization:', error.message);
-		process.exit(1); // Exit process if initialization fails
+		initError = error.message;
+		// Keep initialized=false so middleware returns 503 for /call/* requests
 	}
 }
 
+app.use((error, req, res, next) => {
+	const statusCode = error.statusCode || (error.message?.includes('CORS') ? 403 : 500);
+	console.error('Server error:', error.message);
+	res.status(statusCode).json({
+		message: error.message || 'Unexpected error occurred'
+	});
+});
 
 
-// Call the initialization function and export the handler
-await appInitiallization();
 
+// Run init in background - do NOT await (avoids Vercel cold-start timeout / 505)
+appInitiallization().catch((err) => {
+	console.error('Unhandled init error:', err.message);
+	initError = err.message;
+});
 
 export default app;

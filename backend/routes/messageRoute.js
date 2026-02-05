@@ -105,9 +105,10 @@ messageRoute.route('/')
             chatHistory = [{ role: 'user', content: prompt }]
         }
         //3b. Retrieve response from openAI
+        const systemPrompt = openAIPrompt?.prompt || 'You are a helpful nutrition coach for prenatal, postpartum, and pediatric care.';
         const gptResponse = await openai.chat.completions.create({
             model: "gpt-4o",
-            messages: [{ role: "system", content: openAIPrompt.toString() }, ...chatHistory],
+            messages: [{ role: "system", content: systemPrompt }, ...chatHistory],
         });
         console.log(gptResponse.choices[0].message.content)
 

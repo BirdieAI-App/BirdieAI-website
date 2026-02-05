@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-// import Chat from "@/components/Chat";
+import { useRouter } from "next/navigation";
 import ChatTab from "@/app/chat/tab/Chat";
 import DiscoverTab from "@/app/chat/tab/Discover";
 import LibraryTab from "@/app/chat/tab/Library";
@@ -13,41 +13,61 @@ import { faHouse, faBook, faListCheck } from "@fortawesome/free-solid-svg-icons"
 import { checkAuthentication } from "@/libs/request";
 
 const ChatPage = () => {
+  const router = useRouter();
   const [isloading, setIsLoading] = useState(true);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [selectedThread, setSelectedThread] = useState(null);
-  
+  const [userId, setUserId] = useState(null);
+  const [initialPrompt, setInitialPrompt] = useState(null);
+
   useEffect(() => {
     const checkAuth = async () => {
-        try {
-          const res = await checkAuthentication();
-          setIsLoading(false)
-          console.log(res)//user info for frontend in here
-        } catch (err) {
-          // console.log(err)
-          setIsLoading(false)
-        }
-    }
+      try {
+        const res = await checkAuthentication();
+        setUserId(res?.user?.id || null);
+      } catch (err) {
+        router.push("/api/auth/signin");
+        return;
+      } finally {
+        setIsLoading(false);
+      }
+    };
     checkAuth();
-  }, [])
+  }, [router]);
   return (
-    (isloading ? <></>: <div className="h-screen flex flex-col">
-      <Tab.Group 
-        as="div" 
+    (isloading ? <></> : <div className="h-screen flex flex-col">
+      <Tab.Group
+        as="div"
         className="flex flex-grow flex-col mb-14"
         selectedIndex={selectedIndex}
         onChange={setSelectedIndex}
       >
         {/* Panels */}
         <Tab.Panels className="flex-grow flex h-full">
-          <Tab.Panel className="flex h-full w-full" >
-            <ChatTab  selectedThread={selectedThread}/>
+          <Tab.Panel className="flex h-full w-full">
+            <ChatTab
+              userId={userId}
+              selectedThread={selectedThread}
+              setSelectedThread={setSelectedThread}
+              initialPrompt={initialPrompt}
+              setInitialPrompt={setInitialPrompt}
+            />
           </Tab.Panel>
           <Tab.Panel className="flex h-full w-full">
-            <DiscoverTab />
+            <DiscoverTab
+              onQuestionClick={(question) => {
+                setInitialPrompt(question?.content || question);
+                setSelectedThread(null);
+                setSelectedIndex(0);
+              }}
+            />
           </Tab.Panel>
           <Tab.Panel className="flex h-full w-full">
-            <LibraryTab setSelectedThread={setSelectedThread} setSelectedIndex={setSelectedIndex}/>
+            <LibraryTab
+              userId={userId}
+              setSelectedThread={setSelectedThread}
+              setSelectedIndex={setSelectedIndex}
+            />
           </Tab.Panel>
           <Tab.Panel className="flex h-full">
             <ToDoListTab />

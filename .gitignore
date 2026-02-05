@@ -26,6 +26,7 @@ yarn-error.log*
 
 # local env files
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -41,3 +42,4 @@ public/sitemap-0.xml
 .env*.local
 
 .vercel
+.env*.local

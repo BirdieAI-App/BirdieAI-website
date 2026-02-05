@@ -1,23 +1,22 @@
 "use client"
 
-import { useEffect, useState } from 'react';
-// import { getProviders, signIn } from 'next-auth/react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { SignInLocal, signInWithGoogle } from '@/libs/request';
+import { SignInLocal } from '@/libs/request';
 
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleLocalSignIn = async () =>{
-        event.stopPropagation();
+    const handleLocalSignIn = async (event) => {
         event.preventDefault();
-        try{
-            const response = await SignInLocal({email,password});
-        }catch(err){
-            console.log(err.message)
+        try {
+            await SignInLocal({ email, password });
+        } catch (err) {
+            const message = err.response?.data?.message || err.message || "Sign in failed. Please try again.";
+            toast.error(message);
         }
     }
     return (
@@ -26,17 +25,18 @@ export default function SignIn() {
                 <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
                     <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                         <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">Sign in to your account</h1>
-                        <Link href={`${process.env.NEXT_PUBLIC_BACKEND_URL}/call/auth/google`} passHref>
-                            <div className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150">
-                                <img
-                                    className="w-6 h-6"
-                                    src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                    loading="lazy"
-                                    alt="google logo"
-                                />
-                                <span className="ml-3">Continue with Google</span>
-                            </div>
-                        </Link>
+                        <a
+                            href="/call/auth/google"
+                            className="flex w-full justify-center py-1.5 border border-slate-200 rounded-lg text-slate-700 my-8 hover:border-slate-400 hover:text-slate-900 hover:shadow transition duration-150"
+                        >
+                            <img
+                                className="w-6 h-6"
+                                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                loading="lazy"
+                                alt="google logo"
+                            />
+                            <span className="ml-3">Continue with Google</span>
+                        </a>
                         <div className="inline-flex items-center justify-center w-full">
                             <hr className="w-full h-px my-8 bg-gray-200 border-0" />
                             <span className="absolute px-3 font-medium text-gray-900 -translate-x-1/2 bg-white left-1/2">or</span>
@@ -64,7 +64,7 @@ export default function SignIn() {
                                     </div>
                                 </div>
                                 <div className="mt-2">
-                                    <input id="password" name="password" type="text" autoComplete="current-password"
+                                    <input id="password" name="password" type="password" autoComplete="current-password"
                                         required className="pl-2 bg-white block w-full rounded-md border border-gray-300 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                         placeholder="••••••••"
                                         value={password}
