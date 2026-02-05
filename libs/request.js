@@ -106,7 +106,10 @@ export const getDailyMessageCount = async function (userID) {
 
 export const saveNewMessage = async function (payload) {
     const apiUrl = apiClient.createUrl('messages');
-    const response = await apiClient.put(apiUrl, payload, {withCredentials: true});
+    const response = await apiClient.put(apiUrl, payload, {
+        withCredentials: true,
+        timeout: 90000, // 90s - OpenAI can take 30+ seconds
+    });
     return response;
 }
 

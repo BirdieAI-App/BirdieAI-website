@@ -104,7 +104,8 @@ const ChatTab = ({ userId, selectedThread, setSelectedThread, initialPrompt, set
       }
     } catch (error) {
       console.error('Error sending message:', error);
-      const msg = error?.response?.data?.message || error?.message || 'Failed to send message';
+      const data = error?.response?.data;
+      const msg = data?.message || data?.error || error?.message || 'Failed to send message';
       toast.error(msg);
       setCurrentChatMessage(messageToSend);
     } finally {

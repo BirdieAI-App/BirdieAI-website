@@ -27,6 +27,10 @@ messageRoute.route('/')
             !checkRequiredKeys(prompt, "prompt", res)) {
             return;
         }
+        if (!process.env.OPENAI_KEY || typeof process.env.OPENAI_KEY !== 'string') {
+            console.error('OPENAI_KEY is not set. Add it in Vercel Project Settings → Environment Variables.');
+            return res.status(503).json({ message: 'AI service is not configured. Please contact support.' });
+        }
         let user;
         let newThread;
         const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY })
