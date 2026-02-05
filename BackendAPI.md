@@ -13,6 +13,33 @@ See `.env.example` for the list of required variables (set these in Vercel Dashb
 
 ---
 
+## Production Deployment Checklist
+
+After merging to production, run these steps:
+
+### 1. Seed Discover Questions (required for Discover tab)
+```bash
+npm run seed:discover:prod
+```
+This pulls production env from Vercel and populates the DiscoverQuestion collection in MongoDB.
+
+### 2. Vercel Environment Variables (required for Chat + CORS)
+In **Vercel → Project → Settings → Environment Variables**, ensure these are set for **Production**:
+
+| Variable | Example | Purpose |
+|----------|---------|---------|
+| `FRONTEND_URL` | `https://birdieapp.co` | CORS + redirects |
+| `FRONTEND_URL_WWW` | `https://www.birdieapp.co` | CORS if using www |
+| `MONGODB_URI` | `mongodb+srv://...` | Database |
+| `OPENAI_KEY` | `sk-...` | Chat AI responses |
+| `JWT_SIGNING_SECRET` | (secret) | Auth |
+| `GOOGLE_ID` / `GOOGLE_SECRET` | (from Google Cloud) | Google sign-in |
+
+### 3. Debug CORS (if chat still fails)
+Open `https://your-domain.com/api/cors-check` in a new tab. It shows the `Origin` and whether it's allowed.
+
+---
+
 ## Auth Route
 
 **Note:** This route has already been implemented by the backend developer. No additional information is available.

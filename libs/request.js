@@ -119,6 +119,6 @@ export const updateMessageByID = async function (messageID, payload) {
 //-------------------------------------- DISCOVER -------------------------------------------------
 export const getDiscoverQuestions = async function (category) {
     const apiUrl = apiClient.createUrl(`discover/questions${category ? `?category=${encodeURIComponent(category)}` : ''}`);
-    const response = await apiClient.get(apiUrl, { withCredentials: true });
+    const response = await apiClient.get(apiUrl);
     return response;
 }

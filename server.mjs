@@ -12,10 +12,13 @@ const allowedOrigins = [
 	process.env.FRONTEND_URL,
 	process.env.FRONTEND_URL_WWW,
 	process.env.FRONTEND_URL_ALT,
-	vercelUrl
+	vercelUrl,
+	'https://birdieapp.co',
+	'https://www.birdieapp.co',
+	'http://localhost:3000',
 ].filter(Boolean);
 
-const isAllowedOrigin = (origin) => {
+const isAllowedOrigin = (origin, req) => {
 	try {
 		if (!origin) return true; // Allow same-origin (no Origin header)
 		if (allowedOrigins.includes(origin)) return true;
@@ -25,11 +28,14 @@ const isAllowedOrigin = (origin) => {
 		} catch {
 			return false;
 		}
-		// Vercel deployments: *.vercel.app only (not vercel.app.evil.com)
+		// Allow when origin host matches request Host (same-site)
+		const requestHost = req?.headers?.host?.split(':')[0];
+		if (requestHost && hostname === requestHost) return true;
+		// Vercel deployments: *.vercel.app only
 		if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) return true;
 		// Localhost
 		if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost')) return true;
-		// Production: birdieapp.co and all subdomains (www, app, etc.)
+		// Production: birdieapp.co and all subdomains
 		if (hostname === 'birdieapp.co' || hostname.endsWith('.birdieapp.co')) return true;
 		// Allow if origin hostname matches any configured FRONTEND_URL
 		for (const url of allowedOrigins) {
@@ -43,45 +49,54 @@ const isAllowedOrigin = (origin) => {
 	}
 };
 
-const corsOptions = {
-	origin: (origin, callback) => {
-		if (isAllowedOrigin(origin)) {
-			callback(null, origin !== undefined ? origin : true);
-		} else {
-			callback(new Error('Not allowed by CORS'));
-		}
-	},
-	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-	allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
-	credentials: true,
-	optionsSuccessStatus: 200
+// Dynamic CORS - has access to req so we can allow origin matching request Host
+const corsOptions = (req, callback) => {
+	const origin = req.headers.origin;
+	const allowed = isAllowedOrigin(origin, req);
+	callback(null, {
+		origin: allowed ? (origin || true) : false,
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-XSRF-TOKEN', 'Accept', 'Origin'],
+		credentials: true,
+		optionsSuccessStatus: 200,
+	});
 };
 
-// CORS debug - must run BEFORE cors middleware; open in new tab or fetch from console
-app.all('/call/cors-check', (req, res) => {
+// CORS debug - match multiple paths (Vercel may pass /call/cors-check or /cors-check)
+const handleCorsCheck = (req, res) => {
 	res.set('Access-Control-Allow-Origin', '*');
 	res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
 	if (req.method === 'OPTIONS') return res.sendStatus(200);
 	const origin = req.headers.origin;
-	const allowed = isAllowedOrigin(origin);
+	const allowed = isAllowedOrigin(origin, req);
 	return res.status(200).json({
 		origin: origin || '(none - same-origin request)',
 		allowed,
 		allowedOrigins,
+		path: req.path,
+		url: req.url,
 	});
+};
+app.all('/call/cors-check', handleCorsCheck);
+app.all('/cors-check', handleCorsCheck);
+app.use((req, res, next) => {
+	const p = (req.path || req.url || '').split('?')[0];
+	if (p.endsWith('/cors-check') || p.includes('/cors-check')) {
+		return handleCorsCheck(req, res);
+	}
+	next();
 });
 
 app.options('*', (req, res) => {
-	console.log('in OPTIONS request for ALL routes')
 	const origin = req.headers.origin;
-	if (isAllowedOrigin(origin)) {
+	if (isAllowedOrigin(origin, req)) {
 		res.header('Access-Control-Allow-Origin', origin);
 		res.header('Vary', 'Origin');
 	}
 	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
 	res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
 	res.header('Access-Control-Allow-Credentials', 'true');
-	return res.sendStatus(200); // This ensures no further processing of the OPTIONS request
+	return res.sendStatus(200);
 });
 
 app.use(cors(corsOptions));
@@ -89,7 +104,7 @@ app.use(cors(corsOptions));
 // Additional middleware to ensure CORS headers are set on all responses
 app.use((req, res, next) => {
 	const origin = req.headers.origin;
-	if (origin && isAllowedOrigin(origin)) {
+	if (origin && isAllowedOrigin(origin, req)) {
 		res.header('Access-Control-Allow-Origin', origin);
 		res.header('Vary', 'Origin');
 	}
