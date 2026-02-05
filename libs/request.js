@@ -104,13 +104,23 @@ export const getDailyMessageCount = async function (userID) {
     return response;
 }
 
-export const saveNewMessage = async function (payload) {
+export const saveNewMessage = async function (payload, retries = 3) {
     const apiUrl = apiClient.createUrl('messages');
-    const response = await apiClient.put(apiUrl, payload, {
-        withCredentials: true,
-        timeout: 90000, // 90s - OpenAI can take 30+ seconds
-    });
-    return response;
+    const opts = { withCredentials: true, timeout: 90000 };
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const response = await apiClient.put(apiUrl, payload, opts);
+            return response;
+        } catch (err) {
+            const is503 = err?.response?.status === 503;
+            const shouldRetry = is503 && err?.response?.data?.retry === true && attempt < retries;
+            if (shouldRetry) {
+                await new Promise((r) => setTimeout(r, 2000 * attempt)); // 2s, 4s, 6s
+                continue;
+            }
+            throw err;
+        }
+    }
 }
 
 export const updateMessageByID = async function (messageID, payload) {
