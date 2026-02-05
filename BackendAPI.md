@@ -35,9 +35,6 @@ In **Vercel → Project → Settings → Environment Variables**, ensure these a
 | `JWT_SIGNING_SECRET` | (secret) | Auth |
 | `GOOGLE_ID` / `GOOGLE_SECRET` | (from Google Cloud) | Google sign-in |
 
-### 3. Debug CORS (if chat still fails)
-Open `https://your-domain.com/api/cors-check` in a new tab. It shows the `Origin` and whether it's allowed.
-
 ---
 
 ## Auth Route

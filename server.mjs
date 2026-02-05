@@ -18,10 +18,21 @@ const allowedOrigins = [
 	'http://localhost:3000',
 ].filter(Boolean);
 
+// RegExp patterns for flexible matching (cors package supports these)
+const originPatterns = [
+	/^https:\/\/([a-z0-9-]+\.)*birdieapp\.co(\:\d+)?$/,
+	/^http:\/\/([a-z0-9-]+\.)*birdieapp\.co(\:\d+)?$/,
+	/^https:\/\/[a-z0-9-]+\.vercel\.app(\:\d+)?$/,
+	/^https:\/\/vercel\.app(\:\d+)?$/,
+	/^http:\/\/localhost(:\d+)?$/,
+	/^http:\/\/127\.0\.0\.1(:\d+)?$/,
+];
+
 const isAllowedOrigin = (origin, req) => {
 	try {
 		if (!origin) return true; // Allow same-origin (no Origin header)
 		if (allowedOrigins.includes(origin)) return true;
+		if (originPatterns.some((p) => p.test(origin))) return true;
 		let hostname;
 		try {
 			hostname = new URL(origin).hostname;
@@ -49,10 +60,16 @@ const isAllowedOrigin = (origin, req) => {
 	}
 };
 
-// Dynamic CORS - has access to req so we can allow origin matching request Host
+// Dynamic CORS - use origin function that reflects allowed origins
 const corsOptions = (req, callback) => {
-	const origin = req.headers.origin;
+	let origin = req.headers.origin;
+	// Same-origin requests often omit Origin; construct from Host so we always set the header
+	if (!origin && req.headers.host) {
+		const proto = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
+		origin = `${proto}://${req.headers.host.split(':')[0]}`;
+	}
 	const allowed = isAllowedOrigin(origin, req);
+	// When allowed, pass the exact origin string so cors sets Access-Control-Allow-Origin correctly
 	callback(null, {
 		origin: allowed ? (origin || true) : false,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -62,34 +79,13 @@ const corsOptions = (req, callback) => {
 	});
 };
 
-// CORS debug - match multiple paths (Vercel may pass /call/cors-check or /cors-check)
-const handleCorsCheck = (req, res) => {
-	res.set('Access-Control-Allow-Origin', '*');
-	res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-	if (req.method === 'OPTIONS') return res.sendStatus(200);
-	const origin = req.headers.origin;
-	const allowed = isAllowedOrigin(origin, req);
-	return res.status(200).json({
-		origin: origin || '(none - same-origin request)',
-		allowed,
-		allowedOrigins,
-		path: req.path,
-		url: req.url,
-	});
-};
-app.all('/call/cors-check', handleCorsCheck);
-app.all('/cors-check', handleCorsCheck);
-app.use((req, res, next) => {
-	const p = (req.path || req.url || '').split('?')[0];
-	if (p.endsWith('/cors-check') || p.includes('/cors-check')) {
-		return handleCorsCheck(req, res);
-	}
-	next();
-});
-
 app.options('*', (req, res) => {
-	const origin = req.headers.origin;
-	if (isAllowedOrigin(origin, req)) {
+	let origin = req.headers.origin;
+	if (!origin && req.headers.host) {
+		const proto = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
+		origin = `${proto}://${req.headers.host.split(':')[0]}`;
+	}
+	if (origin && isAllowedOrigin(origin, req)) {
 		res.header('Access-Control-Allow-Origin', origin);
 		res.header('Vary', 'Origin');
 	}
@@ -103,7 +99,11 @@ app.use(cors(corsOptions));
 
 // Additional middleware to ensure CORS headers are set on all responses
 app.use((req, res, next) => {
-	const origin = req.headers.origin;
+	let origin = req.headers.origin;
+	if (!origin && req.headers.host) {
+		const proto = req.headers['x-forwarded-proto'] || (req.connection?.encrypted ? 'https' : 'http');
+		origin = `${proto}://${req.headers.host.split(':')[0]}`;
+	}
 	if (origin && isAllowedOrigin(origin, req)) {
 		res.header('Access-Control-Allow-Origin', origin);
 		res.header('Vary', 'Origin');
