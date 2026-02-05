@@ -29,8 +29,14 @@ const isAllowedOrigin = (origin) => {
 		if (hostname === 'vercel.app' || hostname.endsWith('.vercel.app')) return true;
 		// Localhost
 		if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost')) return true;
-		// Production: exact match for birdieapp.co and www.birdieapp.co
-		if (hostname === 'birdieapp.co' || hostname === 'www.birdieapp.co') return true;
+		// Production: birdieapp.co and all subdomains (www, app, etc.)
+		if (hostname === 'birdieapp.co' || hostname.endsWith('.birdieapp.co')) return true;
+		// Allow if origin hostname matches any configured FRONTEND_URL
+		for (const url of allowedOrigins) {
+			try {
+				if (new URL(url).hostname === hostname) return true;
+			} catch { /* skip */ }
+		}
 		return false;
 	} catch {
 		return false;
@@ -50,6 +56,20 @@ const corsOptions = {
 	credentials: true,
 	optionsSuccessStatus: 200
 };
+
+// CORS debug - must run BEFORE cors middleware; open in new tab or fetch from console
+app.all('/call/cors-check', (req, res) => {
+	res.set('Access-Control-Allow-Origin', '*');
+	res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+	if (req.method === 'OPTIONS') return res.sendStatus(200);
+	const origin = req.headers.origin;
+	const allowed = isAllowedOrigin(origin);
+	return res.status(200).json({
+		origin: origin || '(none - same-origin request)',
+		allowed,
+		allowedOrigins,
+	});
+});
 
 app.options('*', (req, res) => {
 	console.log('in OPTIONS request for ALL routes')
