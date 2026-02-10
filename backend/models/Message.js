@@ -13,22 +13,38 @@ const messageSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
-  prompt: {
+  content:{
     type: String,
     required: true,
   },
-  response: String,
+  messageID:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Message",
+  },
   feedback: {
     type: String,
     enum: ["like", "dislike", "none"],
     default: "none",
   },
+  role: {
+    type:String,
+    enum:["Bot", "User"],
+    required: true,
+  }
 },
   {
     //add createdAt and updatedAt timestamps
     timestamps: true,
   }
 );
+
+// ✅ Custom validation to ensure Bot messages reference a User message
+messageSchema.pre("validate", function (next) {
+  if (this.role === "Bot" && !this.messageID) {
+    return next(new Error("Bot messages must have a messageID referencing the user's message."));
+  }
+  next();
+});
 
 // update the 'updatedAt' field in Thread collection when a new message is saved
 messageSchema.pre("save", async function (next) {
@@ -45,6 +61,7 @@ messageSchema.pre("save", async function (next) {
     return next(err);
   }
 });
+
 
 const Message = mongoose.model("Message", messageSchema);
 export default Message;
