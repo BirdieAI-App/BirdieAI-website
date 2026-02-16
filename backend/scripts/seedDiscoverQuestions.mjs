@@ -6,12 +6,12 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// Load env from Vercel: run "npm run env:pull" to sync from Vercel project
+// Load env (optional .env.local for local runs; Vercel preview/production use env vars from project settings)
 dotenv.config({ path: join(__dirname, '../../.env') });
 dotenv.config({ path: join(__dirname, '../../.env.local') });
 
 if (!process.env.MONGODB_URI) {
-  console.error('Error: MONGODB_URI is not set. Run "npm run env:pull" to load env from Vercel, or add MONGODB_URI to .env.local');
+  console.error('Error: MONGODB_URI is not set. Set it in Vercel Environment Variables (preview/production) or in .env.local for local runs.');
   process.exit(1);
 }
 
