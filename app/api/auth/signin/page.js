@@ -13,7 +13,10 @@ export default function SignIn() {
     const handleLocalSignIn = async (event) => {
         event.preventDefault();
         try {
-            await SignInLocal({ email, password });
+            const res = await SignInLocal({ email, password });
+            if (res?.redirect && res?.url) {
+                window.location = res.url;
+            }
         } catch (err) {
             const message = err.response?.data?.message || err.message || "Sign in failed. Please try again.";
             toast.error(message);
