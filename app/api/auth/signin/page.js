@@ -9,17 +9,24 @@ import { SignInLocal } from '@/libs/request';
 export default function SignIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     const handleLocalSignIn = async (event) => {
         event.preventDefault();
+        setSubmitting(true);
         try {
             const res = await SignInLocal({ email, password });
             if (res?.redirect && res?.url) {
                 window.location = res.url;
             }
         } catch (err) {
-            const message = err.response?.data?.message || err.message || "Sign in failed. Please try again.";
+            const is503 = err?.response?.status === 503;
+            const message = is503
+                ? "Server is starting up. Please wait a moment and try again."
+                : (err.response?.data?.message || err.message || "Sign in failed. Please try again.");
             toast.error(message);
+        } finally {
+            setSubmitting(false);
         }
     }
     return (
@@ -76,8 +83,8 @@ export default function SignIn() {
                                 </div>
                             </div>
                             <div>
-                                <button type="submit" className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                    Sign in
+                                <button type="submit" disabled={submitting} className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70 disabled:cursor-not-allowed">
+                                    {submitting ? "Signing in…" : "Sign in"}
                                 </button>
                             </div>
                         </form>

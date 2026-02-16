@@ -128,19 +128,23 @@ app.use((req, res, next) => {
 // Health check - match multiple possible paths (Vercel may pass path differently)
 app.get('/call/health', (req, res) => res.status(200).json({ ok: true }));
 app.get('/health', (req, res) => res.status(200).json({ ok: true }));
-// Debug route - diagnose path/routing on Vercel
+// Debug route - diagnose path/routing and init state (includes initError when backend misconfigured)
 app.get('/call/debug', (req, res) => res.status(200).json({
 	ok: true,
 	path: req.path,
 	url: req.url,
 	originalUrl: req.originalUrl,
 	baseUrl: req.baseUrl,
+	initialized,
+	...(initError && { initError }),
 }));
 app.get('/debug', (req, res) => res.status(200).json({
 	ok: true,
 	path: req.path,
 	url: req.url,
 	originalUrl: req.originalUrl,
+	initialized,
+	...(initError && { initError }),
 }));
 // Debug: match any path for health to diagnose routing
 app.get('*', (req, res, next) => {
@@ -162,7 +166,7 @@ app.use((req, res, next) => {
 		return res.status(503).json({
 			message: initError ? 'Backend misconfigured' : 'Backend initializing',
 			retry: !initError,
-			...(process.env.NODE_ENV === 'development' && initError && { error: initError })
+			...(initError && { error: initError }),
 		});
 	}
 	next();
@@ -193,14 +197,22 @@ async function appInitiallization() {
 		// };
 		// console.log('AWS Secrets loaded successfully');
 
-		// Connect to MongoDB
+		// Required env (fail fast with clear message)
 		const mongoUri = process.env.MONGODB_URI;
 		if (!mongoUri || typeof mongoUri !== 'string') {
-			throw new Error('MONGODB_URI is not set. Add it in Vercel Project Settings → Environment Variables.');
+			throw new Error('MONGODB_URI is not set. Set it in Vercel → Project → Settings → Environment Variables (Preview + Production).');
+		}
+		if (!process.env.JWT_SIGNING_SECRET || typeof process.env.JWT_SIGNING_SECRET !== 'string') {
+			throw new Error('JWT_SIGNING_SECRET is not set. Set it in Vercel Environment Variables.');
 		}
 		if (mongoose.connection.readyState !== 1) {
-			await mongoose.connect(mongoUri);
-			console.log('Database connected successfully');
+			try {
+				await mongoose.connect(mongoUri);
+				console.log('Database connected successfully');
+			} catch (dbErr) {
+				const msg = dbErr.message || String(dbErr);
+				throw new Error(`MongoDB connection failed: ${msg}. Check MONGODB_URI (user, password, host), IP allowlist (use 0.0.0.0/0 for Vercel), and network.`);
+			}
 		}
 
 		// Dynamically import passportConfig and routes after secrets are loaded

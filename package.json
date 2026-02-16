@@ -16,7 +16,9 @@
     "lint": "next lint",
     "seed:discover": "node backend/scripts/seedDiscoverQuestions.mjs",
     "seed:discover:prod": "vercel env pull .env.local && node backend/scripts/seedDiscoverQuestions.mjs",
-    "setup": "npm run env:pull && npm run seed:discover"
+    "setup": "npm run env:pull && npm run seed:discover",
+    "test:503-retry": "node scripts/test-503-retry.mjs",
+    "list-users": "node backend/scripts/listUsers.mjs"
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^1.0.0",
